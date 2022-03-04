@@ -59,7 +59,7 @@ def get_yaml_size(yaml_file):
         sys.exit(2)
 
 
-def load_doc(yaml_file):
+def load_yml(yaml_file):
     """Load build.yml and test for syntax errors."""
     with open(yaml_file, 'r') as file:
         try:
@@ -338,7 +338,7 @@ def yaml_validation(yaml_file, path_to_yaml):
     # load schema
     schema = eval(open(path_to_script + '/schema.py', 'r').read())
     # load build.yml
-    loaded_yaml = load_doc(yaml_file)
+    loaded_yaml = load_yml(yaml_file)
 
     get_yaml_size(yaml_file)
     get_yaml_errors(schema, loaded_yaml)

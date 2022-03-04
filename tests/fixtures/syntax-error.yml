@@ -1,0 +1,20 @@
+repository: rhel-8-docs
+variants:
+  - name: rhel8
+    attributes:
+      - rhel-8/common-content/_attributes.adoc
+
+    build: true
+    files:
+      included:
+        - rhel-8/assemblies/*.adoc
+        - rhel-8/assemblies/modules/*.adoc
+        - rhel-8/modules/**/*.adoc
+        - rhel-8/assemblies/modules/**/*.adoc
+        - rhel-8/modules/**/**/*.adoc
+        - rhel-8/common-content/*.adoc
+        - rhel-8/assemblies/common-content/*.adoc
+        - rhel-8/assemblies/modules/common-content/*.adoc
+
+        - rhel-8/images/*.png
+- rhel-8/images/*.svg
