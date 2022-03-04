@@ -3,10 +3,10 @@
 import argparse
 from pathlib import Path
 import os
+import sys
+from subprocess import call
 from enki_yaml_valiadtor import yaml_validation
 from enki_files_valiadtor import multi_file_validation, single_file_validation
-from subprocess import call
-import sys
 
 parser = argparse.ArgumentParser()
 subparsers = parser.add_subparsers(dest='command')
