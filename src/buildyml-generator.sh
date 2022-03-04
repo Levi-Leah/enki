@@ -2,9 +2,10 @@
 
 ROOT_REPO=$(git rev-parse --show-toplevel)
 SCRIPT_DIR=$(realpath $(dirname "$0"))
-REPO_NAME=$(basename $ROOT_REPO)
+USER_INPUT="$1"
+REPO_NAME=$(basename $USER_INPUT)
 
-if [[ -f "$ROOT_REPO/build.yml" ]]; then
+if [[ -f "$USER_INPUT/build.yml" ]]; then
     read -p "build.yml already exists. Do you want to overwrite it? [y/N] " -n 1
     echo
     if [[ ! "$REPLY" =~ ^[yY]$ ]]; then
@@ -12,7 +13,7 @@ if [[ -f "$ROOT_REPO/build.yml" ]]; then
     fi
 fi
 
-cat >$ROOT_REPO/build.yml << EOF
+cat >$USER_INPUT/build.yml << EOF
 # Your repository name goes here
 repository: $REPO_NAME
 variants:
