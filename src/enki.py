@@ -21,9 +21,8 @@ if user_input.is_file():
         file_name = os.path.basename(user_input)
         yaml_validation(user_input, file_path)
     else:
-        str = str(user_input)
-        list = str.split()
-        single_file_validation(list)
+        file = str(user_input).split()
+        single_file_validation(file)
 
 elif user_input.is_dir():
     multi_file_validation(user_input)
