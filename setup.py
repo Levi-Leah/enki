@@ -1,6 +1,11 @@
 from setuptools import setup
 
 setup(
-    setup_requires=['setup.cfg'],
-    setup_cfg=True
+   name='enki',
+   version='1.0',
+   description='A useful module',
+   author='Levi V',
+   author_email='levi@redhat.com',
+   packages=['enki'],
+   setup_cfg=True
 )
