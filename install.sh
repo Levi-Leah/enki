@@ -10,5 +10,5 @@ if [ "grep enki.py ~/.bashrc" ]; then
     sed -i "\|enki.py|d" ~/.bashrc
 fi
 
-echo 'alias lcheck="python3 '$enki'"' >> ~/.bashrc
+echo 'alias enki="python3 '$enki'"' >> ~/.bashrc
 source ~/.bashrc

@@ -24,18 +24,16 @@ Command-line validation tool.
     sh install.sh
     ```
 
+1. Source your `~/.baschrc` file:
+    ```bash
+    source ~/.bashrc
+    ```
+
 ## Verification steps
 
 * To verify that `enki` is installed, run:
     ```bash
     enki -h
-    ```
-
-## Troubleshooting
-
-* If you get the `bash: enki: command not found...` error message, source your `~/.baschrc` file:
-    ```bash
-    source ~/.bashrc
     ```
 
 ## Usage
