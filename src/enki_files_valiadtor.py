@@ -4,7 +4,7 @@ import sys
 from enki_checks import Regex, icons_check, toc_check, nbsp_check, checks, nesting_in_modules_check, add_res_section_module_check, add_res_section_assembly_check
 import re
 import subprocess
-from enki_yaml_valiadtor import Report, printing_build_yml_error
+from enki_msg import Report, printing_build_yml_error
 
 
 def get_files_bash(file_path):

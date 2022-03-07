@@ -5,9 +5,8 @@ from pathlib import Path
 import os
 import sys
 from subprocess import call
-from enki_yaml_valiadtor import yaml_file_validation
-from oop import validating_files_in_build_yml
-#from enki_files_valiadtor import multi_file_validation, single_file_validation
+from enki_yaml_valiadtor import yaml_validation
+from enki_files_valiadtor import multi_file_validation, single_file_validation
 
 parser = argparse.ArgumentParser()
 subparsers = parser.add_subparsers(dest='command')
@@ -35,14 +34,17 @@ if p.command == 'generate':
 elif p.command == 'validate':
 
     if user_input.is_file():
-        file_extension = Path(user_input).suffix
-        if file_extension == '.yml':
-            yaml_file_validation(user_input)
-            validating_files_in_build_yml(user_input)
-
-        elif file_extension == '.adoc':
-            print('adoc')
+        file_name = os.path.basename(user_input)
+        file_path = os.path.dirname(user_input)
+        if file_name == 'build.yml':
+            file_name = os.path.basename(user_input)
+            yaml_validation(user_input, file_path)
         else:
-            print("ERROR: Unsupported file type.")
+
+            file = str(user_input).split()
+            single_file_validation(file)
+
+    elif user_input.is_dir():
+        multi_file_validation(user_input)
     else:
-        print("ERROR: Provided path doesn't exist; exiting...")
+        print("ERROR: Provided path doesn't exist.")
