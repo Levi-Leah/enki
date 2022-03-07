@@ -3,21 +3,11 @@
 import subprocess
 import os
 from enki_yaml_valiadtor import ManipulatingBuildYaml
-from enki_msg import Report
+from enki_msg import Report, ReportModified
 import sys
 from pathlib import Path
 from enki_checks import Regex, icons_check, toc_check, nbsp_check, checks, nesting_in_modules_check, add_res_section_module_check, add_res_section_assembly_check
 import re
-
-
-class ReportModified(Report):
-    def print_report(self):
-        """Print report."""
-        separator = "\n\t"
-
-        for category, files in self.report.items():
-            print("\nERROR: {}:".format(category))
-            print('\t' + separator.join(files))
 
 
 class SourcingFilesFromBuildYaml():

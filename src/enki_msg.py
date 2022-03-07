@@ -13,14 +13,6 @@ class CustomErrorHandler(BasicErrorHandler):
     messages[errors.NOT_NULLABLE.code] = "value can't be empty"
 
 
-def printing_build_yml_error(msg, *files):
-    """Print error message."""
-    print('\nERROR: Your build.yml contains the following {}:\n'.format(msg))
-    for file in files:
-        if file:
-            print('\t', file)
-
-
 class Report():
     """Create and print report. thank u J."""
 
@@ -43,4 +35,14 @@ class Report():
 
         for category, files in self.report.items():
             print("\nERROR: {} found in the following files:".format(category))
+            print('\t' + separator.join(files))
+
+
+class ReportModified(Report):
+    def print_report(self):
+        """Print report."""
+        separator = "\n\t"
+
+        for category, files in self.report.items():
+            print("\nERROR: {}:".format(category))
             print('\t' + separator.join(files))

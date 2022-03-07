@@ -53,7 +53,7 @@ Command-line validation tool.
     * Path to the valid `.adoc` file
     * Path to a directory containing `.adoc` files
 
-* To generate a `build.yml` from a template, run:
+* To generate a `build.yml` file from a template, run:
     ```bash
     enki generate <PATH>
     ```
