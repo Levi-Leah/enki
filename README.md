@@ -33,7 +33,7 @@ Command-line validation tool.
 
 ## Troubleshooting
 
-* If you can't run the commands, source your `~/.baschrc` file or restart your terminal:
+* If you get the `bash: enki: command not found...` error message, source your `~/.baschrc` file:
     ```bash
     source ~/.bashrc
     ```
