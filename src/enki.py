@@ -8,7 +8,7 @@ from subprocess import call
 from enki_yaml_valiadtor import yaml_file_validation
 from enki_files_valiadtor import validating_files_in_build_yml, validating_single_file, validating_directory
 
-parser = argparse.ArgumentParser()
+parser = argparse.ArgumentParser(prog='enki')
 subparsers = parser.add_subparsers(dest='command')
 
 parser_a = subparsers.add_parser("validate", help="Perform validation.")
@@ -20,9 +20,9 @@ parser_b.add_argument("path", type=Path, help='Path to files.')
 p = parser.parse_args()
 
 
-user_input = p.path
-
 if p.command == 'generate':
+
+    user_input = p.path
 
     if user_input.is_dir():
         path = str(user_input)
@@ -32,6 +32,8 @@ if p.command == 'generate':
     else:
         print("ERROR: Provided path is not a directory.")
 elif p.command == 'validate':
+
+    user_input = p.path
 
     if user_input.is_file():
         file_extension = Path(user_input).suffix
