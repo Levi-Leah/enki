@@ -6,7 +6,7 @@ enki=$path_to_script'/src/enki.py'
 # install dependencies
 pip install -qr $path_to_script'/requirements.txt'
 
-if [ "grep enki.py ~/.bashrc" ]; then
+if [ "$(grep enki.py ~/.bashrc)" ]; then
     sed -i "\|enki.py|d" ~/.bashrc
 fi
 
