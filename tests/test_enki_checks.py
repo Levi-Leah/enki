@@ -1,6 +1,6 @@
 import unittest
 from src.enki_checks import *
-from src.enki_yaml_valiadtor import Report
+from src.enki_msg import Report
 
 
 # class for every function
