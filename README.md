@@ -6,7 +6,7 @@ Command-line validation tool.
 
 1. Clone the repository:
     ```bash
-    git@github.com:Levi-Leah/enki.git
+    git clone git@github.com:Levi-Leah/enki.git
     ```
 
 1. Navigate to the root directory of the repository:
