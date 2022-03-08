@@ -110,7 +110,7 @@ class SourcingFilesFromBuildYaml():
         unique_attributes, nonexistent_attributes = self.source_attribute_files()
 
         all_attributes = [*attribute_files, *unique_attributes]
-        all_files = [*attribute_files, *prefix_assemblies, *prefix_modules, *undefined_content]
+        all_files = [*all_attributes, *prefix_assemblies, *prefix_modules, *undefined_content]
 
         validation = validate(all_files, report, self.yaml_dir, undefined_content, prefix_assemblies, prefix_modules, all_attributes)
 
