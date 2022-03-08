@@ -13,7 +13,7 @@ import re
 class SourcingFilesFromBuildYaml():
     def __init__(self, loaded_yaml, path_to_yaml):
         self.loaded_yaml = loaded_yaml
-        self.path_to_yaml = os.path.dirname(path_to_yaml)
+        self.yaml_dir = os.path.dirname(path_to_yaml)
 
     def source_attribute_files(self):
         """Get attribute files specifiyed in build.yml."""
@@ -23,7 +23,7 @@ class SourcingFilesFromBuildYaml():
             for item in variant['attributes']:
                 attribute_files.append(item)
 
-        existing_attributes, nonexistent_attributes = sort_files_into_existing_nonexistent(attribute_files, self.path_to_yaml)
+        existing_attributes, nonexistent_attributes = sort_files_into_existing_nonexistent(attribute_files, self.yaml_dir)
 
         unique_attributes = get_realpath(existing_attributes)
 
@@ -45,7 +45,7 @@ class SourcingFilesFromBuildYaml():
 
     def source_includes(self):
         included_values = self.source_other_file('included')
-        existent_includes, nonexistent_includes = sort_files_into_existing_nonexistent(included_values, self.path_to_yaml)
+        existent_includes, nonexistent_includes = sort_files_into_existing_nonexistent(included_values, self.yaml_dir)
 
         unique_includes = get_realpath(existent_includes)
 
@@ -53,7 +53,7 @@ class SourcingFilesFromBuildYaml():
 
     def source_excludes(self):
         excluded_values = self.source_other_file('excluded')
-        existing_excludes, nonexistent_excludes = sort_files_into_existing_nonexistent(excluded_values, self.path_to_yaml)
+        existing_excludes, nonexistent_excludes = sort_files_into_existing_nonexistent(excluded_values, self.yaml_dir)
 
         unique_excludes = get_realpath(existing_excludes)
 
@@ -67,6 +67,14 @@ class SourcingFilesFromBuildYaml():
         nonexistent_files = nonexistent_includes + nonexistent_excludes + nonexistent_attributes
 
         return nonexistent_files
+
+    def removing_excludes_from_includes(self):
+        unique_includes, nonexistent_includes = self.source_includes()
+        unique_excludes, nonexistent_excludes = self.source_excludes()
+
+        content_list = [x for x in unique_includes if x not in unique_excludes]
+
+        return content_list
 
     def attribute_naming_errors(self):
         wrong_name_atrributes = []
@@ -88,14 +96,6 @@ class SourcingFilesFromBuildYaml():
 
         return wrong_name_atrributes
 
-    def removing_excludes_from_includes(self):
-        unique_includes, nonexistent_includes = self.source_includes()
-        unique_excludes, nonexistent_excludes = self.source_excludes()
-
-        content_list = [x for x in unique_includes if x not in unique_excludes]
-
-        return content_list
-
     def sort_content(self):
         content_list = self.removing_excludes_from_includes()
         attribute_files, prefix_assemblies, prefix_modules, undefined_content = sort_prefix_files(content_list)
@@ -112,7 +112,7 @@ class SourcingFilesFromBuildYaml():
         all_attributes = [*attribute_files, *unique_attributes]
         all_files = [*attribute_files, *prefix_assemblies, *prefix_modules, *undefined_content]
 
-        validation = validate(all_files, report, self.path_to_yaml, undefined_content, prefix_assemblies, prefix_modules, all_attributes)
+        validation = validate(all_files, report, self.yaml_dir, undefined_content, prefix_assemblies, prefix_modules, all_attributes)
 
         if validation.count != 0:
             validation.print_report()
@@ -122,9 +122,9 @@ class SourcingFilesFromBuildYaml():
         wrong_name_atrributes = self.attribute_naming_errors()
         nonexistent_files = self.source_nonexistent_values()
 
-        reporting_relative_path(nonexistent_files, self.path_to_yaml, report, 'The following values do not exist in your repository')
+        reporting_relative_path(nonexistent_files, self.yaml_dir, report, 'The following values do not exist in your repository')
 
-        reporting_relative_path(wrong_name_atrributes, self.path_to_yaml, report, 'The following attribute files do not adhere to naming conventions')
+        reporting_relative_path(wrong_name_atrributes, self.yaml_dir, report, 'The following attribute files do not adhere to naming conventions')
 
         return report
 
@@ -132,8 +132,9 @@ class SourcingFilesFromBuildYaml():
 def reporting_relative_path(files, path, report, msg):
     if files:
         for file in files:
-            relative_path = file.replace(path + '/', '')
-            report.create_report(f'{msg}', relative_path)
+            if path != '':
+                file = file.replace(path + '/', '')
+            report.create_report(f'{msg}', file)
 
 
 def expand_file_paths(value):
@@ -150,12 +151,13 @@ def sort_files_into_existing_nonexistent(sourced_files, path):
     nonexistent_value = []
 
     for value in sourced_files:
-        item = path + '/' + value
-        expanded_value = expand_file_paths(item)
+        if path != '':
+            value = path + '/' + value
+        expanded_value = expand_file_paths(value)
         if not expanded_value:
             continue
         if '' in expanded_value:
-            nonexistent_value.append(item)
+            nonexistent_value.append(value)
             continue
         for file_path in expanded_value:
             if file_path not in content_list:
@@ -215,10 +217,8 @@ def validate(all_files, report, path_to_yaml, undefined_content, prefix_assembli
     undetermined_file_type = []
     confused_files = []
 
-
-
     for path in all_files:
-        relative_path = path.replace(path_to_yaml + '/', '')
+        relative_path = path
         with open(path, 'r') as file:
             original = file.read()
             stripped = Regex.MULTI_LINE_COMMENT.sub('', original)
