@@ -9,7 +9,7 @@ class Tags:
     ABSTRACT = '[role="_abstract"]'
     ADD_RES = '[role="_additional-resources"]'
     EXPERIMENTAL = ':experimental:'
-    NBSP_ATT = ':nbsp: &nbsp'
+    NBSP_ATT = ':nbsp: &#160;'
     NBSP_VAR = '{nbsp}'
     LVLOFFSET = ':leveloffset:'
     ICONS = ':icons:'
