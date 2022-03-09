@@ -59,4 +59,5 @@ def yaml_file_validation(path_to_yaml):
     manipulating_build_yaml.get_file_name()
     manipulating_build_yaml.get_yaml_existence()
     manipulating_build_yaml.get_yaml_size()
-    get_yaml_errors(manipulating_build_yaml.get_loaded_yaml())
+    loaded_yaml = manipulating_build_yaml.get_loaded_yaml()
+    get_yaml_errors(loaded_yaml)
