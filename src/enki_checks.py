@@ -35,7 +35,7 @@ class Regex:
     COMMENT_AFTER_ABSTRACT = re.compile(r'\[role="_abstract"]\n(?=\//|(/{4,})(.*\n)*?(/{4,}))')
     VAR_IN_TITLE = re.compile(r'(?<!\=)=\s.*{.*}.*')
     INLINE_ANCHOR = re.compile(r'=.*\[\[.*\]\]')
-    UI_MACROS = re.compile(r'btn:\[.*\]|menu:.*\]|kbd:.*\]')
+    UI_MACROS = re.compile(r'btn:\[.*\]|menu:.*\[.*\]|kbd:.*\[.*\]')
     HTML_MARKUP = re.compile(r'(?<!\`|_)<.*>.*<\/.*>|<.*>\n.*\n</.*>(?!\`|_)')
     INTERNAL_IFDEF = re.compile(r'(ifdef::internal\[\])(.*\n)*?(endif::\[\])')
     CODE_BLOCK_DASHES = re.compile(r'(-{4,})(.*\n)*?(-{4,})')
