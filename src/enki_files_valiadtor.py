@@ -249,24 +249,20 @@ def validating_files_in_build_yml(path_to_yaml):
     sourcing_files_from_build_yaml.validate_content(report_modified, report_original)
 
 
-def validating_single_file(user_input):
+def validating_adoc_files(user_input, file_extension):
     report_original = Report()
+
+    if user_input.is_dir():
+        user_input = expand_file_paths(str(user_input) + '/')
+        attribute_files, prefix_assemblies, prefix_modules, undefined_content = sort_files(user_input)
+    elif user_input.is_file():
+        if file_extension == '.adoc':
+            user_input = str(user_input).split()
+        else:
+            print("ERROR: Unsupported file type; exiting...")
+            sys.exit(2)
+
     attribute_files, prefix_assemblies, prefix_modules, undefined_content = sort_files(user_input)
-
-    all_files = [*attribute_files, *prefix_assemblies, *prefix_modules, *undefined_content]
-
-    validation = validate(all_files, report_original, undefined_content, prefix_assemblies, prefix_modules, '')
-
-    if validation.count != 0:
-        validation.print_report()
-        sys.exit(2)
-
-
-def validating_directory(path_to_dir):
-    report_original = Report()
-    files = expand_file_paths(path_to_dir)
-
-    attribute_files, prefix_assemblies, prefix_modules, undefined_content = sort_files(files)
 
     all_files = [*attribute_files, *prefix_assemblies, *prefix_modules, *undefined_content]
 
