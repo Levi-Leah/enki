@@ -42,9 +42,8 @@ elif p.command == 'validate':
             validating_files_in_build_yml(user_input)
 
         elif file_extension == '.adoc':
-            string = str(user_input)
-            list = string.split()
-            validating_single_file(list)
+            input_file = str(user_input).split()
+            validating_single_file(input_file)
         else:
             print("ERROR: Unsupported file type.")
     elif user_input.is_dir():
