@@ -12,8 +12,6 @@ class Tags:
     NBSP_ATT = ':nbsp: &nbsp'
     NBSP_VAR = '{nbsp}'
     LVLOFFSET = ':leveloffset:'
-    ICONS = ':icons:'
-    TOC = ':toc:'
 
 
 class Regex:
@@ -53,18 +51,6 @@ class Regex:
     EMPTY_LINE_AFTER_ADD_RES_TAG = re.compile(r'\[role="_additional-resources"]\n(?=\n)')
     COMMENT_AFTER_ADD_RES_TAG = re.compile(r'\[role="_additional-resources"]\n(?=\//|(/{4,})(.*\n)*?(/{4,}))')
     EMPTY_LINE_AFTER_ADD_RES_HEADER = re.compile(r'== Additional resources\s\n|\.Additional resources\n\n', re.IGNORECASE)
-
-
-def icons_check(report, stripped_file, file_path):
-    """Check if the file contains icons attribute."""
-    if re.findall(Tags.ICONS, stripped_file):
-        report.create_report('icons attribute', file_path)
-
-
-def toc_check(report, stripped_file, file_path):
-    """Check if the file contains toc attribute."""
-    if re.findall(Tags.TOC, stripped_file):
-        report.create_report('toc attribute', file_path)
 
 
 def nbsp_check(report, stripped_file, file_path):

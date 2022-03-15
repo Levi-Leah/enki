@@ -4,52 +4,6 @@ from src.enki_msg import Report
 
 
 # class for every function
-class TestIconsCheck(unittest.TestCase):
-    def setUp(self):
-        self.file_path = "some/path"
-
-
-    def test_empty_file(self):
-        report = Report()
-        file_contents = ""
-
-        result = icons_check(report, file_contents, self.file_path)
-        self.assertNotIn('icons attribute', report.report)
-
-    def test_file_with_icons_tag(self):
-        report = Report()
-        file_contents = """:toc:
-:icons:
-:imagesdir: images"""
-        file_path = "some/path"
-
-        result = icons_check(report, file_contents, self.file_path)
-        self.assertIn('icons attribute', report.report)
-
-
-class TestTocCheck(unittest.TestCase):
-    def setUp(self):
-        self.file_path = "some/path"
-
-
-    def test_empty_file(self):
-        report = Report()
-        file_contents = ""
-
-        result = toc_check(report, file_contents, self.file_path)
-        self.assertNotIn('toc attribute', report.report)
-
-    def test_file_with_toc_tag(self):
-        report = Report()
-        file_contents = """:toc:
-:icons:
-:imagesdir: images"""
-        file_path = "some/path"
-
-        result = toc_check(report, file_contents, self.file_path)
-        self.assertIn('toc attribute', report.report)
-
-
 class TestVanillaXrefCheck(unittest.TestCase):
     def test_tag_present(self):
         file_contents = """"= Heading

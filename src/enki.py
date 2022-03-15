@@ -12,19 +12,20 @@ parser = argparse.ArgumentParser(prog='enki')
 subparsers = parser.add_subparsers(dest='command')
 
 parser_a = subparsers.add_parser("validate", help="Perform validation.")
-parser_a.add_argument("path", type=Path, help='Path to files.')
+parser_a.add_argument("path", nargs='*', type=Path, help='Path to files.')
 
 parser_b = subparsers.add_parser("generate", help="Generate build.yml from a template.")
-parser_b.add_argument("path", type=Path, help='Path to files.')
+parser_b.add_argument("path", nargs='*', type=Path, help='Path to files.')
 
 p = parser.parse_args()
 
 
-if os.path.exists(p.path):
-    user_input = p.path
-else:
-    print("ERROR: Provided path doesn't exist; exiting...")
-    sys.exit(2)
+for item in p.path:
+    if not os.path.exists(item):
+        print("ERROR: Provided path doesn't exist; exiting...")
+        sys.exit(2)
+
+user_input = p.path
 
 
 if p.command == 'generate':
@@ -38,10 +39,14 @@ if p.command == 'generate':
         print("ERROR: Provided path is not a directory.")
 elif p.command == 'validate':
 
-    if os.path.exists(user_input):
-        file_extension = Path(user_input).suffix
+    item_count = len(user_input)
+
+    for item in user_input:
+        file_extension = Path(item).suffix
         if file_extension == '.yml':
-            yaml_file_validation(user_input)
-            validating_files_in_build_yml(user_input, file_extension)
+            print(f"\nINFO: Validating {item}")
+            yaml_file_validation(item)
+            validating_files_in_build_yml(item)
+
         else:
             validating_adoc_files(user_input, file_extension)

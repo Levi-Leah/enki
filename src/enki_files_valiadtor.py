@@ -6,7 +6,7 @@ from pathlib import Path
 import sys
 from enki_yaml_valiadtor import ManipulatingBuildYaml
 from enki_msg import Report, ReportModified
-from enki_checks import Regex, icons_check, toc_check, nbsp_check, checks, nesting_in_modules_check, add_res_section_module_check, add_res_section_assembly_check
+from enki_checks import Regex, nbsp_check, checks, nesting_in_modules_check, add_res_section_module_check, add_res_section_assembly_check
 
 
 class SourcingFilesFromBuildYaml():
@@ -80,7 +80,6 @@ class SourcingFilesFromBuildYaml():
         if (nonexistent_files.count) or (validation.count) != 0:
             nonexistent_files.print_report()
             validation.print_report()
-            sys.exit(2)
 
 
 def source_files(loaded_yaml, var):
@@ -133,7 +132,7 @@ def get_existent_nonexistent_content(values, yaml_dir):
     return content_files, nonexistent_values
 
 
-def get_realpath(files):
+def get_unique_files(files):
     """Get unique file list of content excluding attributes"""
     # get unique file list through realpath
     unique_files = []
@@ -148,7 +147,7 @@ def get_realpath(files):
 
 def get_unique_and_nonexistent_files(values, yaml_dir):
     existing_files, nonexistent_files = get_existent_nonexistent_content(values, yaml_dir)
-    unique_files = get_realpath(existing_files)
+    unique_files = get_unique_files(existing_files)
 
     return unique_files, nonexistent_files
 
@@ -200,8 +199,6 @@ def validate(all_files, report, undefined_content, prefix_assemblies, prefix_mod
             stripped = Regex.INTERNAL_IFDEF.sub('', stripped)
 
             checks(report, stripped, original, relative_path)
-            icons_check(report, stripped, relative_path)
-            toc_check(report, stripped, relative_path)
 
             if path in undefined_content:
                 if re.findall(Regex.MODULE_TYPE, stripped):
@@ -250,24 +247,8 @@ def validating_files_in_build_yml(path_to_yaml):
 
 
 def validating_adoc_files(user_input, file_extension):
+    file_list = []
+
     report_original = Report()
 
-    if user_input.is_dir():
-        user_input = expand_file_paths(str(user_input) + '/')
-        attribute_files, prefix_assemblies, prefix_modules, undefined_content = sort_files(user_input)
-    elif user_input.is_file():
-        if file_extension == '.adoc':
-            user_input = str(user_input).split()
-        else:
-            print("ERROR: Unsupported file type; exiting...")
-            sys.exit(2)
-
-    attribute_files, prefix_assemblies, prefix_modules, undefined_content = sort_files(user_input)
-
-    all_files = [*attribute_files, *prefix_assemblies, *prefix_modules, *undefined_content]
-
-    validation = validate(all_files, report_original, undefined_content, prefix_assemblies, prefix_modules, '')
-
-    if validation.count != 0:
-        validation.print_report()
-        sys.exit(2)
+    print(user_input)

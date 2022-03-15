@@ -13,7 +13,7 @@ class ManipulatingBuildYaml():
 
     def get_file_name(self):
         if os.path.basename(self.path_to_yaml) != 'build.yml':
-            print("\nERROR: Provided file is not a build.yml; exiting...")
+            print(f"\nERROR: {self.path_to_yaml} is not a build.yml; exiting...")
             sys.exit(2)
 
     def get_yaml_existence(self):
