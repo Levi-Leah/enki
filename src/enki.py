@@ -13,24 +13,28 @@ parser = argparse.ArgumentParser(prog='enki')
 subparsers = parser.add_subparsers(dest='command')
 
 parser_a = subparsers.add_parser("validate", help="Perform validation.")
-parser_a.add_argument("path", nargs='*', type=Path, help='Path to files.')
+parser_a.add_argument("path", nargs='+', type=Path, help='Path to files.')
 
 parser_b = subparsers.add_parser("generate", help="Generate build.yml from a template.")
-parser_b.add_argument("path", nargs='*', type=Path, help='Path to files.')
+parser_b.add_argument("path", nargs='+', type=Path, help='Path to files.')
 
-p = parser.parse_args()
+if len(sys.argv) == 1:
+    parser.print_help()
+    sys.exit(1)
+
+args = parser.parse_args()
 
 
-for item in p.path:
+for item in args.path:
     if not os.path.exists(item):
         print(f"\nENKI ERROR: '{item}' doesn't exist in your repository.")
-        p.path.remove(item)
+        args.path.remove(item)
         continue
 
-user_input = p.path
+user_input = args.path
 
 
-if p.command == 'generate':
+if args.command == 'generate':
 
     if user_input.is_dir():
         path = str(user_input)
@@ -40,7 +44,7 @@ if p.command == 'generate':
     else:
         print("\nENKI ERROR: Provided path is not a directory.")
 
-elif p.command == 'validate':
+elif args.command == 'validate':
     files = []
     unsupported_files = []
 
