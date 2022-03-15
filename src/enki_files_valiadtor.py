@@ -246,9 +246,15 @@ def validating_files_in_build_yml(path_to_yaml):
     sourcing_files_from_build_yaml.validate_content(report_modified, report_original)
 
 
-def validating_adoc_files(user_input, file_extension):
-    file_list = []
-
+def validating_adoc_files(user_input):
     report_original = Report()
 
-    print(user_input)
+    attribute_files, prefix_assemblies, prefix_modules, undefined_content = sort_files(user_input)
+
+    all_files = [*attribute_files, *prefix_assemblies, *prefix_modules, *undefined_content]
+
+    file_validation = validate(all_files, report_original, undefined_content, prefix_assemblies, prefix_modules, attribute_files)
+
+    if file_validation.count != 0:
+        file_validation.print_report()
+        sys.exit(2)

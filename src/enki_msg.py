@@ -34,7 +34,7 @@ class Report():
         separator = "\n\t"
 
         for category, files in self.report.items():
-            print("\nERROR: {} found in the following files:".format(category))
+            print("\nVALIDATION ERROR: {} found in the following files:".format(category))
             print('\t' + separator.join(files))
 
 
@@ -44,5 +44,5 @@ class ReportModified(Report):
         separator = "\n\t"
 
         for category, files in self.report.items():
-            print("\nERROR: {}:".format(category))
+            print("\nVALIDATION ERROR: {}:".format(category))
             print('\t' + separator.join(files))

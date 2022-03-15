@@ -6,7 +6,8 @@ import os
 import sys
 from subprocess import call
 from enki_yaml_valiadtor import yaml_file_validation
-from enki_files_valiadtor import validating_files_in_build_yml, validating_adoc_files
+from enki_files_valiadtor import validating_files_in_build_yml, validating_adoc_files, expand_file_paths
+from enki_msg import ReportModified
 
 parser = argparse.ArgumentParser(prog='enki')
 subparsers = parser.add_subparsers(dest='command')
@@ -22,8 +23,9 @@ p = parser.parse_args()
 
 for item in p.path:
     if not os.path.exists(item):
-        print("ERROR: Provided path doesn't exist; exiting...")
-        sys.exit(2)
+        print(f"\nENKI ERROR: '{item}' doesn't exist in your repository.")
+        p.path.remove(item)
+        continue
 
 user_input = p.path
 
@@ -36,17 +38,29 @@ if p.command == 'generate':
         call("bash " + path_to_script + "/buildyml-generator.sh " + path, shell=True)
         sys.exit(0)
     else:
-        print("ERROR: Provided path is not a directory.")
-elif p.command == 'validate':
+        print("\nENKI ERROR: Provided path is not a directory.")
 
-    item_count = len(user_input)
+elif p.command == 'validate':
+    files = []
+    unsupported_files = []
 
     for item in user_input:
-        file_extension = Path(item).suffix
-        if file_extension == '.yml':
-            print(f"\nINFO: Validating {item}")
+        if os.path.isdir(item):
+            expand_files = expand_file_paths(str(item) + '/')
+            for file in expand_files:
+                files.append(file)
+        elif str(item).endswith('.adoc'):
+            files.append(str(item))
+        elif os.path.basename(str(item)) == 'build.yml':
             yaml_file_validation(item)
             validating_files_in_build_yml(item)
-
         else:
-            validating_adoc_files(user_input, file_extension)
+            unsupported_files.append(str(item))
+
+    if unsupported_files:
+        separator = "\n\t"
+        print('\nENKI ERROR: unsupported file format. The following files were not validated:')
+        print('\t' + separator.join(unsupported_files))
+
+    if files:
+        validating_adoc_files(files)

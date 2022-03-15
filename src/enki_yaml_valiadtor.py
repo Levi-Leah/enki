@@ -11,16 +11,6 @@ class ManipulatingBuildYaml():
     def __init__(self, path_to_yaml):
         self.path_to_yaml = path_to_yaml
 
-    def get_file_name(self):
-        if os.path.basename(self.path_to_yaml) != 'build.yml':
-            print(f"\nERROR: {self.path_to_yaml} is not a build.yml; exiting...")
-            sys.exit(2)
-
-    def get_yaml_existence(self):
-        if not os.path.isfile(self.path_to_yaml):
-            print("\nERROR: Provided file doesn't exist; exiting...")
-            sys.exit(2)
-
     def get_yaml_size(self):
         """Test if build.yml is empty."""
         if os.path.getsize(self.path_to_yaml) == 0:
@@ -32,7 +22,7 @@ class ManipulatingBuildYaml():
             try:
                 return yaml.safe_load(file)
             except yaml.YAMLError:
-                print("There's a syntax error in your build.yml file. Please fix it and try again.\nTo detect an error try running yaml lint on your build.yml file.")
+                print("\nERROR: There's a syntax error in your build.yml file. Please fix it and try again.\nTo detect an error try running yaml lint on your build.yml file.")
                 sys.exit(2)
 
 
@@ -47,7 +37,7 @@ def get_yaml_errors(loaded_yaml):
     v.validate(loaded_yaml, schema)
 
     if v.errors:
-        print("ERROR: there is an error in your yaml file:")
+        print("\nERROR: there is an error in your yaml file:")
         for key in v.errors.keys():
             print("\n\t'{}' {}".format(key, ', '.join(str(item) for item in v.errors[key])))
         sys.exit(2)
@@ -55,9 +45,6 @@ def get_yaml_errors(loaded_yaml):
 
 def yaml_file_validation(path_to_yaml):
     manipulating_build_yaml = ManipulatingBuildYaml(path_to_yaml)
-
-    manipulating_build_yaml.get_file_name()
-    manipulating_build_yaml.get_yaml_existence()
     manipulating_build_yaml.get_yaml_size()
     loaded_yaml = manipulating_build_yaml.get_loaded_yaml()
     get_yaml_errors(loaded_yaml)
