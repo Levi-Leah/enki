@@ -9,11 +9,9 @@ class Tags:
     ABSTRACT = '[role="_abstract"]'
     ADD_RES = '[role="_additional-resources"]'
     EXPERIMENTAL = ':experimental:'
-    NBSP_ATT = ':nbsp: &nbsp'
+    NBSP_ATT = ':nbsp: &#160;'
     NBSP_VAR = '{nbsp}'
     LVLOFFSET = ':leveloffset:'
-    ICONS = ':icons:'
-    TOC = ':toc:'
 
 
 class Regex:
@@ -22,6 +20,7 @@ class Regex:
     INCLUDE = re.compile(r'include::.*\]\n')
     MODULE_TYPE = re.compile(r':_content-type: (PROCEDURE|CONCEPT|REFERENCE)')
     ASSEMBLY_TYPE = re.compile(r':_content-type: ASSEMBLY')
+    SNIPPET_TYPE = re.compile(r':_content-type: SNIPPET')
     PREFIX_ASSEMBLIES = re.compile(r'.*\/assembly.*\.adoc')
     PREFIX_MODULES = re.compile(r'.*\/con.*\.adoc|.*\/proc.*\.adoc|.*\/ref.*\.adoc')
     # should exclude pseudo vanilla like <<some content>>
@@ -34,7 +33,7 @@ class Regex:
     COMMENT_AFTER_ABSTRACT = re.compile(r'\[role="_abstract"]\n(?=\//|(/{4,})(.*\n)*?(/{4,}))')
     VAR_IN_TITLE = re.compile(r'(?<!\=)=\s.*{.*}.*')
     INLINE_ANCHOR = re.compile(r'=.*\[\[.*\]\]')
-    UI_MACROS = re.compile(r'btn:\[.*\]|menu:.*\]|kbd:.*\]')
+    UI_MACROS = re.compile(r'btn:\[.*\]|menu:.*\[.*\]|kbd:.*\[.*\]')
     HTML_MARKUP = re.compile(r'(?<!\`|_)<.*>.*<\/.*>|<.*>\n.*\n</.*>(?!\`|_)')
     INTERNAL_IFDEF = re.compile(r'(ifdef::internal\[\])(.*\n)*?(endif::\[\])')
     CODE_BLOCK_DASHES = re.compile(r'(-{4,})(.*\n)*?(-{4,})')
@@ -54,23 +53,11 @@ class Regex:
     EMPTY_LINE_AFTER_ADD_RES_HEADER = re.compile(r'== Additional resources\s\n|\.Additional resources\n\n', re.IGNORECASE)
 
 
-def icons_check(report, stripped_file, file_path):
-    """Check if the file contains icons attribute."""
-    if re.findall(Tags.ICONS, stripped_file):
-        report.create_report('icons attribute', file_path)
-
-
-def toc_check(report, stripped_file, file_path):
-    """Check if the file contains toc attribute."""
-    if re.findall(Tags.TOC, stripped_file):
-        report.create_report('toc attribute', file_path)
-
-
 def nbsp_check(report, stripped_file, file_path):
     if re.findall(Tags.NBSP_ATT, stripped_file):
         return
     elif re.findall(Tags.NBSP_VAR, stripped_file):
-        report.create_report('`{nsbp}` attribute is used but not defined. `:nbsp: &nbsp` attribute is not', file_path)
+        report.create_report('`{nsbp}` attribute is used but not defined. `:nbsp: &#160;` attribute is not', file_path)
 
 
 def vanilla_xref_check(stripped_file):
