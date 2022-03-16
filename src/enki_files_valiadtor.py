@@ -1,74 +1,58 @@
 #!/usr/bin/env/ python3
-
-import subprocess
 import os
+import re
+import subprocess
+from pathlib import Path
+import sys
 from enki_yaml_valiadtor import ManipulatingBuildYaml
 from enki_msg import Report, ReportModified
-import sys
-from pathlib import Path
-from enki_checks import Regex, icons_check, toc_check, nbsp_check, checks, nesting_in_modules_check, add_res_section_module_check, add_res_section_assembly_check
-import re
+from enki_checks import Regex, nbsp_check, checks, nesting_in_modules_check, add_res_section_module_check, add_res_section_assembly_check
 
 
 class SourcingFilesFromBuildYaml():
     def __init__(self, loaded_yaml, path_to_yaml):
         self.loaded_yaml = loaded_yaml
+        self.path_to_yaml = path_to_yaml
         self.yaml_dir = os.path.dirname(path_to_yaml)
 
-    def source_attribute_files(self):
+    def source_attributes(self):
         """Get attribute files specifiyed in build.yml."""
-        attribute_files = []
+        attribute_values = []
 
         for variant in self.loaded_yaml['variants']:
             for item in variant['attributes']:
-                attribute_files.append(item)
+                attribute_values.append(item)
 
-        existing_attributes, nonexistent_attributes = sort_files_into_existing_nonexistent(attribute_files, self.yaml_dir)
-
-        unique_attributes = get_realpath(existing_attributes)
+        unique_attributes, nonexistent_attributes = get_unique_and_nonexistent_files(attribute_values, self.yaml_dir)
 
         return unique_attributes, nonexistent_attributes
 
-    def source_other_file(self, var):
-        sourced_files = []
-
-        for yaml_dict in self.loaded_yaml['variants']:
-            for subkey in yaml_dict['files']:
-                if subkey != var:
-                    continue
-
-                for item in yaml_dict['files'][var]:
-                    if item not in sourced_files:
-                        sourced_files.append(item)
-
-        return sourced_files
-
     def source_includes(self):
-        included_values = self.source_other_file('included')
-        existent_includes, nonexistent_includes = sort_files_into_existing_nonexistent(included_values, self.yaml_dir)
-
-        unique_includes = get_realpath(existent_includes)
+        included_values = source_files(self.loaded_yaml, 'included')
+        unique_includes, nonexistent_includes = get_unique_and_nonexistent_files(included_values, self.yaml_dir)
 
         return unique_includes, nonexistent_includes
 
     def source_excludes(self):
-        excluded_values = self.source_other_file('excluded')
-        existing_excludes, nonexistent_excludes = sort_files_into_existing_nonexistent(excluded_values, self.yaml_dir)
-
-        unique_excludes = get_realpath(existing_excludes)
+        excluded_values = source_files(self.loaded_yaml, 'excluded')
+        unique_excludes, nonexistent_excludes = get_unique_and_nonexistent_files(excluded_values, self.yaml_dir)
 
         return unique_excludes, nonexistent_excludes
 
-    def source_nonexistent_values(self):
+    def source_nonexistent_content(self, report_modified):
         unique_includes, nonexistent_includes = self.source_includes()
-        existing_excludes, nonexistent_excludes = self.source_excludes()
-        existing_attributes, nonexistent_attributes = self.source_attribute_files()
+        unique_excludes, nonexistent_excludes = self.source_excludes()
+        unique_attributes, nonexistent_attributes = self.source_attributes()
 
-        nonexistent_files = nonexistent_includes + nonexistent_excludes + nonexistent_attributes
+        nonexistent_values = nonexistent_includes + nonexistent_excludes + nonexistent_attributes
 
-        return nonexistent_files
+        if nonexistent_values:
+            for value in nonexistent_values:
+                report_modified.create_report(f'The following values do not exist in your repository', value)
 
-    def removing_excludes_from_includes(self):
+        return report_modified
+
+    def source_existing_content(self):
         unique_includes, nonexistent_includes = self.source_includes()
         unique_excludes, nonexistent_excludes = self.source_excludes()
 
@@ -76,65 +60,41 @@ class SourcingFilesFromBuildYaml():
 
         return content_list
 
-    def attribute_naming_errors(self):
-        wrong_name_atrributes = []
-
-        unique_attributes, nonexistent_attributes = self.source_attribute_files()
-
-        for item in unique_attributes:
-            file_name = os.path.basename(item)
-            file_path = os.path.basename(item)
-
-            if file_path.startswith("_"):
-                continue
-            elif "/_" in file_path:
-                continue
-            elif file_name.startswith("_"):
-                continue
-            else:
-                wrong_name_atrributes.append(item)
-
-        return wrong_name_atrributes
-
     def sort_content(self):
-        content_list = self.removing_excludes_from_includes()
-        attribute_files, prefix_assemblies, prefix_modules, undefined_content = sort_prefix_files(content_list)
+        content_list = self.source_existing_content()
+        attribute_files, prefix_assemblies, prefix_modules, undefined_content = sort_files(content_list)
 
         return attribute_files, prefix_assemblies, prefix_modules, undefined_content
 
-    def file_validation(self):
-        """Validate all files."""
-        report = Report()
-
+    def validate_content(self, report_modified, report_original):
+        unique_attributes, nonexistent_attributes = self.source_attributes()
         attribute_files, prefix_assemblies, prefix_modules, undefined_content = self.sort_content()
-        unique_attributes, nonexistent_attributes = self.source_attribute_files()
 
         all_attributes = [*attribute_files, *unique_attributes]
         all_files = [*all_attributes, *prefix_assemblies, *prefix_modules, *undefined_content]
 
-        validation = validate(all_files, report, self.yaml_dir, undefined_content, prefix_assemblies, prefix_modules, all_attributes)
+        validation = validate(all_files, report_original, undefined_content, prefix_assemblies, prefix_modules, all_attributes)
 
-        if validation.count != 0:
+        nonexistent_files = self.source_nonexistent_content(report_modified)
+
+        if (nonexistent_files.count) or (validation.count) != 0:
+            nonexistent_files.print_report()
             validation.print_report()
 
 
-    def generating_report(self, report):
-        wrong_name_atrributes = self.attribute_naming_errors()
-        nonexistent_files = self.source_nonexistent_values()
+def source_files(loaded_yaml, var):
+    sourced_files = []
 
-        reporting_relative_path(nonexistent_files, self.yaml_dir, report, 'The following values do not exist in your repository')
+    for yaml_dict in loaded_yaml['variants']:
+        for subkey in yaml_dict['files']:
+            if subkey != var:
+                continue
 
-        reporting_relative_path(wrong_name_atrributes, self.yaml_dir, report, 'The following attribute files do not adhere to naming conventions')
+            for item in yaml_dict['files'][var]:
+                if item not in sourced_files:
+                    sourced_files.append(item)
 
-        return report
-
-
-def reporting_relative_path(files, path, report, msg):
-    if files:
-        for file in files:
-            if path != '':
-                file = file.replace(path + '/', '')
-            report.create_report(f'{msg}', file)
+    return sourced_files
 
 
 def expand_file_paths(value):
@@ -146,27 +106,33 @@ def expand_file_paths(value):
     return expanded_files
 
 
-def sort_files_into_existing_nonexistent(sourced_files, path):
-    content_list = []
-    nonexistent_value = []
+def get_existent_nonexistent_content(values, yaml_dir):
+    content_files = []
+    nonexistent_values = []
 
-    for value in sourced_files:
-        if path != '':
-            value = path + '/' + value
-        expanded_value = expand_file_paths(value)
-        if not expanded_value:
-            continue
-        if '' in expanded_value:
-            nonexistent_value.append(value)
-            continue
-        for file_path in expanded_value:
-            if file_path not in content_list:
-                content_list.append(file_path)
+    for value in values:
+        path_to_value = os.path.join(yaml_dir, value)
+        # deal with global patterns
+        wildcards = re.compile(r'[*?\[\]]')
+        if wildcards.search(value):
+            expanded_items = expand_file_paths(path_to_value)
+            if expanded_items:
+                for expanded_item in expanded_items:
+                    if expanded_item != '':
+                        content_files.append(expanded_item)
+                    else:
+                        nonexistent_values.append(value)
+            else:
+                continue
+        elif os.path.isfile(path_to_value):
+            content_files.append(path_to_value)
+        else:
+            nonexistent_values.append(value)
 
-    return content_list, nonexistent_value
+    return content_files, nonexistent_values
 
 
-def get_realpath(files):
+def get_unique_files(files):
     """Get unique file list of content excluding attributes"""
     # get unique file list through realpath
     unique_files = []
@@ -179,8 +145,15 @@ def get_realpath(files):
     return unique_files
 
 
-def sort_prefix_files(files):
-    """Get a list of assemblies, modulesa, and unidentifiyed files."""
+def get_unique_and_nonexistent_files(values, yaml_dir):
+    existing_files, nonexistent_files = get_existent_nonexistent_content(values, yaml_dir)
+    unique_files = get_unique_files(existing_files)
+
+    return unique_files, nonexistent_files
+
+
+def sort_files(files):
+    """Get a list of assemblies, modules, and unidentifiyed files."""
     attribute_files = []
     prefix_assemblies = []
     prefix_modules = []
@@ -192,13 +165,8 @@ def sort_prefix_files(files):
             continue
 
         file_name = os.path.basename(file)
-        file_path = os.path.basename(file)
 
-        if file_path.startswith("_"):
-            attribute_files.append(file)
-        elif "/_" in file_path:
-            attribute_files.append(file)
-        elif file_name.startswith("_"):
+        if re.search("/_", file):
             attribute_files.append(file)
         elif file_name.startswith('assembly'):
             prefix_assemblies.append(file)
@@ -212,13 +180,15 @@ def sort_prefix_files(files):
     return attribute_files, prefix_assemblies, prefix_modules, undefined_content
 
 
-def validate(all_files, report, path_to_yaml, undefined_content, prefix_assemblies, prefix_modules, all_attributes):
+def validate(all_files, report, undefined_content, prefix_assemblies, prefix_modules, all_attributes):
 
     undetermined_file_type = []
     confused_files = []
 
+    cwd = os.getcwd()
+
     for path in all_files:
-        relative_path = path
+        relative_path = os.path.relpath(path, cwd)
         with open(path, 'r') as file:
             original = file.read()
             stripped = Regex.MULTI_LINE_COMMENT.sub('', original)
@@ -229,8 +199,6 @@ def validate(all_files, report, path_to_yaml, undefined_content, prefix_assembli
             stripped = Regex.INTERNAL_IFDEF.sub('', stripped)
 
             checks(report, stripped, original, relative_path)
-            icons_check(report, stripped, relative_path)
-            toc_check(report, stripped, relative_path)
 
             if path in undefined_content:
                 if re.findall(Regex.MODULE_TYPE, stripped):
@@ -264,55 +232,28 @@ def validate(all_files, report, path_to_yaml, undefined_content, prefix_assembli
             if path in all_attributes:
                 nbsp_check(report, stripped, relative_path)
 
-    reporting_relative_path(undetermined_file_type, path_to_yaml, report, 'files can not be checked. no filename prefix or content type')
-
-    reporting_relative_path(confused_files, path_to_yaml, report, 'mismatched filename prefix and content type tag')
-
     return report
 
 
 def validating_files_in_build_yml(path_to_yaml):
-    report = ReportModified()
+    report_original = Report()
+    report_modified = ReportModified()
 
-    manipulating_yaml = ManipulatingBuildYaml(path_to_yaml)
-    loaded_yaml = manipulating_yaml.get_loaded_yaml()
-    sourcing_files = SourcingFilesFromBuildYaml(loaded_yaml, path_to_yaml)
+    manipulating_build_yaml = ManipulatingBuildYaml(path_to_yaml)
+    loaded_yaml = manipulating_build_yaml.get_loaded_yaml()
+    sourcing_files_from_build_yaml = SourcingFilesFromBuildYaml(loaded_yaml, path_to_yaml)
 
-    generating_report = sourcing_files.generating_report(report)
-
-    if generating_report.count != 0:
-        generating_report.print_report()
-
-    file_validation = sourcing_files.file_validation()
+    sourcing_files_from_build_yaml.validate_content(report_modified, report_original)
 
 
-def validating_single_file(path_to_adoc):
-    report = Report()
+def validating_adoc_files(user_input):
+    report_original = Report()
 
-    path_to_yaml = '/some/path'
-
-    attribute_files, prefix_assemblies, prefix_modules, undefined_content = sort_prefix_files(path_to_adoc)
+    attribute_files, prefix_assemblies, prefix_modules, undefined_content = sort_files(user_input)
 
     all_files = [*attribute_files, *prefix_assemblies, *prefix_modules, *undefined_content]
 
-    file_validation = validate(all_files, report, path_to_yaml, undefined_content, prefix_assemblies, prefix_modules, attribute_files)
-
-    if file_validation.count != 0:
-        file_validation.print_report()
-        sys.exit(2)
-
-
-def validating_directory(path_to_dir):
-    report = Report()
-
-    path_to_yaml = '/some/path'
-
-    files = expand_file_paths(path_to_dir)
-    attribute_files, prefix_assemblies, prefix_modules, undefined_content = sort_prefix_files(files)
-
-    all_files = [*attribute_files, *prefix_assemblies, *prefix_modules, *undefined_content]
-
-    file_validation = validate(all_files, report, path_to_yaml, undefined_content, prefix_assemblies, prefix_modules, attribute_files)
+    file_validation = validate(all_files, report_original, undefined_content, prefix_assemblies, prefix_modules, attribute_files)
 
     if file_validation.count != 0:
         file_validation.print_report()

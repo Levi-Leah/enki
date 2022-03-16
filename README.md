@@ -6,7 +6,7 @@ Command-line validation tool.
 
 1. Clone the repository:
     ```bash
-    git clone git@github.com:Levi-Leah/enki.git
+    git clone https://github.com/Levi-Leah/enki.git
     ```
 
 1. Navigate to the root directory of the repository:
@@ -47,17 +47,42 @@ Command-line validation tool.
     ```bash
     enki validate <PATH>
     ```
-    Replace `<PATH>` with one of the following options:
-
-    * Path to the valid `build.yml` file
-    * Path to the valid `.adoc` file
-    * Path to a directory containing `.adoc` files
+    Replace `<PATH>` with the path to files or directories you want to validate.
 
 * To generate a `build.yml` file from a template, run:
     ```bash
     enki generate <PATH>
     ```
     Replace `<PATH>` with the path to a directory where you want to generate the `build.yml` file.
+
+    ---
+    **Examples**
+
+    * To validate the `build.yml` file and its content, run:
+        ```bash
+        enki validate path/to/build.yml #Validates build.yml file and content specifiyed in it
+        ```
+
+    * To validate all files in the directory, run:
+        ```bash
+        enki validate path/
+        ```
+
+    * To validate a specific file or files, run:
+        ```bash
+        enki validate path/to/file.adoc
+        enki validate path/to/file.adoc path/to/another-file.adoc
+        ```
+
+    * To validate all files that match a global pattern, run:
+        ```bash
+        enki validate path/to/**/**/*adoc
+        ```
+
+    * To validate all files that match the special character, run:
+        ```bash
+        enki validate path/to/*adoc
+        ```
 
 ## Reporting a bug
 [Issue tracker](https://github.com/Levi-Leah/enki/issues)
