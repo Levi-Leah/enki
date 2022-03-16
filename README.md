@@ -14,11 +14,6 @@ Command-line validation tool.
     cd enki
     ```
 
-1. Switch to the `oop` branch:
-    ```bash
-    git checkout oop
-    ```
-
 1. Run the installation script:
     ```bash
     sh install.sh
