@@ -126,15 +126,15 @@ def lvloffset_check(stripped_file):
         return True
 
 
-def abstarct_tag_multiple_check(stripped_file):
-    """Checks if the abstract tag is not set or set more than once."""
-    if stripped_file.count(Tags.ABSTRACT) > 1:
+def abstract_tag_check(stripped_file):
+    """Checks if the abstract tag is set once."""
+    if stripped_file.count(Tags.ABSTRACT) == 1:
         return True
 
 
-def abstract_tag_check(original_file):
-    """Checks if the abstract tag is set once."""
-    if original_file.count(Tags.ABSTRACT) == 1:
+def abstarct_tag_multiple_check(stripped_file):
+    """Checks if the abstract tag is not set or set more than once."""
+    if stripped_file.count(Tags.ABSTRACT) > 1:
         return True
 
 
