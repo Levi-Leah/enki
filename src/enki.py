@@ -7,7 +7,6 @@ import sys
 from subprocess import call
 from enki_yaml_valiadtor import yaml_file_validation
 from enki_files_valiadtor import validating_files_in_build_yml, validating_adoc_files, expand_file_paths
-from enki_msg import ReportModified
 
 parser = argparse.ArgumentParser(prog='enki')
 subparsers = parser.add_subparsers(dest='command')

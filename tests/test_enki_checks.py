@@ -106,7 +106,7 @@ class TestHtmlMarkupCheck(unittest.TestCase):
         result = html_markup_check(file_contents)
         self.assertTrue(result, "Should return True when file has HTML markup.")
 
-    def test_html_markup_present(self):
+    def test_html_markup_not_present(self):
         file_contents = """= Heading
 
 <nothtml>markup<nothtml>"""
@@ -193,35 +193,6 @@ include::some-include.adoc[]"""
 
         result = lvloffset_check(file_contents)
         self.assertTrue(result, "Should return True when file has no :leveloffset: tag.")
-
-
-class TestAbstractTagCheck(unittest.TestCase):
-    def test_tag_present(self):
-        file_contents = """= Heading
-
-[role="_abstract"]
-This is examle abstract."""
-
-        result = abstract_tag_check(file_contents)
-        self.assertTrue(result, "Should return True when file has a single abstract tag.")
-
-    def test_tag_not_present(self):
-        file_contents = """= Heading
-
-This is examle abstract."""
-
-        result = abstract_tag_check(file_contents)
-        self.assertFalse(result, "Should return False when file has no abstract tag.")
-
-    def test_multile_tags_present(self):
-        file_contents = """= Heading
-
-[role="_abstract"]
-[role="_abstract"]
-This is examle abstract."""
-
-        result = abstract_tag_check(file_contents)
-        self.assertFalse(result, "Should return False when file has multiple abstract tags.")
 
 
 class TestAbstractTagMultipleCheck(unittest.TestCase):

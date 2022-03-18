@@ -126,12 +126,6 @@ def lvloffset_check(stripped_file):
         return True
 
 
-def abstract_tag_check(stripped_file):
-    """Checks if the abstract tag is set once."""
-    if stripped_file.count(Tags.ABSTRACT) == 1:
-        return True
-
-
 def abstarct_tag_multiple_check(stripped_file):
     """Checks if the abstract tag is not set or set more than once."""
     if stripped_file.count(Tags.ABSTRACT) > 1:
@@ -225,13 +219,3 @@ def checks(report, stripped_file, original_file, file_path):
 
     if abstarct_tag_multiple_check(stripped_file):
         report.create_report('multiple abstract tags', file_path)
-
-    if abstract_tag_check(original_file):
-        if re.findall(Regex.FIRST_PARA, original_file):
-            report.create_report('the first paragraph might render incorrectly. line between the level 1 heading and the abstract tag not', file_path)
-        if re.findall(Regex.NO_EMPTY_LINE_BEFORE_ABSTRACT, original_file):
-            report.create_report('empty line before the abstract tag not', file_path)
-        if re.findall(Regex.EMPTY_LINE_AFTER_ABSTRACT, original_file):
-            report.create_report('empty line after the abstract tag', file_path)
-        if re.findall(Regex.COMMENT_AFTER_ABSTRACT, original_file):
-            report.create_report('comment after the abstract tag', file_path)
