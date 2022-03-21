@@ -6,7 +6,7 @@ from src.enki_msg import Report
 # class for every function
 class TestVanillaXrefCheck(unittest.TestCase):
     def test_tag_present(self):
-        file_contents = """"= Heading
+        file_contents = """= Heading
 
 <<This-is-a-vanilla-xref>>
 <<this is not a vanilla xref>>
@@ -17,7 +17,7 @@ class TestVanillaXrefCheck(unittest.TestCase):
         self.assertTrue(result, "Should return True when file has a vanilla xref.")
 
     def test_tag_not_present(self):
-        file_contents = """"= Heading
+        file_contents = """= Heading
 
 <<this is not a vanilla xref>>
 <not xref>
@@ -28,7 +28,7 @@ class TestVanillaXrefCheck(unittest.TestCase):
 
 class TestInlineAnchorCheck(unittest.TestCase):
     def test_tag_present(self):
-        file_contents = """"= Heading[[inline-anchor]]
+        file_contents = """= Heading[[inline-anchor]]
 
 [role="_abstract"]
 This is examle abstract."""
@@ -37,12 +37,22 @@ This is examle abstract."""
         self.assertTrue(result, "Should return True when file has an inline anchor.")
 
     def test_tag_not_present(self):
-        file_contents = """"= Heading
+        file_contents = """= Heading
 
 [role="_abstract"]
 This is examle abstract."""
 
         result = inline_anchor_check(file_contents)
+        self.assertFalse(result, "Should return False when file has no inline anchor.")
+
+
+class TestExperimentalTagCheck(unittest.TestCase):
+    def test_tag_present(self):
+        file_contents = """:experimental:
+= Heading
+
+Some btn:[button]."""
+        result = experimental_tag_check(file_contents)
         self.assertFalse(result, "Should return False when file has no inline anchor.")
 
 
@@ -96,7 +106,7 @@ class TestHtmlMarkupCheck(unittest.TestCase):
         result = html_markup_check(file_contents)
         self.assertTrue(result, "Should return True when file has HTML markup.")
 
-    def test_html_markup_present(self):
+    def test_html_markup_not_present(self):
         file_contents = """= Heading
 
 <nothtml>markup<nothtml>"""
@@ -166,7 +176,6 @@ class TestAddResSectionModuleCheck(unittest.TestCase):
         self.assertNotIn('Additional resources section for modules should be `.Additional resources`. Wrong section name was', report.report)
 
 
-
 class TestLvloffsetCheck(unittest.TestCase):
     def test_lvloffset_tag_not_present(self):
         file_contents = """= Heading
@@ -186,33 +195,46 @@ include::some-include.adoc[]"""
         self.assertTrue(result, "Should return True when file has no :leveloffset: tag.")
 
 
-class TestAbstractTagCheck(unittest.TestCase):
-    def test_tag_present(self):
-        file_contents = """"= Heading
-
-[role="_abstract"]
-This is examle abstract."""
-
-        result = abstract_tag_check(file_contents)
-        self.assertTrue(result, "Should return True when file has a single abstract tag.")
-
-    def test_tag_not_present(self):
-        file_contents = """"= Heading
-
-This is examle abstract."""
-
-        result = abstract_tag_check(file_contents)
-        self.assertFalse(result, "Should return False when file has no abstract tag.")
-
-    def test_multile_tags_present(self):
-        file_contents = """"= Heading
-
+class TestAbstractTagMultipleCheck(unittest.TestCase):
+    def test_multiple_tags_present(self):
+        file_contents = """= Heading
 [role="_abstract"]
 [role="_abstract"]
 This is examle abstract."""
+        result = abstarct_tag_multiple_check(file_contents)
+        self.assertTrue(result, "Should return True when file has multiple abstract tags.")
 
-        result = abstract_tag_check(file_contents)
-        self.assertFalse(result)
+    def test_no_multiple_tags_present(self):
+        file_contents = """= Heading
+[role="_abstract"]
+This is examle abstract."""
+        result = abstarct_tag_multiple_check(file_contents)
+        self.assertFalse(result, "Should return False when file doesn't have multiple abstract tag.")
+
+
+class TestRelatedInfoCheck(unittest.TestCase):
+    def test_module_section_present(self):
+        file_contents = """= Heading
+
+.Related information
+Sample text."""
+        result = related_info_check(file_contents)
+        self.assertTrue(result, "Should return True when file has `.Related information` section.")
+
+    def test_assembly_section_present(self):
+        file_contents = """= Heading
+
+= Related information
+Sample text."""
+        result = related_info_check(file_contents)
+        self.assertTrue(result, "Should return True when file has `= Related information` section.")
+
+    def test_no_section_present(self):
+        file_contents = """= Heading
+
+Sample text."""
+        result = related_info_check(file_contents)
+        self.assertFalse(result, "Should return False when file has no related information` section.")
 
 
 # run all the tests in this file
