@@ -11,6 +11,7 @@ import sys
 
 # Andrew's code
 lock = threading.Lock()
+current_count = 0
 
 def prepare_build_directory():
     """Removes any existing 'build' directory and creates the directory structure required."""
@@ -119,9 +120,21 @@ def asciidoctor_build_pdf(lang, attributes, all_files):
 
 
 def build_files(all_files, lang, attributes, output_format):
+    adoc_files = []
+
     for item in all_files:
-        print('Building {}'.format(item))
         if item.endswith('.adoc'):
+            adoc_files.append(item)
+
+    content_count = len(adoc_files)
+    global current_count
+
+    with lock:
+
+        for item in adoc_files:
+            current_count += 1
+
+            print('Building {0:d}/{1:d}: {2:s}'.format(current_count, content_count, item))
             if output_format == 'pdf':
                 asciidoctor_build_pdf(lang, attributes, item)
             else:
