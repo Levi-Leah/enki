@@ -1,4 +1,5 @@
 #!/usr/bin/python3
+
 import os
 import shutil
 from enki_files_valiadtor import SourcingFilesFromBuildYaml
@@ -98,24 +99,18 @@ def combine_attributes_into_string(resolved_attributes_dict):
     return attribute_string
 
 
-def asciidoctor_build_html(lang, attributes, all_files):
+def asciidoctor_build(lang, attributes, all_files, output_format):
     script_dir = os.path.dirname(os.path.realpath(__file__))
     templates = script_dir + "/../templates/ "
-    haml =  script_dir + "/../haml/ "
-    fonts = script_dir + "/../fonts/ "
-
-    command = ("asciidoctor -a toc! -a icons! " + lang + attributes + " -a imagesdir=images -E haml -T " + haml + all_files + " -D pcmd-build/")
-    process = subprocess.run(command, stdout=subprocess.PIPE, shell=True).stdout
-
-
-def asciidoctor_build_pdf(lang, attributes, all_files):
-    script_dir = os.path.dirname(os.path.realpath(__file__))
-    templates = script_dir + "/../templates/ "
-    haml =  script_dir + "/../haml/ "
+    haml = script_dir + "/../haml/ "
     fonts = script_dir + "/../fonts/ "
     theme = script_dir + "/../templates/red-hat.yml "
 
-    command = ("asciidoctor-pdf -a pdf-themesdir=" + templates + "-a pdf-theme=" + theme + "-a pdf-fontsdir=" + fonts + lang + attributes + " -a imagesdir=images " + all_files + " -D pcmd-build/")
+    if output_format == 'pdf':
+        command = ("asciidoctor-pdf -a pdf-themesdir=" + templates + "-a pdf-theme=" + theme + "-a pdf-fontsdir=" + fonts + lang + attributes + " -a imagesdir=images " + all_files + " -D pcmd-build/")
+    else:
+        command = ("asciidoctor -a toc! -a icons! " + lang + attributes + " -a imagesdir=images -E haml -T " + haml + all_files + " -D pcmd-build/")
+
     process = subprocess.run(command, stdout=subprocess.PIPE, shell=True).stdout
 
 
@@ -135,10 +130,7 @@ def build_files(all_files, lang, attributes, output_format):
             current_count += 1
 
             print('Building {0:d}/{1:d}: {2:s}'.format(current_count, content_count, item))
-            if output_format == 'pdf':
-                asciidoctor_build_pdf(lang, attributes, item)
-            else:
-                asciidoctor_build_html(lang, attributes, item)
+            asciidoctor_build(lang, attributes, item, output_format)
 
 
 def main(path_to_yaml, language, output_format):
