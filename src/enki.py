@@ -101,7 +101,6 @@ elif args.command == "preview":
     for item in user_input:
         if os.path.basename(str(item)) == 'build.yml':
             yaml_file_validation(item)
-            print('pull files from build.yml')
             main(str(item), language, output_format)
         else:
             # if user input is not a build.yml file

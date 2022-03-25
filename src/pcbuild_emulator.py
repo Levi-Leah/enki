@@ -11,7 +11,12 @@ import sys
 from queue import Queue
 from threading import Thread
 
-# Andrew's code
+
+home_dir = os.path.expanduser('~')
+pcmd_build_dir = home_dir + '/pcmd-build'
+pcmd_images_dir = pcmd_build_dir + '/images'
+pcmd_previews_dir = pcmd_build_dir + '/previews'
+
 current_count = 0
 
 
@@ -30,14 +35,8 @@ class BuildWorker(Thread):
                 self.queue.task_done()
 
 
-def build_files(all_files, lang, attributes, output_format):
-    adoc_files = []
-
-    for item in all_files:
-        if item.endswith('.adoc'):
-            adoc_files.append(item)
-
-    content_count = len(adoc_files)
+def build_files(files_to_build, lang, attributes, output_format):
+    content_count = len(files_to_build)
 
     queue = Queue()
 
@@ -48,7 +47,7 @@ def build_files(all_files, lang, attributes, output_format):
 
     global current_count
 
-    for item in adoc_files:
+    for item in files_to_build:
         current_count += 1
         queue.put((item, lang, attributes, output_format, current_count, content_count))
 
@@ -56,31 +55,19 @@ def build_files(all_files, lang, attributes, output_format):
 
 
 def prepare_build_directory():
-    """Removes any existing 'build' directory and creates the directory structure required."""
+    paths = (pcmd_build_dir, pcmd_images_dir, pcmd_previews_dir)
 
-    # Remove build directory if it exists
-    # renamed to pcmd-build bacause some repos have a build dir
-    if os.path.exists('pcmd-build'):
-        shutil.rmtree('pcmd-build')
-
-    # Create a build directory
-    os.makedirs('pcmd-build/images', exist_ok=True)
-    os.makedirs('pcmd-build/files', exist_ok=True)
+    for item in paths:
+        if not os.path.exists(item):
+            os.makedirs(item, exist_ok=True)
 
 
 def copy_resources(files):
     """Copy resources such as images and files to the build directory."""
-    script_dir = os.path.dirname(os.path.realpath(__file__))
-
     # Copy resources
     for file in files:
         if file.endswith(('jpg', 'jpeg', 'png', 'svg')):
-            shutil.copy(file, 'pcmd-build/images/')
-        else:
-            shutil.copy(file, 'pcmd-build/files/')
-
-    # Copy styling resources
-    shutil.copytree(script_dir + '/resources', 'pcmd-build/resources')
+            shutil.copy(file, pcmd_images_dir)
 
 
 def parse_attributes(attributes):
@@ -140,7 +127,66 @@ def combine_attributes_into_string(resolved_attributes_dict):
     return attribute_string
 
 
-def asciidoctor_build(lang, attributes, all_files, output_format):
+def get_adoc_files(all_file):
+    adoc_files = []
+
+    for item in all_file:
+        if item.endswith('.adoc'):
+            adoc_files.append(item)
+
+    return adoc_files
+
+
+def get_changed_files(all_adoc_files):
+    changed_files = []
+
+    for item in all_adoc_files:
+        item_html = pcmd_previews_dir + '/' + os.path.splitext(os.path.basename(item))[0] + '.html'
+        try:
+            mod_time_adoc = os.path.getmtime(item)
+            mod_time_html = os.path.getmtime(item_html)
+
+            if mod_time_adoc > mod_time_html:
+                changed_files.append(item)
+        except OSError as e:
+            continue
+
+    return changed_files
+
+
+def get_affected_files(changed_files, all_adoc_files):
+    patterns = []
+    affected_files = []
+
+    for item in changed_files:
+        basename = os.path.basename(item)
+        pattern = r'include::.*{}\['.format(basename)
+        patterns.append(pattern)
+
+    for item in all_adoc_files:
+        with open(item, 'r') as file:
+            f = file.read()
+            for p in patterns:
+                if re.findall(p, f):
+                    if item in affected_files:
+                        continue
+                    affected_files.append(item)
+
+    return affected_files
+
+
+def get_files_to_build(all_adoc_files):
+    if len(os.listdir(pcmd_previews_dir)) == 0:
+        files_to_build = all_adoc_files
+    else:
+        changed_files = get_changed_files(all_adoc_files)
+        affected_files = get_affected_files(changed_files, all_adoc_files)
+        files_to_build = [*changed_files, *affected_files]
+
+    return files_to_build
+
+
+def asciidoctor_build(lang, attributes, files_to_build, output_format):
     script_dir = os.path.dirname(os.path.realpath(__file__))
     templates = script_dir + "/../templates/ "
     haml = script_dir + "/../haml/ "
@@ -148,11 +194,13 @@ def asciidoctor_build(lang, attributes, all_files, output_format):
     theme = script_dir + "/../templates/red-hat.yml "
 
     if output_format == 'pdf':
-        command = ("asciidoctor-pdf -a pdf-themesdir=" + templates + "-a pdf-theme=" + theme + "-a pdf-fontsdir=" + fonts + lang + attributes + " -a imagesdir=images " + all_files + " -D pcmd-build/")
+        command = ("asciidoctor-pdf -a pdf-themesdir=" + templates + "-a pdf-theme=" + theme + "-a pdf-fontsdir=" + fonts + lang + attributes + " -a imagesdir=images " + files_to_build + " -D pcmd-build/")
     else:
-        command = ("asciidoctor -a toc! -a icons! " + lang + attributes + " -a imagesdir=images -E haml -T " + haml + all_files + " -D pcmd-build/")
+        command = ("asciidoctor -a toc! -a icons! " + lang + attributes + " -a imagesdir=images -E haml -T " + haml + files_to_build + " -D " + pcmd_previews_dir)
 
     process = subprocess.run(command, stdout=subprocess.PIPE, shell=True).stdout
+
+    print("\nAccess your previe files in `{}` directory.".format(pcmd_previews_dir))
 
 
 def main(path_to_yaml, language, output_format):
@@ -163,6 +211,7 @@ def main(path_to_yaml, language, output_format):
     sourcing_files_from_build_yaml = SourcingFilesFromBuildYaml(loaded_yaml, path_to_yaml)
 
     files = sourcing_files_from_build_yaml.source_existing_content()
+    adoc_files = get_adoc_files(files)
 
     # pull attribute files
     unique_attributes, nonexistent_attributes = sourcing_files_from_build_yaml.source_attributes()
@@ -180,10 +229,15 @@ def main(path_to_yaml, language, output_format):
     if nonexistent_content.count != 0:
         nonexistent_content.print_report()
 
+    files_to_build = get_files_to_build(adoc_files)
+    if not files_to_build:
+        print("\nNo changes detected since the last build.\nAccess your previe files in `{}` directory.".format(pcmd_previews_dir))
+        sys.exit(0)
+
     resolved_attributes = get_resolved_attributes_dict(unique_attributes)
     attribute_string = combine_attributes_into_string(resolved_attributes)
 
     prepare_build_directory()
-    copy_resources(files)
+    copy_resources(adoc_files)
 
-    build_files(files, language, attribute_string, output_format)
+    build_files(files_to_build, language, attribute_string, output_format)
