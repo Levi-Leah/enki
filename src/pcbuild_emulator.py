@@ -10,6 +10,7 @@ import subprocess
 import sys
 from queue import Queue
 from threading import Thread
+from enki_checks import Regex
 
 # Define directory names for pcmd-build
 home_dir = os.path.expanduser('~')
@@ -77,11 +78,57 @@ def copy_resources(files):
 def parse_attributes(attributes):
     """Read an attributes file and parse values into a key:value dictionary."""
 
+    can_append = True
     final_attributes = {}
 
     for line in attributes:
         # replaces the nbsp attribute
         line = re.sub('{nbsp}', '&#160;', line)
+
+        # ignore single-line comments
+        if re.match(Regex.SINGLE_LINE_COMMENT, line):
+            continue
+
+        # ignore multiline comments
+        if line.startswith("////"):
+            can_append = True if not can_append else False
+            continue
+
+        # resolve ifeval
+        if line.startswith('ifeval'):
+            can_append = False
+
+            # find attribute in ifeval statement
+            conditional_attribute = ''.join(re.findall(r'(?<={)[^\s]*(?=})', line))
+            # find operator in ifeval statement
+            operator = line.split()[1]
+            # finding the right side value in ifeval statement
+            conditional_value = re.split(operator, line)[-1].replace(']', '')
+            # iterrating through already recorded attribute values
+            for key, value in final_attributes.items():
+                if re.fullmatch(key, conditional_attribute):
+                    # if the value contains spaces it needs to be put into quotes for comparation purposes
+                    if ' ' in value:
+                        value = '"' + value + '"'
+                    # combines values in the following format:
+                    # VALUE FROM DICT OPERATOR(e.g. ==) VALUE FROM IFEVAL
+                    string_to_evaluate = ''.join([value, operator, conditional_value[:-1]])
+                    try:
+                        if eval(string_to_evaluate) is True:
+                            can_append = True
+                        else:
+                            continue
+                    except TypeError:
+                        can_append = False
+                        continue
+
+        elif line.startswith('endif'):
+            can_append = True
+            continue
+
+        if not can_append:
+            continue
+
         if re.match(r'^:\S+:.*', line):
             attribute_name = line.split(":")[1].strip()
             attribute_value = line.split(":")[2].strip()
@@ -146,22 +193,26 @@ def get_adoc_files(all_file):
     return adoc_files
 
 
-def get_changed_files(all_adoc_files):
+def get_changed_files(all_adoc_files, output_format):
     """Returnes a list of files that were modifiyed after the last preview build."""
     changed_files = []
+    unbuilt_files = []
 
     for item in all_adoc_files:
-        item_html = pcmd_previews_dir + '/' + os.path.splitext(os.path.basename(item))[0] + '.html'
+        if output_format == 'html':
+            built_file = pcmd_previews_dir + '/' + os.path.splitext(os.path.basename(item))[0] + '.html'
+        else:
+            built_file = pcmd_previews_dir + '/' + os.path.splitext(os.path.basename(item))[0] + '.pdf'
         try:
             mod_time_adoc = os.path.getmtime(item)
-            mod_time_html = os.path.getmtime(item_html)
+            mod_time_built_file = os.path.getmtime(built_file)
 
-            if mod_time_adoc > mod_time_html:
+            if mod_time_adoc > mod_time_built_file:
                 changed_files.append(item)
         except OSError as e:
-            continue
+            unbuilt_files.append(item)
 
-    return changed_files
+    return changed_files, unbuilt_files
 
 
 def get_affected_files(changed_files, all_adoc_files):
@@ -186,14 +237,14 @@ def get_affected_files(changed_files, all_adoc_files):
     return affected_files
 
 
-def get_files_to_build(all_adoc_files):
+def get_files_to_build(all_adoc_files, output_format):
     """Determines what files need to be build."""
     if len(os.listdir(pcmd_previews_dir)) == 0:
         files_to_build = all_adoc_files
     else:
-        changed_files = get_changed_files(all_adoc_files)
+        changed_files, unbuilt_files = get_changed_files(all_adoc_files, output_format)
         affected_files = get_affected_files(changed_files, all_adoc_files)
-        files_to_build = [*changed_files, *affected_files]
+        files_to_build = [*changed_files, *affected_files, *unbuilt_files]
 
     return files_to_build
 
@@ -207,13 +258,11 @@ def asciidoctor_build(lang, attributes, files_to_build, output_format):
     theme = script_dir + "/../templates/red-hat.yml "
 
     if output_format == 'pdf':
-        command = ("asciidoctor-pdf -a pdf-themesdir=" + templates + "-a pdf-theme=" + theme + "-a pdf-fontsdir=" + fonts + lang + attributes + " -a imagesdir=images " + files_to_build + " -D pcmd-build/")
+        command = ("asciidoctor-pdf -a pdf-themesdir=" + templates + "-a pdf-theme=" + theme + "-a pdf-fontsdir=" + fonts + lang + attributes + " -a imagesdir=images " + files_to_build + " -D " + pcmd_previews_dir)
     else:
         command = ("asciidoctor -a toc! -a icons! " + lang + attributes + " -a imagesdir=images -E haml -T " + haml + files_to_build + " -D " + pcmd_previews_dir)
 
     process = subprocess.run(command, stdout=subprocess.PIPE, shell=True).stdout
-
-    print("\nAccess your previe files in `{}` directory.".format(pcmd_previews_dir))
 
 
 def main(path_to_yaml, language, output_format):
@@ -242,7 +291,7 @@ def main(path_to_yaml, language, output_format):
     if nonexistent_content.count != 0:
         nonexistent_content.print_report()
 
-    files_to_build = get_files_to_build(adoc_files)
+    files_to_build = get_files_to_build(adoc_files, output_format)
     if not files_to_build:
         print("\nNo changes detected since the last build.\nAccess your previe files in `{}` directory.".format(pcmd_previews_dir))
         sys.exit(0)
@@ -254,3 +303,4 @@ def main(path_to_yaml, language, output_format):
     copy_resources(adoc_files)
 
     build_files(files_to_build, language, attribute_string, output_format)
+    print("\nAccess your previe files in `{}` directory.".format(pcmd_previews_dir))
