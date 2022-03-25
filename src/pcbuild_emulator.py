@@ -5,14 +5,55 @@ import shutil
 from enki_files_valiadtor import SourcingFilesFromBuildYaml
 from enki_yaml_valiadtor import ManipulatingBuildYaml
 from enki_msg import ReportModified
-import threading
 import re
 import subprocess
 import sys
+from queue import Queue
+from threading import Thread
 
 # Andrew's code
-lock = threading.Lock()
 current_count = 0
+
+
+class BuildWorker(Thread):
+    def __init__(self, queue):
+        Thread.__init__(self)
+        self.queue = queue
+
+    def run(self):
+        while True:
+            item, lang, attributes, output_format, current_count, content_count = self.queue.get()
+            try:
+                print('Building {0:d}/{1:d}: {2:s}'.format(current_count, content_count, item))
+                asciidoctor_build(lang, attributes, item, output_format)
+            finally:
+                self.queue.task_done()
+
+
+def build_files(all_files, lang, attributes, output_format):
+    adoc_files = []
+
+    for item in all_files:
+        if item.endswith('.adoc'):
+            adoc_files.append(item)
+
+    content_count = len(adoc_files)
+
+    queue = Queue()
+
+    for x in range(8):
+        worker = BuildWorker(queue)
+        worker.daemon = True
+        worker.start()
+
+    global current_count
+
+    for item in adoc_files:
+        current_count += 1
+        queue.put((item, lang, attributes, output_format, current_count, content_count))
+
+    queue.join()
+
 
 def prepare_build_directory():
     """Removes any existing 'build' directory and creates the directory structure required."""
@@ -112,25 +153,6 @@ def asciidoctor_build(lang, attributes, all_files, output_format):
         command = ("asciidoctor -a toc! -a icons! " + lang + attributes + " -a imagesdir=images -E haml -T " + haml + all_files + " -D pcmd-build/")
 
     process = subprocess.run(command, stdout=subprocess.PIPE, shell=True).stdout
-
-
-def build_files(all_files, lang, attributes, output_format):
-    adoc_files = []
-
-    for item in all_files:
-        if item.endswith('.adoc'):
-            adoc_files.append(item)
-
-    content_count = len(adoc_files)
-    global current_count
-
-    with lock:
-
-        for item in adoc_files:
-            current_count += 1
-
-            print('Building {0:d}/{1:d}: {2:s}'.format(current_count, content_count, item))
-            asciidoctor_build(lang, attributes, item, output_format)
 
 
 def main(path_to_yaml, language, output_format):
