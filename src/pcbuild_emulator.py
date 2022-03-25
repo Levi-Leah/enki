@@ -11,7 +11,7 @@ import sys
 from queue import Queue
 from threading import Thread
 
-
+# Define directory names for pcmd-build
 home_dir = os.path.expanduser('~')
 pcmd_build_dir = home_dir + '/pcmd-build'
 pcmd_images_dir = pcmd_build_dir + '/images'
@@ -21,6 +21,7 @@ current_count = 0
 
 
 class BuildWorker(Thread):
+    """Fetches files that need to be built and passes them to asciidoctor build function."""
     def __init__(self, queue):
         Thread.__init__(self)
         self.queue = queue
@@ -36,6 +37,7 @@ class BuildWorker(Thread):
 
 
 def build_files(files_to_build, lang, attributes, output_format):
+    """Threads the queue."""
     content_count = len(files_to_build)
 
     queue = Queue()
@@ -55,6 +57,7 @@ def build_files(files_to_build, lang, attributes, output_format):
 
 
 def prepare_build_directory():
+    """Creates directory structure for previews."""
     paths = (pcmd_build_dir, pcmd_images_dir, pcmd_previews_dir)
 
     for item in paths:
@@ -63,8 +66,9 @@ def prepare_build_directory():
 
 
 def copy_resources(files):
-    """Copy resources such as images and files to the build directory."""
-    # Copy resources
+    """Copies images."""
+    # I think I can just point with asciidoctor to images dir
+    # by determining the common parent?
     for file in files:
         if file.endswith(('jpg', 'jpeg', 'png', 'svg')):
             shutil.copy(file, pcmd_images_dir)
@@ -76,6 +80,7 @@ def parse_attributes(attributes):
     final_attributes = {}
 
     for line in attributes:
+        # replaces the nbsp attribute
         line = re.sub('{nbsp}', '&#160;', line)
         if re.match(r'^:\S+:.*', line):
             attribute_name = line.split(":")[1].strip()
@@ -86,6 +91,7 @@ def parse_attributes(attributes):
 
 
 def resolve_attributes(text, dictionary):
+    """Relolves attribute values."""
     pattern = re.compile('\{([^}]+)\}')
 
     while True:
@@ -100,6 +106,7 @@ def resolve_attributes(text, dictionary):
 
 
 def resolve_dictionary(dictionary):
+    """Resolves the attribute values in dict."""
     result = {}
 
     for key, value in dictionary.items():
@@ -118,6 +125,7 @@ def get_resolved_attributes_dict(attribute_files):
 
 
 def combine_attributes_into_string(resolved_attributes_dict):
+    """Creates a string of attributes in `-a ATTRIBUTE=VALUE@` format to pass to asciidoctor."""
     attribute_string = ''
 
     for key, value in resolved_attributes_dict.items():
@@ -128,6 +136,7 @@ def combine_attributes_into_string(resolved_attributes_dict):
 
 
 def get_adoc_files(all_file):
+    """Returns only adoc files."""
     adoc_files = []
 
     for item in all_file:
@@ -138,6 +147,7 @@ def get_adoc_files(all_file):
 
 
 def get_changed_files(all_adoc_files):
+    """Returnes a list of files that were modifiyed after the last preview build."""
     changed_files = []
 
     for item in all_adoc_files:
@@ -155,6 +165,7 @@ def get_changed_files(all_adoc_files):
 
 
 def get_affected_files(changed_files, all_adoc_files):
+    """Returns files that include changed files."""
     patterns = []
     affected_files = []
 
@@ -176,6 +187,7 @@ def get_affected_files(changed_files, all_adoc_files):
 
 
 def get_files_to_build(all_adoc_files):
+    """Determines what files need to be build."""
     if len(os.listdir(pcmd_previews_dir)) == 0:
         files_to_build = all_adoc_files
     else:
@@ -187,6 +199,7 @@ def get_files_to_build(all_adoc_files):
 
 
 def asciidoctor_build(lang, attributes, files_to_build, output_format):
+    """Runs asciidoctor."""
     script_dir = os.path.dirname(os.path.realpath(__file__))
     templates = script_dir + "/../templates/ "
     haml = script_dir + "/../haml/ "
