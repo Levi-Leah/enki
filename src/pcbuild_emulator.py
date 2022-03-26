@@ -10,56 +10,23 @@ import subprocess
 import sys
 from queue import Queue
 from threading import Thread
-from enki_checks import Regex
+from enki_attribute_parser import get_attributes_string
 
 # Define directory names for pcmd-build
 home_dir = os.path.expanduser('~')
 pcmd_build_dir = home_dir + '/pcmd-build'
 pcmd_images_dir = pcmd_build_dir + '/images'
 pcmd_previews_dir = pcmd_build_dir + '/previews'
+pcmd_previews_dir_pdf = pcmd_previews_dir + '/pdf'
+pcmd_previews_dir_html = pcmd_previews_dir + '/html'
+
 
 current_count = 0
 
 
-class BuildWorker(Thread):
-    """Fetches files that need to be built and passes them to asciidoctor build function."""
-    def __init__(self, queue):
-        Thread.__init__(self)
-        self.queue = queue
-
-    def run(self):
-        while True:
-            item, lang, attributes, output_format, current_count, content_count = self.queue.get()
-            try:
-                print('Building {0:d}/{1:d}: {2:s}'.format(current_count, content_count, item))
-                asciidoctor_build(lang, attributes, item, output_format)
-            finally:
-                self.queue.task_done()
-
-
-def build_files(files_to_build, lang, attributes, output_format):
-    """Threads the queue."""
-    content_count = len(files_to_build)
-
-    queue = Queue()
-
-    for x in range(8):
-        worker = BuildWorker(queue)
-        worker.daemon = True
-        worker.start()
-
-    global current_count
-
-    for item in files_to_build:
-        current_count += 1
-        queue.put((item, lang, attributes, output_format, current_count, content_count))
-
-    queue.join()
-
-
 def prepare_build_directory():
     """Creates directory structure for previews."""
-    paths = (pcmd_build_dir, pcmd_images_dir, pcmd_previews_dir)
+    paths = (pcmd_build_dir, pcmd_images_dir, pcmd_previews_dir_pdf, pcmd_previews_dir_html)
 
     for item in paths:
         if not os.path.exists(item):
@@ -75,113 +42,6 @@ def copy_resources(files):
             shutil.copy(file, pcmd_images_dir)
 
 
-def parse_attributes(attributes):
-    """Read an attributes file and parse values into a key:value dictionary."""
-
-    can_append = True
-    final_attributes = {}
-
-    for line in attributes:
-        # replaces the nbsp attribute
-        line = re.sub('{nbsp}', '&#160;', line)
-
-        # ignore single-line comments
-        if re.match(Regex.SINGLE_LINE_COMMENT, line):
-            continue
-
-        # ignore multiline comments
-        if line.startswith("////"):
-            can_append = True if not can_append else False
-            continue
-
-        # resolve ifeval
-        if line.startswith('ifeval'):
-            can_append = False
-
-            # find attribute in ifeval statement
-            conditional_attribute = ''.join(re.findall(r'(?<={)[^\s]*(?=})', line))
-            # find operator in ifeval statement
-            operator = line.split()[1]
-            # finding the right side value in ifeval statement
-            conditional_value = re.split(operator, line)[-1].replace(']', '')
-            # iterrating through already recorded attribute values
-            for key, value in final_attributes.items():
-                if re.fullmatch(key, conditional_attribute):
-                    # if the value contains spaces it needs to be put into quotes for comparation purposes
-                    if ' ' in value:
-                        value = '"' + value + '"'
-                    # combines values in the following format:
-                    # VALUE FROM DICT OPERATOR(e.g. ==) VALUE FROM IFEVAL
-                    string_to_evaluate = ''.join([value, operator, conditional_value[:-1]])
-                    try:
-                        if eval(string_to_evaluate) is True:
-                            can_append = True
-                        else:
-                            continue
-                    except TypeError:
-                        can_append = False
-                        continue
-
-        elif line.startswith('endif'):
-            can_append = True
-            continue
-
-        if not can_append:
-            continue
-
-        if re.match(r'^:\S+:.*', line):
-            attribute_name = line.split(":")[1].strip()
-            attribute_value = line.split(":")[2].strip()
-            final_attributes[attribute_name] = attribute_value
-
-    return final_attributes
-
-
-def resolve_attributes(text, dictionary):
-    """Relolves attribute values."""
-    pattern = re.compile('\{([^}]+)\}')
-
-    while True:
-        attributes = pattern.findall(text)
-
-        if not any(key in dictionary for key in attributes):
-            return text
-
-        for attribute in attributes:
-            if attribute in dictionary:
-                text = text.replace(f'{{{attribute}}}', dictionary[attribute])
-
-
-def resolve_dictionary(dictionary):
-    """Resolves the attribute values in dict."""
-    result = {}
-
-    for key, value in dictionary.items():
-        result[key] = resolve_attributes(value, dictionary)
-
-    return result
-
-
-def get_resolved_attributes_dict(attribute_files):
-    for item in attribute_files:
-        with open(item, 'r') as file:
-            parsed_attributes = parse_attributes(file)
-            resolved_attributes = resolve_dictionary(parsed_attributes)
-
-    return resolved_attributes
-
-
-def combine_attributes_into_string(resolved_attributes_dict):
-    """Creates a string of attributes in `-a ATTRIBUTE=VALUE@` format to pass to asciidoctor."""
-    attribute_string = ''
-
-    for key, value in resolved_attributes_dict.items():
-        attribute_substring = "-a " + key + "=" + "'" + value + "'@ "
-        attribute_string+=str(attribute_substring)
-
-    return attribute_string
-
-
 def get_adoc_files(all_file):
     """Returns only adoc files."""
     adoc_files = []
@@ -193,6 +53,42 @@ def get_adoc_files(all_file):
     return adoc_files
 
 
+class BuildWorker(Thread):
+    """Fetches files that need to be built and passes them to asciidoctor build function."""
+    def __init__(self, queue):
+        Thread.__init__(self)
+        self.queue = queue
+
+    def run(self):
+        while True:
+            item, lang, attributes_string, output_format, current_count, content_count = self.queue.get()
+            try:
+                print('Building {0:d}/{1:d}: {2:s}'.format(current_count, content_count, item))
+                asciidoctor_build(lang, attributes_string, item, output_format)
+            finally:
+                self.queue.task_done()
+
+
+def build_files(files_to_build, lang, attributes_string, output_format):
+    """Threads the queue."""
+    content_count = len(files_to_build)
+
+    queue = Queue()
+
+    for x in range(8):
+        worker = BuildWorker(queue)
+        worker.daemon = True
+        worker.start()
+
+    global current_count
+
+    for item in files_to_build:
+        current_count += 1
+        queue.put((item, lang, attributes_string, output_format, current_count, content_count))
+
+    queue.join()
+
+
 def get_changed_files(all_adoc_files, output_format):
     """Returnes a list of files that were modifiyed after the last preview build."""
     changed_files = []
@@ -200,14 +96,14 @@ def get_changed_files(all_adoc_files, output_format):
 
     for item in all_adoc_files:
         if output_format == 'html':
-            built_file = pcmd_previews_dir + '/' + os.path.splitext(os.path.basename(item))[0] + '.html'
+            built_files = pcmd_previews_dir_html + '/' + os.path.splitext(os.path.basename(item))[0] + '.html'
         else:
-            built_file = pcmd_previews_dir + '/' + os.path.splitext(os.path.basename(item))[0] + '.pdf'
+            built_files = pcmd_previews_dir_pdf + '/' + os.path.splitext(os.path.basename(item))[0] + '.pdf'
         try:
             mod_time_adoc = os.path.getmtime(item)
-            mod_time_built_file = os.path.getmtime(built_file)
+            mod_time_built_files = os.path.getmtime(built_files)
 
-            if mod_time_adoc > mod_time_built_file:
+            if mod_time_adoc > mod_time_built_files:
                 changed_files.append(item)
         except OSError as e:
             unbuilt_files.append(item)
@@ -237,19 +133,30 @@ def get_affected_files(changed_files, all_adoc_files):
     return affected_files
 
 
-def get_files_to_build(all_adoc_files, output_format):
-    """Determines what files need to be build."""
-    if len(os.listdir(pcmd_previews_dir)) == 0:
-        files_to_build = all_adoc_files
-    else:
-        changed_files, unbuilt_files = get_changed_files(all_adoc_files, output_format)
-        affected_files = get_affected_files(changed_files, all_adoc_files)
-        files_to_build = [*changed_files, *affected_files, *unbuilt_files]
+def abstract(output_format, output_format_value, pcmd_previews_dir_value, all_adoc_files):
+    """Abstracts the the process of sourcing files to based on output format."""
+    if output_format == output_format_value:
+        if len(os.listdir(pcmd_previews_dir_value)) == 0:
+            files_to_build = all_adoc_files
+        else:
+            changed_files, unbuilt_files = get_changed_files(all_adoc_files, output_format)
+            affected_files = get_affected_files(changed_files, all_adoc_files)
+            files_to_build = [*changed_files, *affected_files, *unbuilt_files]
 
     return files_to_build
 
 
-def asciidoctor_build(lang, attributes, files_to_build, output_format):
+def get_files_to_build(all_adoc_files, output_format):
+    """Determines what files need to be build."""
+    if output_format == 'pdf':
+        files_to_build = abstract(output_format, 'pdf', pcmd_previews_dir_pdf, all_adoc_files)
+    else:
+        files_to_build = abstract(output_format, 'html', pcmd_previews_dir_html, all_adoc_files)
+
+    return files_to_build
+
+
+def asciidoctor_build(lang, attributes_string, files_to_build, output_format):
     """Runs asciidoctor."""
     script_dir = os.path.dirname(os.path.realpath(__file__))
     templates = script_dir + "/../templates/ "
@@ -258,9 +165,9 @@ def asciidoctor_build(lang, attributes, files_to_build, output_format):
     theme = script_dir + "/../templates/red-hat.yml "
 
     if output_format == 'pdf':
-        command = ("asciidoctor-pdf -a pdf-themesdir=" + templates + "-a pdf-theme=" + theme + "-a pdf-fontsdir=" + fonts + lang + attributes + " -a imagesdir=images " + files_to_build + " -D " + pcmd_previews_dir)
+        command = ("asciidoctor-pdf -q -a pdf-themesdir=" + templates + "-a pdf-theme=" + theme + "-a pdf-fontsdir=" + fonts + lang + attributes_string + " -a imagesdir=images " + files_to_build + " -D " + pcmd_previews_dir_pdf)
     else:
-        command = ("asciidoctor -a toc! -a icons! " + lang + attributes + " -a imagesdir=images -E haml -T " + haml + files_to_build + " -D " + pcmd_previews_dir)
+        command = ("asciidoctor -q -a toc! -a icons! " + lang + attributes_string + " -a imagesdir=images -E haml -T " + haml + files_to_build + " -D " + pcmd_previews_dir_html)
 
     process = subprocess.run(command, stdout=subprocess.PIPE, shell=True).stdout
 
@@ -291,16 +198,15 @@ def main(path_to_yaml, language, output_format):
     if nonexistent_content.count != 0:
         nonexistent_content.print_report()
 
+    attribute_string = get_attributes_string(unique_attributes)
+
+    prepare_build_directory()
+    copy_resources(adoc_files)
+
     files_to_build = get_files_to_build(adoc_files, output_format)
     if not files_to_build:
         print("\nNo changes detected since the last build.\nAccess your previe files in `{}` directory.".format(pcmd_previews_dir))
         sys.exit(0)
-
-    resolved_attributes = get_resolved_attributes_dict(unique_attributes)
-    attribute_string = combine_attributes_into_string(resolved_attributes)
-
-    prepare_build_directory()
-    copy_resources(adoc_files)
 
     build_files(files_to_build, language, attribute_string, output_format)
     print("\nAccess your previe files in `{}` directory.".format(pcmd_previews_dir))
