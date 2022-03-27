@@ -14,11 +14,11 @@ from enki_attribute_parser import get_attributes_string
 
 # Define directory names for pcmd-build
 home_dir = os.path.expanduser('~')
-pcmd_build_dir = home_dir + '/pcmd-build'
-pcmd_images_dir = pcmd_build_dir + '/images'
-pcmd_previews_dir = pcmd_build_dir + '/previews'
-pcmd_previews_dir_pdf = pcmd_previews_dir + '/pdf'
-pcmd_previews_dir_html = pcmd_previews_dir + '/html'
+pcmd_build_dir = os.path.join(home_dir, 'pcmd-build')
+pcmd_images_dir = os.path.join(pcmd_build_dir, 'images')
+pcmd_previews_dir = os.path.join(pcmd_build_dir, 'previews')
+pcmd_previews_dir_pdf = os.path.join(pcmd_previews_dir, 'pdf')
+pcmd_previews_dir_html = os.path.join(pcmd_previews_dir, 'html')
 
 
 current_count = 0
@@ -95,13 +95,15 @@ def get_changed_files(all_adoc_files, output_format):
     unbuilt_files = []
 
     for item in all_adoc_files:
+        directory_path = os.path.dirname(os.path.relpath(item, home_dir))
+
         if output_format == 'html':
-            built_files = pcmd_previews_dir_html + '/' + os.path.splitext(os.path.basename(item))[0] + '.html'
+            file_to_build = os.path.join(pcmd_previews_dir_html, directory_path, os.path.splitext(os.path.basename(item))[0] + '.html')
         else:
-            built_files = pcmd_previews_dir_pdf + '/' + os.path.splitext(os.path.basename(item))[0] + '.pdf'
+            file_to_build = os.path.join(pcmd_previews_dir_pdf, directory_path, os.path.splitext(os.path.basename(item))[0] + '.pdf')
         try:
             mod_time_adoc = os.path.getmtime(item)
-            mod_time_built_files = os.path.getmtime(built_files)
+            mod_time_built_files = os.path.getmtime(file_to_build)
 
             if mod_time_adoc > mod_time_built_files:
                 changed_files.append(item)
@@ -133,30 +135,20 @@ def get_affected_files(changed_files, all_adoc_files):
     return affected_files
 
 
-def abstract(output_format, output_format_value, pcmd_previews_dir_value, all_adoc_files):
-    """Abstracts the the process of sourcing files to based on output format."""
-    if output_format == output_format_value:
-        if len(os.listdir(pcmd_previews_dir_value)) == 0:
-            files_to_build = all_adoc_files
-        else:
-            changed_files, unbuilt_files = get_changed_files(all_adoc_files, output_format)
-            affected_files = get_affected_files(changed_files, all_adoc_files)
-            files_to_build = [*changed_files, *affected_files, *unbuilt_files]
-
-    return files_to_build
-
-
 def get_files_to_build(all_adoc_files, output_format):
     """Determines what files need to be build."""
-    if output_format == 'pdf':
-        files_to_build = abstract(output_format, 'pdf', pcmd_previews_dir_pdf, all_adoc_files)
+    # path.join determines if the preview subdir is html or pdf
+    if len(os.listdir(os.path.join(pcmd_previews_dir, output_format))) == 0:
+        files_to_build = all_adoc_files
     else:
-        files_to_build = abstract(output_format, 'html', pcmd_previews_dir_html, all_adoc_files)
+        changed_files, unbuilt_files = get_changed_files(all_adoc_files, output_format)
+        affected_files = get_affected_files(changed_files, all_adoc_files)
+        files_to_build = [*changed_files, *affected_files, *unbuilt_files]
 
     return files_to_build
 
 
-def asciidoctor_build(lang, attributes_string, files_to_build, output_format):
+def asciidoctor_build(lang, attributes_string, file_to_build, output_format):
     """Runs asciidoctor."""
     script_dir = os.path.dirname(os.path.realpath(__file__))
     templates = script_dir + "/../templates/ "
@@ -164,10 +156,15 @@ def asciidoctor_build(lang, attributes_string, files_to_build, output_format):
     fonts = script_dir + "/../fonts/ "
     theme = script_dir + "/../templates/red-hat.yml "
 
+    directory_path = os.path.dirname(os.path.relpath(file_to_build, home_dir))
+    pcmd_directory_path = os.path.join(pcmd_previews_dir, output_format, directory_path)
+    if not pcmd_directory_path:
+        os.makedirs(pcmd_directory_path, exist_ok=True)
+
     if output_format == 'pdf':
-        command = ("asciidoctor-pdf -q -a pdf-themesdir=" + templates + "-a pdf-theme=" + theme + "-a pdf-fontsdir=" + fonts + lang + attributes_string + " -a imagesdir=images " + files_to_build + " -D " + pcmd_previews_dir_pdf)
+        command = ("asciidoctor-pdf -q -a pdf-themesdir=" + templates + "-a pdf-theme=" + theme + "-a pdf-fontsdir=" + fonts + lang + attributes_string + " -a imagesdir=images " + file_to_build + " -D " + pcmd_directory_path)
     else:
-        command = ("asciidoctor -q -a toc! -a icons! " + lang + attributes_string + " -a imagesdir=images -E haml -T " + haml + files_to_build + " -D " + pcmd_previews_dir_html)
+        command = ("asciidoctor -q -a toc! -a icons! " + lang + attributes_string + " -a imagesdir=images -E haml -T " + haml + file_to_build + " -D " + pcmd_directory_path)
 
     process = subprocess.run(command, stdout=subprocess.PIPE, shell=True).stdout
 

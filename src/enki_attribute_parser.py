@@ -35,7 +35,7 @@ def parse_attributes(attributes):
 
 
 def resolve_attributes(attributes, attribute_names):
-    """Read an attributes file and parse values into a key:value dictionary."""
+    """Build temp attributes file with asciidoctor and parse values into a key:value dictionary."""
 
     temp_adoc = tempfile.NamedTemporaryFile(suffix='.adoc', mode='w+')
     temp_html = tempfile.NamedTemporaryFile(suffix='.html', mode='w+')
