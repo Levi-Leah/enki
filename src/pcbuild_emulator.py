@@ -17,16 +17,15 @@ home_dir = os.path.expanduser('~')
 pcmd_build_dir = os.path.join(home_dir, 'pcmd-build')
 pcmd_images_dir = os.path.join(pcmd_build_dir, 'images')
 pcmd_previews_dir = os.path.join(pcmd_build_dir, 'previews')
-pcmd_previews_dir_pdf = os.path.join(pcmd_previews_dir, 'pdf')
-pcmd_previews_dir_html = os.path.join(pcmd_previews_dir, 'html')
 
 
 current_count = 0
 
 
-def prepare_build_directory():
+def prepare_build_directory(output_format):
     """Creates directory structure for previews."""
-    paths = (pcmd_build_dir, pcmd_images_dir, pcmd_previews_dir_pdf, pcmd_previews_dir_html)
+    previews_subdir = os.path.join(pcmd_previews_dir, output_format)
+    paths = (pcmd_build_dir, pcmd_images_dir, previews_subdir)
 
     for item in paths:
         if not os.path.exists(item):
@@ -96,11 +95,11 @@ def get_changed_files(all_adoc_files, output_format):
 
     for item in all_adoc_files:
         directory_path = os.path.dirname(os.path.relpath(item, home_dir))
+        previews_subdir = os.path.join(pcmd_previews_dir, output_format)
+        filename_no_extension = os.path.splitext(os.path.basename(item))[0]
 
-        if output_format == 'html':
-            file_to_build = os.path.join(pcmd_previews_dir_html, directory_path, os.path.splitext(os.path.basename(item))[0] + '.html')
-        else:
-            file_to_build = os.path.join(pcmd_previews_dir_pdf, directory_path, os.path.splitext(os.path.basename(item))[0] + '.pdf')
+        file_to_build = os.path.join(previews_subdir, directory_path, filename_no_extension + '.' + output_format)
+
         try:
             mod_time_adoc = os.path.getmtime(item)
             mod_time_built_files = os.path.getmtime(file_to_build)
@@ -137,8 +136,9 @@ def get_affected_files(changed_files, all_adoc_files):
 
 def get_files_to_build(all_adoc_files, output_format):
     """Determines what files need to be build."""
-    # path.join determines if the preview subdir is html or pdf
-    if len(os.listdir(os.path.join(pcmd_previews_dir, output_format))) == 0:
+    previews_subdir = os.path.join(pcmd_previews_dir, output_format)
+
+    if len(os.listdir(previews_subdir)) == 0:
         files_to_build = all_adoc_files
     else:
         changed_files, unbuilt_files = get_changed_files(all_adoc_files, output_format)
@@ -157,14 +157,15 @@ def asciidoctor_build(lang, attributes_string, file_to_build, output_format):
     theme = script_dir + "/../templates/red-hat.yml "
 
     directory_path = os.path.dirname(os.path.relpath(file_to_build, home_dir))
-    pcmd_directory_path = os.path.join(pcmd_previews_dir, output_format, directory_path)
-    if not pcmd_directory_path:
-        os.makedirs(pcmd_directory_path, exist_ok=True)
+    output_dir = os.path.join(pcmd_previews_dir, output_format, directory_path)
+
+    if not output_dir:
+        os.makedirs(output_dir, exist_ok=True)
 
     if output_format == 'pdf':
-        command = ("asciidoctor-pdf -q -a pdf-themesdir=" + templates + "-a pdf-theme=" + theme + "-a pdf-fontsdir=" + fonts + lang + attributes_string + " -a imagesdir=images " + file_to_build + " -D " + pcmd_directory_path)
+        command = ("asciidoctor-pdf -q -a pdf-themesdir=" + templates + "-a pdf-theme=" + theme + "-a pdf-fontsdir=" + fonts + lang + attributes_string + " -a imagesdir=images " + file_to_build + " -D " + output_dir)
     else:
-        command = ("asciidoctor -q -a toc! -a icons! " + lang + attributes_string + " -a imagesdir=images -E haml -T " + haml + file_to_build + " -D " + pcmd_directory_path)
+        command = ("asciidoctor -q -a toc! -a icons! " + lang + attributes_string + " -a imagesdir=images -E haml -T " + haml + file_to_build + " -D " + output_dir)
 
     process = subprocess.run(command, stdout=subprocess.PIPE, shell=True).stdout
 
@@ -197,7 +198,7 @@ def main(path_to_yaml, language, output_format):
 
     attribute_string = get_attributes_string(unique_attributes)
 
-    prepare_build_directory()
+    prepare_build_directory(output_format)
     copy_resources(adoc_files)
 
     files_to_build = get_files_to_build(adoc_files, output_format)
