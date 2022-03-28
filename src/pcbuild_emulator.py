@@ -240,7 +240,7 @@ def main(path_to_yaml, language, output_format):
     attribute_string = get_attributes_string(unique_attributes)
 
     prepare_build_directory(output_format)
-    copy_resources(adoc_files)
+    copy_resources(files)
 
     files_to_build = get_files_to_build(adoc_files, output_format)
     if not files_to_build:
