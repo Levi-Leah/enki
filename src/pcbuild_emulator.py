@@ -227,11 +227,11 @@ def main(path_to_yaml, language, output_format):
     nonexistent_content = sourcing_files_from_build_yaml.source_nonexistent_content(report_modified)
 
     if not files:
-        print(f"\nENKI ERROR: No files suppliyed. Check if files included in your build.yml exist in path.")
+        print(f"\nENKI ERROR: No files supplied. Check if files included in your build.yml exist in path.")
         sys.exit(2)
 
     if not unique_attributes:
-        print(f"\nENKI ERROR: No attributes suppliyed. Check if files included in your build.yml exist in path.")
+        print(f"\nENKI ERROR: No attributes supplied. Check if files included in your build.yml exist in path.")
         sys.exit(2)
 
     if nonexistent_content.count != 0:
