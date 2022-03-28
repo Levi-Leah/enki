@@ -103,24 +103,7 @@ elif args.command == "preview":
             yaml_file_validation(item)
             main(str(item), language, output_format)
         else:
-            # if user input is not a build.yml file
-            # ensure the user provided the build.yml file?????? or maybe attributes, idk
-            if not build_yml:
-                print(f"\nENKI ERROR: build.yml is not specifiyed. Use --yml option to point to the build.yml")
-                sys.exit(2)
-            if os.path.basename(str(build_yml)) != 'build.yml':
-                print(f"\nENKI ERROR: '{build_yml}' is not a build.yml.")
-                sys.exit(2)
-            yaml_file_validation(build_yml)
-
-            if os.path.isdir(item):
-                expand_files = expand_file_paths(str(item) + '/')
-                for file in expand_files:
-                    files.append(file)
-            elif str(item).endswith('.adoc'):
-                files.append(str(item))
-            else:
-                unsupported_files.append(str(item))
+            print('Can only validate build.yml. Support for other files coming soon.')
 
     if unsupported_files:
         separator = "\n\t"
