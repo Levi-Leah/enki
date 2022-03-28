@@ -70,6 +70,8 @@ class BuildWorker(Thread):
             finally:
                 self.queue.task_done()
 
+    print("\nAccess your previe files in `{}` directory.".format(pcmd_previews_dir))
+
 
 def build_files(files_to_build, lang, attributes_string, output_format):
     """Threads the queue."""
