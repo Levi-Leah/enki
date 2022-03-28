@@ -11,7 +11,10 @@ import sys
 from queue import Queue
 from threading import Thread
 from enki_attribute_parser import get_attributes_string
+from enki_checks import Regex
 
+
+script_dir = os.path.dirname(os.path.realpath(__file__))
 # Define directory names for pcmd-build
 home_dir = os.path.expanduser('~')
 pcmd_build_dir = os.path.join(home_dir, 'pcmd-build')
@@ -89,7 +92,7 @@ def build_files(files_to_build, lang, attributes_string, output_format):
 
 
 def get_changed_files(all_adoc_files, output_format):
-    """Returnes a list of files that were modifiyed after the last preview build."""
+    """Returnes a list of files that were modified after the last preview build."""
     changed_files = []
     unbuilt_files = []
 
@@ -112,26 +115,64 @@ def get_changed_files(all_adoc_files, output_format):
     return changed_files, unbuilt_files
 
 
-def get_affected_files(changed_files, all_adoc_files):
-    """Returns files that include changed files."""
-    patterns = []
-    affected_files = []
-
-    for item in changed_files:
-        basename = os.path.basename(item)
-        pattern = r'include::.*{}\['.format(basename)
-        patterns.append(pattern)
+def get_all_includes(all_adoc_files):
+    """Get all include statements from adoc files."""
+    all_includes = {}
 
     for item in all_adoc_files:
         with open(item, 'r') as file:
-            f = file.read()
-            for p in patterns:
-                if re.findall(p, f):
-                    if item in affected_files:
-                        continue
-                    affected_files.append(item)
+            original = file.read()
+            stripped = Regex.MULTI_LINE_COMMENT.sub('', original)
+            stripped = Regex.SINGLE_LINE_COMMENT.sub('', stripped)
+
+            pattern = r'(?<=include::)[\S]*(?=\[)'
+            match = re.findall(pattern, stripped)
+
+        all_includes[item] = match
+
+    return all_includes
+
+
+def get_parrent_files(modified_files, included_files):
+    """Return parent files."""
+    patterns = []
+    affected_files = []
+
+    for item in modified_files:
+        basename = os.path.basename(item)
+        patterns.append(basename)
+
+
+    for key, value in included_files.items():
+        present = [i for i in value if any(j in i for j in patterns)]
+        if not present:
+            continue
+        if key in affected_files:
+            continue
+
+        affected_files.append(key)
 
     return affected_files
+
+
+def get_all_parrent_files(modified_files, included_files):
+    """Loops and returns all parent files."""
+    if len(modified_files) == 0:
+        # returns empty list to avoid NoneType error
+        return []
+    else:
+        last_mod = get_parrent_files(modified_files, included_files)
+        if last_mod:
+            # must be list
+            last_mod = [last_mod.pop()]
+        return last_mod + get_parrent_files(last_mod, included_files)
+
+
+def get_affected_files(all_adoc_files, output_format, changed_files):
+    changed_files, unbuilt_files = get_changed_files(all_adoc_files, output_format)
+    all_includes = get_all_includes(all_adoc_files)
+
+    return get_all_parrent_files(changed_files, all_includes)
 
 
 def get_files_to_build(all_adoc_files, output_format):
@@ -142,15 +183,15 @@ def get_files_to_build(all_adoc_files, output_format):
         files_to_build = all_adoc_files
     else:
         changed_files, unbuilt_files = get_changed_files(all_adoc_files, output_format)
-        affected_files = get_affected_files(changed_files, all_adoc_files)
-        files_to_build = [*changed_files, *affected_files, *unbuilt_files]
+        affected_files = get_affected_files(all_adoc_files, output_format, changed_files)
+
+        files_to_build = set(changed_files) | set(affected_files) | set(unbuilt_files)
 
     return files_to_build
 
 
 def asciidoctor_build(lang, attributes_string, file_to_build, output_format):
     """Runs asciidoctor."""
-    script_dir = os.path.dirname(os.path.realpath(__file__))
     templates = script_dir + "/../templates/ "
     haml = script_dir + "/../haml/ "
     fonts = script_dir + "/../fonts/ "
