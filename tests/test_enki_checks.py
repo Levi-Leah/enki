@@ -4,6 +4,28 @@ from src.enki_msg import Report
 
 
 # class for every function
+class TestEmptyLineAfterIncludeCheck(unittest.TestCase):
+    def test_empty_line_present(self):
+        file_contents = """= Heading
+
+include::some.adoc[leveloffset=+1]
+
+include::other.adoc[leveloffset=+1]
+"""
+
+        result = empty_line_after_include_check(file_contents)
+        self.assertIsNone(result, "Should return None when the empty line is present.")
+
+    def test_empty_line_not_present(self):
+        file_contents = """= Heading
+
+include::some.adoc[leveloffset=+1]
+include::other.adoc[leveloffset=+1]
+"""
+
+        result = empty_line_after_include_check(file_contents)
+        self.assertTrue(result, "Should return True when the empty line is present.")
+
 class TestVanillaXrefCheck(unittest.TestCase):
     def test_tag_present(self):
         file_contents = """= Heading

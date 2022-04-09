@@ -18,6 +18,7 @@ class Regex:
     """Define regular expresiions for the checks."""
 
     INCLUDE = re.compile(r'include::.*\]\n')
+    EMPTY_LINE_AFTER_INCLUDE = re.compile(r'include::.*\]\n\n')
     MODULE_TYPE = re.compile(r':_content-type: (PROCEDURE|CONCEPT|REFERENCE)')
     ASSEMBLY_TYPE = re.compile(r':_content-type: ASSEMBLY')
     SNIPPET_TYPE = re.compile(r':_content-type: SNIPPET')
@@ -51,6 +52,11 @@ class Regex:
     EMPTY_LINE_AFTER_ADD_RES_TAG = re.compile(r'\[role="_additional-resources"]\n(?=\n)')
     COMMENT_AFTER_ADD_RES_TAG = re.compile(r'\[role="_additional-resources"]\n(?=\//|(/{4,})(.*\n)*?(/{4,}))')
     EMPTY_LINE_AFTER_ADD_RES_HEADER = re.compile(r'== Additional resources\s\n|\.Additional resources\n\n', re.IGNORECASE)
+
+
+def empty_line_after_include_check(original_file):
+    if re.findall(Regex.INCLUDE, original_file) and not re.findall(Regex.EMPTY_LINE_AFTER_INCLUDE, original_file):
+        return True
 
 
 def nbsp_check(report, stripped_file, file_path):
@@ -219,3 +225,6 @@ def checks(report, stripped_file, original_file, file_path):
 
     if abstarct_tag_multiple_check(stripped_file):
         report.create_report('multiple abstract tags', file_path)
+
+    if empty_line_after_include_check(original_file):
+        report.create_report('no empty line after include statement', file_path)
