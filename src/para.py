@@ -11,9 +11,24 @@ def checks(line, line_number, report, file_path):
     if inline_anchor_check(line):
         report.create_report('in-line anchors', file_path, line_number)
 
-    if experimental_tag_check(line):
-        report.create_report('files contain UI macros but the :experimental: tag not', file_path, line_number)
+    if human_readable_label_check_xrefs(line):
+        report.create_report('xrefs without a human readable label', file_path, line_number)
 
+    if human_readable_label_check_links(line):
+        report.create_report('links without a human readable label', file_path, line_number)
+
+    if lvloffset_check(line):
+        report.create_report('unsupported use of :leveloffset:. unsupported includes', file_path, line_number)
+
+    if related_info_check(line):
+        report.create_report('"Related information" section was', file_path, line_number)
+
+
+def nesting_in_modules_check(line, line_number, report, file_path):
+    """Check if modules contains nested content."""
+    if re.findall(Regex.INCLUDE, line):
+        if not line.startswith(("include::_", "include::snip")):
+            report.create_report('nesting in modules. nesting', file_path, line_number)
 
 
 class Report():
@@ -54,6 +69,7 @@ def main(files):
         line_count = 0
         expects_empty = False
         comment = False
+        expects_text = False
 
         with open(path, 'r') as file:
 
@@ -70,8 +86,23 @@ def main(files):
                 if comment:
                     continue
 
-
                 checks(line, line_count, report, path)
+                nesting_in_modules_check(line, line_count, report, path)
+
+                if expects_text and line in ('\n', '\r\n'):
+                    report.create_report(msg, path, expects_text)
+
+                expects_text = False
+
+                if re.findall(Regex.ABSTRACT, line):
+                    expects_text = f"{line_count}"
+                    msg = 'an empty line after the abstract resources tag was'
+
+
+                if re.findall(Regex.ADD_RES, line):
+                    expects_text = f"{line_count}"
+                    msg = 'an empty line after the additional resources tag was'
+
 
                 # Ignore conditions:
                 if line.startswith(('ifeval', 'ifdef', 'ifndef', '//', 'endif')):

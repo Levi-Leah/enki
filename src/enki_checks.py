@@ -17,6 +17,8 @@ class Tags:
 class Regex:
     """Define regular expresiions for the checks."""
 
+    ADD_RES = re.compile(r'\[role="_additional-resources"\]')
+    ABSTRACT = re.compile(r'\[role="_abstract"\]\n')
     INCLUDE = re.compile(r'include::.*\]\n')
     EMPTY_LINE_AFTER_INCLUDE = re.compile(r'include::.*\]\n\n')
     MODULE_TYPE = re.compile(r':_content-type: (PROCEDURE|CONCEPT|REFERENCE)')
@@ -54,11 +56,13 @@ class Regex:
     EMPTY_LINE_AFTER_ADD_RES_HEADER = re.compile(r'== Additional resources\s\n|\.Additional resources\n\n', re.IGNORECASE)
 
 
+# in
 def empty_line_after_include_check(original_file):
     if re.findall(Regex.INCLUDE, original_file) and not re.findall(Regex.EMPTY_LINE_AFTER_INCLUDE, original_file):
         return True
 
 
+# not needed
 def nbsp_check(report, stripped_file, file_path):
     if re.findall(Tags.NBSP_ATT, stripped_file):
         return
@@ -66,18 +70,21 @@ def nbsp_check(report, stripped_file, file_path):
         report.create_report('`{nsbp}` attribute is used but not defined. `:nbsp: &#160;` attribute is not', file_path)
 
 
+# one in
 def vanilla_xref_check(stripped_file):
     """Check if the file contains vanilla xrefs."""
     if re.findall(Regex.VANILLA_XREF, stripped_file):
         return True
 
 
+# one in
 def inline_anchor_check(stripped_file):
     """Check if the in-line anchor directly follows the level 1 heading."""
     if re.findall(Regex.INLINE_ANCHOR, stripped_file):
         return True
 
 
+# not needed
 def experimental_tag_check(stripped_file):
     """Check if the experimental tag is set."""
     if stripped_file.count(Tags.EXPERIMENTAL) > 0:
@@ -86,24 +93,28 @@ def experimental_tag_check(stripped_file):
         return True
 
 
+# one in
 def human_readable_label_check_xrefs(stripped_file):
     "Check if the human readable label is present in xrefs."""
     if re.findall(Regex.HUMAN_READABLE_LABEL_XREF, stripped_file):
         return True
 
 
+# one in
 def human_readable_label_check_links(stripped_file):
     "Check if the human readable label is present in links."""
     if re.findall(Regex.HUMAN_READABLE_LABEL_LINK, stripped_file):
         return True
 
 
+# milti
 def html_markup_check(stripped_file):
     """Check if HTML markup is present in the file."""
     if re.findall(Regex.HTML_MARKUP, stripped_file):
         return True
 
 
+# one
 # Standalone check on modules_found
 def nesting_in_modules_check(report, stripped_file, file_path):
     """Check if modules contains nested content."""
@@ -126,18 +137,21 @@ def add_res_section_assembly_check(report, stripped_file, file_path):
             return report.create_report("additional resources section for assemblies should be `== Additional resources`. Wrong section name was", file_path)
 
 
+# one in
 def lvloffset_check(stripped_file):
     """Check if file contains unsupported includes."""
     if re.findall(Tags.LVLOFFSET, stripped_file):
         return True
 
 
+# multi? true false?
 def abstarct_tag_multiple_check(stripped_file):
     """Checks if the abstract tag is not set or set more than once."""
     if stripped_file.count(Tags.ABSTRACT) > 1:
         return True
 
 
+# one in
 def related_info_check(stripped_file):
     """Checks if everything related to additional resources section is OK"""
     if re.findall(Regex.RELATED_INFO, stripped_file):
