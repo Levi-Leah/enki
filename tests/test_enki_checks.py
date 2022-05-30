@@ -68,16 +68,6 @@ This is examle abstract."""
         self.assertFalse(result, "Should return False when file has no inline anchor.")
 
 
-class TestExperimentalTagCheck(unittest.TestCase):
-    def test_tag_present(self):
-        file_contents = """:experimental:
-= Heading
-
-Some btn:[button]."""
-        result = experimental_tag_check(file_contents)
-        self.assertFalse(result, "Should return False when file has no inline anchor.")
-
-
 class TestHumanReadableLabelCheckXref(unittest.TestCase):
     def test_label_present(self):
         file_contents = """= Heading

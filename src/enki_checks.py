@@ -8,9 +8,6 @@ class Tags:
     """Define tags."""
     ABSTRACT = '[role="_abstract"]'
     ADD_RES = '[role="_additional-resources"]'
-    EXPERIMENTAL = ':experimental:'
-    NBSP_ATT = ':nbsp: &#160;'
-    NBSP_VAR = '{nbsp}'
     LVLOFFSET = ':leveloffset:'
 
 
@@ -29,7 +26,6 @@ class Regex:
     MULTI_LINE_COMMENT = re.compile(r'(/{4,})(.*\n)*?(/{4,})')
     SINGLE_LINE_COMMENT = re.compile(r'(?<!\/\/)(?<!\/)^\/\/(?!\/\/).*\n', re.M)
     EMPTY_LINE_AFTER_ABSTRACT = re.compile(r'\[role="_abstract"]\n(?=\n)')
-    FIRST_PARA = re.compile(r'(?<!\n\n)\[role="_abstract"]\n(?!\n)')
     NO_EMPTY_LINE_BEFORE_ABSTRACT = re.compile(r'(?<!\n\n)\[role="_abstract"]')
     COMMENT_AFTER_ABSTRACT = re.compile(r'\[role="_abstract"]\n(?=\//|(/{4,})(.*\n)*?(/{4,}))')
     VAR_IN_TITLE = re.compile(r'(?<!\=)=\s.*{.*}.*')
@@ -59,13 +55,6 @@ def empty_line_after_include_check(original_file):
         return True
 
 
-def nbsp_check(report, stripped_file, file_path):
-    if re.findall(Tags.NBSP_ATT, stripped_file):
-        return
-    elif re.findall(Tags.NBSP_VAR, stripped_file):
-        report.create_report('`{nsbp}` attribute is used but not defined. `:nbsp: &#160;` attribute is not', file_path)
-
-
 def vanilla_xref_check(stripped_file):
     """Check if the file contains vanilla xrefs."""
     if re.findall(Regex.VANILLA_XREF, stripped_file):
@@ -75,14 +64,6 @@ def vanilla_xref_check(stripped_file):
 def inline_anchor_check(stripped_file):
     """Check if the in-line anchor directly follows the level 1 heading."""
     if re.findall(Regex.INLINE_ANCHOR, stripped_file):
-        return True
-
-
-def experimental_tag_check(stripped_file):
-    """Check if the experimental tag is set."""
-    if stripped_file.count(Tags.EXPERIMENTAL) > 0:
-        return
-    elif re.findall(Regex.UI_MACROS, stripped_file):
         return True
 
 
@@ -207,9 +188,6 @@ def checks(report, stripped_file, original_file, file_path):
 
     if inline_anchor_check(stripped_file):
         report.create_report('in-line anchors', file_path)
-
-    if experimental_tag_check(stripped_file):
-        report.create_report('files contain UI macros but the :experimental: tag not', file_path)
 
     if html_markup_check(stripped_file):
         report.create_report('HTML markup', file_path)
