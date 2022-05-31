@@ -52,6 +52,15 @@ class Regex:
     EMPTY_LINE_AFTER_ADD_RES_TAG = re.compile(r'\[role="_additional-resources"]\n(?=\n)')
     COMMENT_AFTER_ADD_RES_TAG = re.compile(r'\[role="_additional-resources"]\n(?=\//|(/{4,})(.*\n)*?(/{4,}))')
     EMPTY_LINE_AFTER_ADD_RES_HEADER = re.compile(r'== Additional resources\s\n|\.Additional resources\n\n', re.IGNORECASE)
+    CONDITIONAL_OPEN = re.compile(r'(ifdef|ifndef|ifeval)::.*\[(?!\s)\]')
+    CONDITIONAL_CLOSE = re.compile(r'endif::.*\]')
+
+
+def open_conditionals_check(stripped_file):
+    if not re.findall(Regex.CONDITIONAL_OPEN, stripped_file):
+        return
+    if len(re.findall(Regex.CONDITIONAL_OPEN, stripped_file)) != len(re.findall(Regex.CONDITIONAL_CLOSE, stripped_file)):
+        return True
 
 
 def empty_line_after_include_check(original_file):
@@ -181,6 +190,9 @@ def empty_line_after_add_res_header(stripped_file, original_file):
 
 def checks(report, stripped_file, original_file, file_path):
     """Run the checks."""
+    if open_conditionals_check(stripped_file):
+        report.create_report('Unclosed conditional was', file_path)
+
     if related_info_check(stripped_file):
         report.create_report('"Related information" section was', file_path)
 
