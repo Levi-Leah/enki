@@ -52,14 +52,25 @@ class Regex:
     EMPTY_LINE_AFTER_ADD_RES_TAG = re.compile(r'\[role="_additional-resources"]\n(?=\n)')
     COMMENT_AFTER_ADD_RES_TAG = re.compile(r'\[role="_additional-resources"]\n(?=\//|(/{4,})(.*\n)*?(/{4,}))')
     EMPTY_LINE_AFTER_ADD_RES_HEADER = re.compile(r'== Additional resources\s\n|\.Additional resources\n\n', re.IGNORECASE)
-    CONDITIONAL_OPEN = re.compile(r'(ifdef|ifndef|ifeval)::.*\[(?!\s)\]')
+    CONDITIONAL_IFDEF = re.compile(r'(ifdef|ifndef)::.*\[(?!\s)\]')
+    CONDITIONAL_IFEVAL = re.compile(r'ifeval::.*\[.*?\]')
     CONDITIONAL_CLOSE = re.compile(r'endif::.*\]')
+    FOOTNOTE_REF = re.compile(r'footnoteref:\[.*?\]')
+
+
+def footnote_ref_check(stripped_file):
+    if re.findall(Regex.FOOTNOTE_REF, stripped_file):
+        return True
 
 
 def open_conditionals_check(stripped_file):
-    if not re.findall(Regex.CONDITIONAL_OPEN, stripped_file):
+    ifdef = re.findall(Regex.CONDITIONAL_IFDEF, stripped_file)
+    ifeval = re.findall(Regex.CONDITIONAL_IFEVAL, stripped_file)
+    endif = re.findall(Regex.CONDITIONAL_CLOSE, stripped_file)
+
+    if not ifdef and not ifeval:
         return
-    if len(re.findall(Regex.CONDITIONAL_OPEN, stripped_file)) != len(re.findall(Regex.CONDITIONAL_CLOSE, stripped_file)):
+    if len(ifdef) + len(ifeval) != len(endif):
         return True
 
 
@@ -190,6 +201,9 @@ def empty_line_after_add_res_header(stripped_file, original_file):
 
 def checks(report, stripped_file, original_file, file_path):
     """Run the checks."""
+    if footnote_ref_check(stripped_file):
+        report.create_report('Deprecated `footnoteref` markup was', file_path)
+
     if open_conditionals_check(stripped_file):
         report.create_report('Unclosed conditional was', file_path)
 
