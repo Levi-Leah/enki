@@ -6,7 +6,7 @@ from pathlib import Path
 import sys
 from enki_yaml_valiadtor import ManipulatingBuildYaml
 from enki_msg import Report, ReportModified
-from enki_checks import Regex, nbsp_check, checks, nesting_in_modules_check, add_res_section_module_check, add_res_section_assembly_check
+from enki_checks import Regex, checks, nesting_in_modules_check, add_res_section_module_check, add_res_section_assembly_check
 
 
 class SourcingFilesFromBuildYaml():
@@ -229,9 +229,6 @@ def validate(all_files, report, undefined_content, prefix_assemblies, prefix_mod
                 else:
                     nesting_in_modules_check(report, stripped, relative_path)
                     add_res_section_module_check(report, stripped, relative_path)
-
-            if path in all_attributes:
-                nbsp_check(report, stripped, relative_path)
 
     return report
 

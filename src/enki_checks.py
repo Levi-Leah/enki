@@ -9,8 +9,6 @@ class Tags:
     ABSTRACT = '[role="_abstract"]'
     ADD_RES = '[role="_additional-resources"]'
     EXPERIMENTAL = ':experimental:'
-    NBSP_ATT = ':nbsp: &#160;'
-    NBSP_VAR = '{nbsp}'
     LVLOFFSET = ':leveloffset:'
 
 
@@ -55,9 +53,6 @@ class Regex:
     EMPTY_LINE_AFTER_ADD_RES_TAG = re.compile(r'\[role="_additional-resources"]\n(?=\n)')
     COMMENT_AFTER_ADD_RES_TAG = re.compile(r'\[role="_additional-resources"]\n(?=\//|(/{4,})(.*\n)*?(/{4,}))')
     EMPTY_LINE_AFTER_ADD_RES_HEADER = re.compile(r'== Additional resources\s\n|\.Additional resources\n\n', re.IGNORECASE)
-    CONDITIONAL_IFDEF = re.compile(r'(ifdef|ifndef)::.*\[(?!\s)\]')
-    CONDITIONAL_IFEVAL = re.compile(r'ifeval::.*\[.*?\]')
-    CONDITIONAL_CLOSE = re.compile(r'endif::.*\]')
     FOOTNOTE_REF = re.compile(r'footnoteref:\[.*?\]')
 
 
@@ -73,27 +68,9 @@ def footnote_ref_check(stripped_file):
         return True
 
 
-def open_conditionals_check(stripped_file):
-    ifdef = re.findall(Regex.CONDITIONAL_IFDEF, stripped_file)
-    ifeval = re.findall(Regex.CONDITIONAL_IFEVAL, stripped_file)
-    endif = re.findall(Regex.CONDITIONAL_CLOSE, stripped_file)
-
-    if not ifdef and not ifeval:
-        return
-    if len(ifdef) + len(ifeval) != len(endif):
-        return True
-
-
 def empty_line_after_include_check(original_file):
     if re.findall(Regex.INCLUDE, original_file) and not re.findall(Regex.EMPTY_LINE_AFTER_INCLUDE, original_file):
         return True
-
-
-def nbsp_check(report, stripped_file, file_path):
-    if re.findall(Tags.NBSP_ATT, stripped_file):
-        return
-    elif re.findall(Tags.NBSP_VAR, stripped_file):
-        report.create_report('`{nsbp}` attribute is used but not defined. `:nbsp: &#160;` attribute is not', file_path)
 
 
 def vanilla_xref_check(stripped_file):
@@ -105,14 +82,6 @@ def vanilla_xref_check(stripped_file):
 def inline_anchor_check(stripped_file):
     """Check if the in-line anchor directly follows the level 1 heading."""
     if re.findall(Regex.INLINE_ANCHOR, stripped_file):
-        return True
-
-
-def experimental_tag_check(stripped_file):
-    """Check if the experimental tag is set."""
-    if stripped_file.count(Tags.EXPERIMENTAL) > 0:
-        return
-    elif re.findall(Regex.UI_MACROS, stripped_file):
         return True
 
 
@@ -217,9 +186,6 @@ def checks(report, stripped_file, original_file, file_path):
     if footnote_ref_check(stripped_file):
         report.create_report('Deprecated `footnoteref` markup was', file_path)
 
-    if open_conditionals_check(stripped_file):
-        report.create_report('Unclosed conditional was', file_path)
-
     if related_info_check(stripped_file):
         report.create_report('"Related information" section was', file_path)
 
@@ -246,9 +212,6 @@ def checks(report, stripped_file, original_file, file_path):
 
     if inline_anchor_check(stripped_file):
         report.create_report('in-line anchors', file_path)
-
-    if experimental_tag_check(stripped_file):
-        report.create_report('files contain UI macros but the :experimental: tag not', file_path)
 
     if html_markup_check(stripped_file):
         report.create_report('HTML markup', file_path)
