@@ -41,8 +41,7 @@ class Regex:
     CODE_BLOCK_DASHES = re.compile(r'(-{4,})(.*\n)*?(-{4,})')
     CODE_BLOCK_DOTS = re.compile(r'(\.{4,})(.*\n)*?(\.{4,})')
     CODE_BLOCK_TWO_DASHES = re.compile(r'(-{2,})(.*\n)*?(-{2,})')
-    HUMAN_READABLE_LABEL_XREF = re.compile(r'xref:.*\[]')
-    HUMAN_READABLE_LABEL_LINK = re.compile(r'\b(?:https?|file|ftp|irc):\/\/[^\s\[\]<]*\[\]')
+    HUMAN_READABLE_LABEL = re.compile(r'xref:[\S]*\[\]|\b(?:https?|file|ftp|irc):\/\/[^\s\[\]<]*\[\]')
     NESTED_ASSEMBLY = re.compile(r'include.*assembly([a-z|0-9|A-Z|\-|_]+)\.adoc(\[.*\])')
     NESTED_MODULES = re.compile(r'include.*(proc|con|ref)([a-z|0-9|A-Z|\-|_]+)\.adoc(\[.*\])')
     RELATED_INFO = re.compile(r'= Related information|\.Related information', re.IGNORECASE)
@@ -85,15 +84,9 @@ def inline_anchor_check(stripped_file):
         return True
 
 
-def human_readable_label_check_xrefs(stripped_file):
+def human_readable_label_check(stripped_file):
     "Check if the human readable label is present in xrefs."""
-    if re.findall(Regex.HUMAN_READABLE_LABEL_XREF, stripped_file):
-        return True
-
-
-def human_readable_label_check_links(stripped_file):
-    "Check if the human readable label is present in links."""
-    if re.findall(Regex.HUMAN_READABLE_LABEL_LINK, stripped_file):
+    if re.findall(Regex.HUMAN_READABLE_LABEL, stripped_file):
         return True
 
 
@@ -216,11 +209,8 @@ def checks(report, stripped_file, original_file, file_path):
     if html_markup_check(stripped_file):
         report.create_report('HTML markup', file_path)
 
-    if human_readable_label_check_xrefs(stripped_file):
-        report.create_report('xrefs without a human readable label', file_path)
-
-    if human_readable_label_check_links(stripped_file):
-        report.create_report('links without a human readable label', file_path)
+    if human_readable_label_check(stripped_file):
+        report.create_report('xrefs or link without a human readable label', file_path)
 
     if lvloffset_check(stripped_file):
         report.create_report('unsupported use of :leveloffset:. unsupported includes', file_path)

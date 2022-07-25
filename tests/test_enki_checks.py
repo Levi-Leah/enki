@@ -101,44 +101,42 @@ This is examle abstract."""
         self.assertFalse(result, "Should return False when file has no inline anchor.")
 
 
-class TestHumanReadableLabelCheckXref(unittest.TestCase):
-    def test_label_present(self):
+class TestHumanReadableLabelCheck(unittest.TestCase):
+    def test_label_present_xref(self):
         file_contents = """= Heading
 
 [role="_abstract"]
 This is examle abstract and xref:human-readable_label[present]."""
 
-        result = human_readable_label_check_xrefs(file_contents)
+        result = human_readable_label_check(file_contents)
         self.assertIsNone(result, "Should return None when xref has a human readable label.")
 
-    def test_label_not_present(self):
+    def test_label_not_present_xref(self):
         file_contents = """= Heading
 
 [role="_abstract"]
 This is examle abstract and xref:human-readable_label[present].
 xref:human-readable-label_not-present[]."""
 
-        result = human_readable_label_check_xrefs(file_contents)
+        result = human_readable_label_check(file_contents)
         self.assertTrue(result, "Should return True when xref has no human readable label.")
 
-
-class TestHumanReadableLabelCheckLinks(unittest.TestCase):
-    def test_label_present(self):
+    def test_label_present_link(self):
         file_contents = """= Heading
 
 [role="_abstract"]
 This is examle abstract and http://www.sample-link.com[present]."""
 
-        result = human_readable_label_check_links(file_contents)
+        result = human_readable_label_check(file_contents)
         self.assertIsNone(result, "Should return None when link has a human readable label.")
 
-    def test_label_not_present(self):
+    def test_label_not_present_link(self):
         file_contents = """= Heading
 
 [role="_abstract"]
 This is examle abstract and http://www.sample-link.com[]."""
 
-        result = human_readable_label_check_links(file_contents)
+        result = human_readable_label_check(file_contents)
         self.assertTrue(result, "Should return True when link has no human readable label.")
 
 
