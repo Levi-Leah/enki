@@ -4,6 +4,39 @@ from src.enki_msg import Report
 
 
 # class for every function
+class TestUnterminatedConditionalCheck(unittest.TestCase):
+    def test_closed_conditionals(self):
+        file_contents = """
+ifeval::[{ProductNumber} == 8]
+ifndef::context[]
+[id="assembly_affinity-in-rhel-for-real-time"]
+endif::[]
+ifdef::context[]
+[id="assembly_affinity-in-rhel-for-real-time_{context}"]
+= Affinity in
+endif::[]
+endif::[]
+"""
+        result = undetermined_conditional_check(file_contents)
+        self.assertFalse(result, "Should return False when all conditionals are closed.")
+
+
+    def test_unclosed_conditionals(self):
+        file_contents = """
+ifeval::[{ProductNumber} == 8]
+ifndef::context[]
+[id="assembly_affinity-in-rhel-for-real-time"]
+endif::[]
+ifdef::context[]
+[id="assembly_affinity-in-rhel-for-real-time_{context}"]
+= Affinity in
+
+endif::[]
+"""
+        result = undetermined_conditional_check(file_contents)
+        self.assertTrue(result, "Should return True when all conditionals are not closed.")
+
+
 class TestEmptyLineAfterIncludeCheck(unittest.TestCase):
     def test_empty_line_present(self):
         file_contents = """= Heading
