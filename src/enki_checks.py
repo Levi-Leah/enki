@@ -17,6 +17,9 @@ class Tags:
 class Regex:
     """Define regular expresiions for the checks."""
 
+    OPENING_CONDITIONAL = re.compile(r'(ifdef|ifndef|ifeval)::(.*)?\]')
+    CLOSING_CONDITIONAL = re.compile(r'endif::(.*)?\]')
+    SINGLE_LINE_CONDITIONAL = re.compile(r'(ifdef|ifndef)::[\S]*\[(?!\])(.*)\]')
     INCLUDE = re.compile(r'include::.*\]\n')
     EMPTY_LINE_AFTER_INCLUDE = re.compile(r'include::.*\]\n\n')
     MODULE_TYPE = re.compile(r':_content-type: (PROCEDURE|CONCEPT|REFERENCE)')
@@ -56,6 +59,13 @@ class Regex:
     CONDITIONAL_IFEVAL = re.compile(r'ifeval::.*\[.*?\]')
     CONDITIONAL_CLOSE = re.compile(r'endif::.*\]')
     FOOTNOTE_REF = re.compile(r'footnoteref:\[.*?\]')
+
+
+def undetermined_conditional_check(stripped_file):
+    open = re.findall(Regex.OPENING_CONDITIONAL, stripped_file)
+    closed = re.findall(Regex.CLOSING_CONDITIONAL, stripped_file)
+    if len(open) != len(closed):
+        return True
 
 
 def footnote_ref_check(stripped_file):
@@ -201,6 +211,9 @@ def empty_line_after_add_res_header(stripped_file, original_file):
 
 def checks(report, stripped_file, original_file, file_path):
     """Run the checks."""
+    if undetermined_conditional_check(stripped_file):
+        report.create_report('Unterminated conditional statement', file_path)
+
     if footnote_ref_check(stripped_file):
         report.create_report('Deprecated `footnoteref` markup was', file_path)
 

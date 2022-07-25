@@ -197,6 +197,7 @@ def validate(all_files, report, undefined_content, prefix_assemblies, prefix_mod
             stripped = Regex.CODE_BLOCK_TWO_DASHES.sub('', stripped)
             stripped = Regex.CODE_BLOCK_DOTS.sub('', stripped)
             stripped = Regex.INTERNAL_IFDEF.sub('', stripped)
+            stripped = Regex.SINGLE_LINE_CONDITIONAL.sub('', stripped)
 
             checks(report, stripped, original, relative_path)
 
