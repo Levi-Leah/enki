@@ -14,43 +14,227 @@ class Tags:
 
 class Regex:
     """Define regular expresiions for the checks."""
-
+    # Opening conditionals
+    #
+    # Matches any opening conditional; single-line and multi-line (e.g. ifdef, ifndef, ifeval)
+    #
+    # Examples
+    #
+    #   ifdef::condition[]
+    #   ifndef::condition[]
+    #   ifeval::["{attribute}" >= "v.1"]
+    #   ifdef::condition[description!]
+    #
     OPENING_CONDITIONAL = re.compile(r'(ifdef|ifndef|ifeval)::(.*)?\]')
+
+    # Closing conditionals
+    #
+    # Matches any closing conditional (e.g. endif)
+    #
+    # Examples
+    #
+    #   endif::condition[]
+    #   endif::[]
+    #
     CLOSING_CONDITIONAL = re.compile(r'endif::(.*)?\]')
+
+    # Single-line conditionals
+    #
+    # Matches only single-line conditionals (e.g. ifdef, ifndef)
+    #
+    # Examples
+    #
+    # ifdef::condition[description!]
+    # ifndef::condition[description!]
+    #
     SINGLE_LINE_CONDITIONAL = re.compile(r'(ifdef|ifndef)::[\S]*\[(?!\])(.*)\]')
-    INCLUDE = re.compile(r'include::.*\]\n')
+
+    # Empty line after
+    #
+    # Matches an include followed by an empty line
+    #
+    # Examples
+    #
+    #   include::file.adoc[]
+    #
+    #
     EMPTY_LINE_AFTER_INCLUDE = re.compile(r'include::.*\]\n\n')
+
+    # Module content type tags
+    #
+    # Matches procedure, concept, reference content type tags
+    #
+    # Examples
+    #
+    #   :_content-type: PROCEDURE
+    #   :_content-type: CONCEPT
+    #   :_content-type: REFERENCE
+    #
     MODULE_TYPE = re.compile(r':_content-type: (PROCEDURE|CONCEPT|REFERENCE)')
+
+    # Assembly content type tag
+    #
+    # Matches assembly content type tag
+    #
+    # Examples
+    #
+    #   :_content-type: ASSEMBLY
+    #
     ASSEMBLY_TYPE = re.compile(r':_content-type: ASSEMBLY')
+
+    # Snippet content type tag (NOT USED)
+    #
+    # Matches snippet content type tag
+    #
+    # Examples
+    #
+    #   :_content-type: SNIPPET
+    #
     SNIPPET_TYPE = re.compile(r':_content-type: SNIPPET')
+
+    # Assembly prefix (NOT USED)
+    #
+    # Matches assembly prefix
+    #
+    # Examples
+    #
+    #   <PATH>/assembly_file-name.adoc
+    #   <PATH>/assembly-file-name.adoc
+    #
     PREFIX_ASSEMBLIES = re.compile(r'.*\/assembly.*\.adoc')
+
+    # Modules prefix (NOT USED)
+    #
+    # Matches modules prefix (e.g. con, proc, ref)
+    #
+    # Examples
+    #
+    #   <PATH>/con_file-name.adoc
+    #   <PATH>/con-file-name.adoc
+    #   <PATH>/proc_file-name.adoc
+    #   <PATH>/proc-file-name.adoc
+    #   <PATH>/ref_file-name.adoc
+    #   <PATH>/ref-file-name.adoc
+    #
     PREFIX_MODULES = re.compile(r'.*\/con.*\.adoc|.*\/proc.*\.adoc|.*\/ref.*\.adoc')
-    # should exclude pseudo vanilla like <<some content>>
+
+    # Vanilla xrefs
+    #
+    # Matches any vanilla xref
+    #
+    # Excludes pseudo vanilla like <<some content>>
+    #
+    # Examples
+    #
+    #   <<id_parent-id>>
+    #   <<some-id>>
+    #   <<id,text>>
+    #
     VANILLA_XREF = re.compile(r'<<[^\s]*>>')
+
+    # Multi-line comment
+    #
+    # Matches multi-line comments
+    #
+    # Examples
+    #
+    #   ////
+    #   This is a
+    #   multi-line comment
+    #   ////
+    #
     MULTI_LINE_COMMENT = re.compile(r'(/{4,})(.*\n)*?(/{4,})')
+
+    # Single-line comment TODO: remove lookaround
+    #
+    # Matches any single-line comment
+    #
+    # Example
+    #   // This is a single-line comment
+    #
     SINGLE_LINE_COMMENT = re.compile(r'(?<!\/\/)(?<!\/)^\/\/(?!\/\/).*\n', re.M)
     EMPTY_LINE_AFTER_ABSTRACT = re.compile(r'\[role="_abstract"]\n(?=\n)')
+
     FIRST_PARA = re.compile(r'(?<!\n\n)\[role="_abstract"]\n(?!\n)')
+
     NO_EMPTY_LINE_BEFORE_ABSTRACT = re.compile(r'(?<!\n\n)\[role="_abstract"]')
+
     COMMENT_AFTER_ABSTRACT = re.compile(r'\[role="_abstract"]\n(?=\//|(/{4,})(.*\n)*?(/{4,}))')
+
     VAR_IN_TITLE = re.compile(r'(?<!\=)=\s.*{.*}.*')
+
     INLINE_ANCHOR = re.compile(r'=.*\[\[.*\]\]')
+
     UI_MACROS = re.compile(r'btn:\[.*\]|menu:.*\[.*\]|kbd:.*\[.*\]')
+
     HTML_MARKUP = re.compile(r'(?<!\`|_)<.*>.*<\/.*>|<.*>\n.*\n</.*>(?!\`|_)')
+
     INTERNAL_IFDEF = re.compile(r'(ifdef::internal\[\])(.*\n)*?(endif::\[\])')
+
     CODE_BLOCK_DASHES = re.compile(r'(-{4,})(.*\n)*?(-{4,})')
+
     CODE_BLOCK_DOTS = re.compile(r'(\.{4,})(.*\n)*?(\.{4,})')
+
     CODE_BLOCK_TWO_DASHES = re.compile(r'(-{2,})(.*\n)*?(-{2,})')
+
+    # Human readable label
+    # Matches human readable label for xrefs and links
+    #
+    # Examples
+    #
+    #   xref:some-id[Human readable label]
+    #   https://link.com[Human readable label]
+    #   link:https://link.com[Human readable label]
+    #
     HUMAN_READABLE_LABEL = re.compile(r'xref:[\S]*\[\]|\b(?:https?|file|ftp|irc):\/\/[^\s\[\]<]*\[\]')
+
+    # Include statement
+    # Matches all includes
+    #
+    # Examples
+    #
+    #   include::file.adoc[]
+    #   include::file.adoc[leveloffset=+1]
+    #
     INCLUDE_STATEMENT = re.compile(r'include::[\S]*\]')
-    SNIPPET = re.compile(r'include::[\S]*(snip-|snip_)[\S]*\[')
+
+    # Included snippets
+    #
+    # Matches any snippet include
+    #
+    # Example
+    #   include::sni-file.adoc[leveloffset=+1]
+    #   include::snip_file.adoc[leveloffset=+1]
+    #
+    SNIPPET_INCLUDE = re.compile(r'include::[\S]*(snip-|snip_)[\S]*\[')
+
+    # Related information section
+    #
+    #
+    # Matches related info section (case is ignored)
+    #
+    # Examples
+    #   = Related information
+    #   .Related information
+    #
     RELATED_INFO = re.compile(r'= Related information|\.Related information', re.IGNORECASE)
+
+    # Additional information information section
+    #
+    #
+    # Matches additional info section (case is ignored)
+    #
+    # Examples
+    #   == Additional information
+    #   .Additional information
+    #
     ADDITIONAL_RES = re.compile(r'== Additional resources\n|\.Additional resources\n', re.IGNORECASE)
-    ADD_RES_TAG = re.compile(r'\[role="_additional-resources"]')
+
     ADD_RES_ASSEMBLY = re.compile(r'== Additional resources', re.IGNORECASE)
     ADD_RES_MODULE = re.compile(r'\.Additional resources', re.IGNORECASE)
     CORRECT_ADDITIONAL_RES_SECTION = re.compile(r'\[role="_additional-resources"\]\n(== Additional resources|\.Additional resources)\n(\*|(ifdef|ifndef|ifeval)::(.*)?\]\n\*)', re.IGNORECASE)
     FOOTNOTE_REF = re.compile(r'footnoteref:\[.*?\]')
+
 
 
 def undetermined_conditional_check(stripped_file):
@@ -66,7 +250,7 @@ def footnote_ref_check(stripped_file):
 
 
 def empty_line_after_include_check(original_file):
-    if re.findall(Regex.INCLUDE, original_file) and not re.findall(Regex.EMPTY_LINE_AFTER_INCLUDE, original_file):
+    if re.findall(Regex.INCLUDE_STATEMENT, original_file) and not re.findall(Regex.EMPTY_LINE_AFTER_INCLUDE, original_file):
         return True
 
 
@@ -99,7 +283,7 @@ def nesting_in_modules_check(report, stripped_file, file_path):
     includes = re.findall(Regex.INCLUDE_STATEMENT, stripped_file)
 
     for i in includes:
-        if not Regex.SNIPPET.match(i):
+        if not Regex.SNIPPET_INCLUDE.match(i):
             report.create_report('nesting in modules. nesting', file_path)
 
 
@@ -145,7 +329,7 @@ def add_res_tag_multiple(stripped_file):
 
 
 def add_res_tag_without_header(stripped_file):
-    if re.findall(Regex.ADD_RES_TAG, stripped_file):
+    if re.findall(Tags.ADD_RES, stripped_file):
         if not re.findall(Regex.ADDITIONAL_RES, stripped_file):
             return True
 
