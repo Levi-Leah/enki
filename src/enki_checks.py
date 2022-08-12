@@ -219,10 +219,10 @@ class Regex:
     #
     RELATED_INFO = re.compile(r'= Related information|\.Related information', re.IGNORECASE)
 
-    # Additional information information section
+    # Additional information resources section
     #
     #
-    # Matches additional info section (case is ignored)
+    # Matches additional res section (case is ignored)
     #
     # Examples
     #   == Additional information
@@ -230,9 +230,34 @@ class Regex:
     #
     ADDITIONAL_RES = re.compile(r'== Additional resources\n|\.Additional resources\n', re.IGNORECASE)
 
+    # Assembly specific additional resources section
+    #
+    #
+    # Matches additional res section for assemblies (case is ignored)
+    #
+    # Examples
+    #   == Additional information
+    #
     ADD_RES_ASSEMBLY = re.compile(r'== Additional resources', re.IGNORECASE)
+
+    # Module specific additional resources section
+    #
+    #
+    # Matches additional res section for modules (case is ignored)
+    #
+    # Examples
+    #   .Additional information
+    #
     ADD_RES_MODULE = re.compile(r'\.Additional resources', re.IGNORECASE)
-    CORRECT_ADDITIONAL_RES_SECTION = re.compile(r'\[role="_additional-resources"\]\n(== Additional resources|\.Additional resources)\n(\*|(ifdef|ifndef|ifeval)::(.*)?\]\n\*)', re.IGNORECASE)
+
+    # Correct additional res section
+    #
+    # Matches correctly formated add res section
+    #
+    # Examples
+    #
+    #
+    CORRECT_ADDITIONAL_RES_SECTION = re.compile(r'\[role="_additional-resources"\]\n+((ifdef|ifndef|ifeval|endif)::.*\]\n+)*?(== Additional resources|\.Additional resources)\n+((ifdef|ifndef|ifeval|endif)::.*\]\n+)*?((\* .*\n+((ifdef|ifndef|ifeval|endif)::.*\]\n+)*?(^//.*\n+)*?((\/{4,})(.*\n)*?(\/{4,})\n+)*?)*\z)', re.IGNORECASE)
     FOOTNOTE_REF = re.compile(r'footnoteref:\[.*?\]')
 
 
