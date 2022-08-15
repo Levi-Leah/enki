@@ -34,9 +34,7 @@ def expand_file_paths(item):
 
     for dirpath, dirnames, filenames in os.walk(str(item) + '/'):
         for name in filenames:
-            if name.startswith('_') or not name.endswith('adoc') or name == 'master.adoc' or name == 'README.adoc':
-                continue
-            else:
+            if not name.startswith('_') and name.endswith('.adoc') and name != 'master.adoc' and name != 'README.adoc':
                 file = os.path.realpath(os.path.join(dirpath, name))
                 if file not in expanded_files:
                     expanded_files.append(file)
