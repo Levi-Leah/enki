@@ -4,7 +4,6 @@ import argparse
 from pathlib import Path
 import os
 import sys
-from subprocess import call
 from enki_files_valiadtor import validating_files
 
 parser = argparse.ArgumentParser(prog='enki')

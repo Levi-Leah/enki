@@ -121,8 +121,9 @@ def checks(report, stripped_file, original_file, file_path):
     if add_res_tag_without_header(stripped_file):
         report.create_report('additional resources tag without the Additional resources header was', file_path)
 
-    '''if add_res_wrong_format(stripped_file):
-        report.create_report('incorrectly formatted Additional recourses section', file_path)'''
+    #NOTE: DISABLED
+    #if add_res_wrong_format(stripped_file):
+    #    report.create_report('incorrectly formatted Additional recourses section', file_path)
 
     if vanilla_xref_check(stripped_file):
         report.create_report('vanilla xrefs', file_path)
