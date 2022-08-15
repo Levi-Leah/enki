@@ -13,7 +13,7 @@ class Tags:
 
 
 class Regex:
-    """Define regular expresiions for the checks."""
+    """Define regular expressions for the checks."""
 
     # Additional resources tag
     #
