@@ -24,7 +24,7 @@ for item in args.path:
     if not os.path.exists(item):
         print(f"\nENKI ERROR: '{item}' doesn't exist in your repository.")
         args.path.remove(item)
-        continue
+        sys.exit(2)
 
 user_input = args.path
 
@@ -67,8 +67,9 @@ if args.command == 'validate':
 
     if unsupported_files:
         separator = "\n\t"
-        print('\nENKI ERROR: unsupported file format. The following files were not validated:')
+        print('\nENKI ERROR: unsupported file format. The following files cannot be validated:')
         print('\t' + separator.join(unsupported_files))
+        sys.exit(2)
 
     if files:
         validating_files(files)

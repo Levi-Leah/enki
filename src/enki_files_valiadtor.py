@@ -1,7 +1,6 @@
 #!/usr/bin/env/ python3
 import os
 import re
-import subprocess
 import sys
 from enki_msg import Report
 from enki_checks import checks, nesting_in_modules_check
@@ -29,6 +28,7 @@ def sort_files(files):
 
 
 def validate(all_files, report, undefined_content, prefix_assemblies, prefix_modules):
+    """Run validation checks and return the report."""
 
     undetermined_file_type = []
     confused_files = []
@@ -71,6 +71,7 @@ def validate(all_files, report, undefined_content, prefix_assemblies, prefix_mod
 
 
 def validating_files(files):
+    """Print the result of validation and exit with an error."""
     report = Report()
 
     prefix_assemblies, prefix_modules, undefined_content = sort_files(files)
