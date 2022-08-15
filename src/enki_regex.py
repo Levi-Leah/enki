@@ -15,7 +15,7 @@ class Tags:
 class Regex:
     """Define regular expresiions for the checks."""
 
-    # Additional recourses tag
+    # Additional resources tag
     #
     # Matches add res tag
     # Duplicates Tag.ADD_RES cause some tests need it as regex
