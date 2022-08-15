@@ -12,7 +12,7 @@ def unterminated_conditional_check(stripped_file):
     if len(opening_conditional) != len(closing_conditional):
         return True
 
-
+#TODO unittest
 def footnote_ref_check(stripped_file):
     """Checks if deprecated foornoteref is present."""
     if re.findall(Regex.FOOTNOTE_REF, stripped_file):
@@ -70,7 +70,7 @@ def related_info_check(stripped_file):
     if re.findall(Regex.RELATED_INFO, stripped_file):
         return True
 
-
+#TODO unittest
 def add_res_tag_missing(stripped_file):
     """Checks if the add res tag is missing."""
     if re.findall(Regex.ADDITIONAL_RES, stripped_file):
@@ -78,12 +78,14 @@ def add_res_tag_missing(stripped_file):
             return True
 
 
+#TODO unittest
 def add_res_tag_multiple(stripped_file):
     """Checks if there are multiple add res tags."""
     if stripped_file.count(Tags.ADD_RES) > 1:
         return True
 
 
+#TODO unittest
 def add_res_tag_without_header(stripped_file):
     """Checks id add res header is missing."""
     if re.findall(Regex.ADD_RES, stripped_file):
