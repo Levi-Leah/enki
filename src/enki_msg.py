@@ -36,13 +36,3 @@ class Report():
         for category, files in self.report.items():
             print("\nVALIDATION ERROR: {} found in the following files:".format(category))
             print('\t' + separator.join(files))
-
-
-class ReportModified(Report):
-    def print_report(self):
-        """Print report."""
-        separator = "\n\t"
-
-        for category, files in self.report.items():
-            print("\nVALIDATION ERROR: {}:".format(category))
-            print('\t' + separator.join(files))

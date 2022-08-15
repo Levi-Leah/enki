@@ -94,7 +94,7 @@ class Regex:
     #
     ASSEMBLY_TYPE = re.compile(r':_content-type: ASSEMBLY')
 
-    # Snippet content type tag (NOT USED)
+    # Snippet content type tag
     #
     # Matches snippet content type tag
     #
@@ -104,31 +104,6 @@ class Regex:
     #
     SNIPPET_TYPE = re.compile(r':_content-type: SNIPPET')
 
-    # Assembly prefix (NOT USED)
-    #
-    # Matches assembly prefix
-    #
-    # Examples
-    #
-    #   <PATH>/assembly_file-name.adoc
-    #   <PATH>/assembly-file-name.adoc
-    #
-    PREFIX_ASSEMBLIES = re.compile(r'.*\/assembly.*\.adoc')
-
-    # Modules prefix (NOT USED)
-    #
-    # Matches modules prefix (e.g. con, proc, ref)
-    #
-    # Examples
-    #
-    #   <PATH>/con_file-name.adoc
-    #   <PATH>/con-file-name.adoc
-    #   <PATH>/proc_file-name.adoc
-    #   <PATH>/proc-file-name.adoc
-    #   <PATH>/ref_file-name.adoc
-    #   <PATH>/ref-file-name.adoc
-    #
-    PREFIX_MODULES = re.compile(r'.*\/con.*\.adoc|.*\/proc.*\.adoc|.*\/ref.*\.adoc')
 
     # Vanilla xrefs
     #
@@ -166,12 +141,59 @@ class Regex:
     #
     SINGLE_LINE_COMMENT = re.compile(r'(?<!\/\/)(?<!\/)^\/\/(?!\/\/).*\n', re.M)
 
+    # In-line anchor
+    #
+    # Matches in-line anchors
+    #
+    # Example
+    #   [[this-is-an-inline-anchor]]
+    #
     INLINE_ANCHOR = re.compile(r'=.*\[\[.*\]\]')
 
+    # HTML markup (NOTE:DISABLED)
+    #
+    # Matches multi-line and single-line html markup
+    #
+    # Example
+    #
+    #   <title>Title</title>
+    #
+    #   <title>
+    #       Page Title
+    #   </title>
+    #
     HTML_MARKUP = re.compile(r'(?<!\`|_)<.*>.*<\/.*>|<.*>\n.*\n</.*>(?!\`|_)')
 
+    # Internal conditionals TODO: expand regex to include oneliners
+    #
+    # Matches internal conditionals
+    #
+    # Example
+    #   ifdef::internal[]
+    #   This text
+    #   Is only visible
+    #   Internally
+    #   endif::[]
+    #
     INTERNAL_IFDEF = re.compile(r'(ifdef::internal\[\])(.*\n)*?(endif::\[\])')
 
+    # Code blocks
+    #
+    # Matches code blocks
+    #
+    # Example
+    #
+    #    ----
+    #    this is a code block
+    #    ----
+    #
+    #    ....
+    #    this is also a code block
+    #    ....
+    #
+    #    --
+    #    I guess this is a thing too
+    #    --
     CODE_BLOCK = re.compile(r'((-|\.){2,}|--\n+)(.*\n)*?((-|\.){2,})')
 
     # Human readable label
@@ -227,33 +249,6 @@ class Regex:
     #
     ADDITIONAL_RES = re.compile(r'== Additional resources|\.Additional resources', re.IGNORECASE)
 
-    # Assembly specific additional resources section
-    #
-    #
-    # Matches additional res section for assemblies (case is ignored)
-    #
-    # Examples
-    #   == Additional information
-    #
-    ADD_RES_ASSEMBLY = re.compile(r'== Additional resources', re.IGNORECASE)
-
-    # Module specific additional resources section
-    #
-    #
-    # Matches additional res section for modules (case is ignored)
-    #
-    # Examples
-    #   .Additional information
-    #
-    ADD_RES_MODULE = re.compile(r'\.Additional resources', re.IGNORECASE)
-
-    # Correct additional res section
-    #
-    # Matches correctly formated add res section
-    #
-    # Examples
-    #
-    #
     '''CORRECT_ADDITIONAL_RES_SECTION = re.compile(r'\[role="_additional-resources"\]\n+((ifdef|ifndef|ifeval|endif)::.*\]\n+)*?(== Additional resources|\.Additional resources)\n+((ifdef|ifndef|ifeval|endif)::.*\]\n+)*?((\* .*\n+((ifdef|ifndef|ifeval|endif)::.*\]\n+)*?(^//.*\n+)*?((\/{4,})(.*\n)*?(\/{4,})\n+)*?)*\z)', re.IGNORECASE)'''
 
     # Deprecated footnoteref macro

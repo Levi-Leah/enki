@@ -43,6 +43,7 @@ def human_readable_label_check(stripped_file):
         return True
 
 
+#NOTE: DISABLED
 def html_markup_check(stripped_file):
     """Check if HTML markup is present in the file."""
     if re.findall(Regex.HTML_MARKUP, stripped_file):
@@ -59,29 +60,32 @@ def nesting_in_modules_check(report, stripped_file, file_path):
 
 
 def abstarct_tag_multiple_check(stripped_file):
-    """Checks if the abstract tag is not set or set more than once."""
+    """Checks if the abstract tag is set more than once."""
     if stripped_file.count(Tags.ABSTRACT) > 1:
         return True
 
 
 def related_info_check(stripped_file):
-    """Checks if everything related to additional resources section is OK"""
+    """Checks if releted info section is present."""
     if re.findall(Regex.RELATED_INFO, stripped_file):
         return True
 
 
 def add_res_tag_missing(stripped_file):
+    """Checks if the add res tag is missing."""
     if re.findall(Regex.ADDITIONAL_RES, stripped_file):
         if stripped_file.count(Tags.ADD_RES) == 0:
             return True
 
 
 def add_res_tag_multiple(stripped_file):
+    """Checks if there are multiple add res tags."""
     if stripped_file.count(Tags.ADD_RES) > 1:
         return True
 
 
 def add_res_tag_without_header(stripped_file):
+    """Checks id add res header is missing."""
     if re.findall(Regex.ADD_RES, stripped_file):
         if not re.findall(Regex.ADDITIONAL_RES, stripped_file):
             return True
@@ -98,6 +102,7 @@ def add_res_tag_without_header(stripped_file):
 
 def checks(report, stripped_file, original_file, file_path):
     """Run the checks."""
+
     if unterminated_conditional_check(stripped_file):
         report.create_report('Unterminated conditional statement', file_path)
 
@@ -125,8 +130,9 @@ def checks(report, stripped_file, original_file, file_path):
     if inline_anchor_check(stripped_file):
         report.create_report('in-line anchors', file_path)
 
-    if html_markup_check(stripped_file):
-        report.create_report('HTML markup', file_path)
+    #NOTE: DISABLED
+    #if html_markup_check(stripped_file):
+    #    report.create_report('HTML markup', file_path)
 
     if human_readable_label_check(stripped_file):
         report.create_report('xrefs or link without a human readable label', file_path)

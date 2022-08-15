@@ -5,17 +5,13 @@ from pathlib import Path
 import os
 import sys
 from subprocess import call
-from enki_yaml_valiadtor import yaml_file_validation
-from enki_files_valiadtor import validating_files_in_build_yml, validating_adoc_files, expand_file_paths
+from enki_files_valiadtor import validating_files
 
 parser = argparse.ArgumentParser(prog='enki')
 subparsers = parser.add_subparsers(dest='command')
 
 parser_a = subparsers.add_parser("validate", help="Perform validation.")
 parser_a.add_argument("path", nargs='+', type=Path, help='Path to files.')
-
-parser_b = subparsers.add_parser("generate", help="Generate build.yml from a template.")
-parser_b.add_argument("path", nargs='+', type=Path, help='Path to files.')
 
 if len(sys.argv) == 1:
     parser.print_help()
@@ -33,32 +29,41 @@ for item in args.path:
 user_input = args.path
 
 
-if args.command == 'generate':
+def expand_file_paths(item):
+    """Expand filepaths."""
+    expanded_files = []
 
-    if user_input.is_dir():
-        path = str(user_input)
-        path_to_script = os.path.dirname(os.path.realpath(__file__))
-        call("bash " + path_to_script + "/buildyml-generator.sh " + path, shell=True)
-        sys.exit(0)
-    else:
-        print("\nENKI ERROR: Provided path is not a directory.")
+    for dirpath, dirnames, filenames in os.walk(str(item) + '/'):
+        for name in filenames:
+            if name.startswith('_') or not name.endswith('adoc') or name == 'master.adoc' or name == 'README.adoc':
+                continue
+            else:
+                file = os.path.realpath(os.path.join(dirpath, name))
+                if file not in expanded_files:
+                    expanded_files.append(file)
 
-elif args.command == 'validate':
+    return expanded_files
+
+
+if args.command == 'validate':
     files = []
     unsupported_files = []
 
     for item in user_input:
+
+        item = str(item)
+
         if os.path.isdir(item):
-            expand_files = expand_file_paths(str(item) + '/')
-            for file in expand_files:
+            expanded_files = expand_file_paths(item)
+            for file in expanded_files:
+                if file not in files:
+                    files.append(file)
+        elif item.endswith('.adoc'):
+            file = os.path.realpath(item)
+            if file not in files:
                 files.append(file)
-        elif str(item).endswith('.adoc'):
-            files.append(str(item))
-        elif os.path.basename(str(item)) == 'build.yml':
-            yaml_file_validation(item)
-            validating_files_in_build_yml(item)
         else:
-            unsupported_files.append(str(item))
+            unsupported_files.append(item)
 
     if unsupported_files:
         separator = "\n\t"
@@ -66,4 +71,4 @@ elif args.command == 'validate':
         print('\t' + separator.join(unsupported_files))
 
     if files:
-        validating_adoc_files(files)
+        validating_files(files)
