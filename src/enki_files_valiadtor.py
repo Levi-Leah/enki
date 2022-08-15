@@ -3,7 +3,7 @@ import os
 import re
 import sys
 from enki_msg import Report
-from enki_checks import checks, nesting_in_modules_check
+from enki_checks import checks, nesting_in_modules_check, too_many_comments_check
 from enki_regex import Regex
 
 
@@ -42,6 +42,13 @@ def validate(all_files, report, undefined_content, prefix_assemblies, prefix_mod
             original = file.read()
             stripped = Regex.MULTI_LINE_COMMENT.sub('', original)
             stripped = Regex.SINGLE_LINE_COMMENT.sub('', stripped)
+
+            # this check should run before
+            # code blocks
+            # internal/single line conditionals
+            # are replaced
+            too_many_comments_check(original, stripped, report, path)
+
             stripped = Regex.CODE_BLOCK.sub('', stripped)
             stripped = Regex.INTERNAL_IFDEF.sub('', stripped)
             stripped = Regex.SINGLE_LINE_CONDITIONAL.sub('', stripped)

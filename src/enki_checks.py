@@ -4,6 +4,12 @@ import re
 from enki_regex import Regex, Tags
 
 
+def too_many_comments_check(original_file, stripped_file, report, file_path):
+    """Checks if more than 1/3 of the file is comments."""
+    if stripped_file.count('\n') < original_file.count('\n')*0.75:
+        report.create_report('Over 1/3 of the file is comments. Too many comments', file_path)
+
+
 def unterminated_conditional_check(stripped_file):
     """Check if the number of opening conditionals matches
     the ammount of closing conditionals."""
@@ -12,7 +18,7 @@ def unterminated_conditional_check(stripped_file):
     if len(opening_conditional) != len(closing_conditional):
         return True
 
-#TODO unittest
+
 def footnote_ref_check(stripped_file):
     """Checks if deprecated foornoteref is present."""
     if re.findall(Regex.FOOTNOTE_REF, stripped_file):
@@ -70,30 +76,28 @@ def related_info_check(stripped_file):
     if re.findall(Regex.RELATED_INFO, stripped_file):
         return True
 
-#TODO unittest
-def add_res_tag_missing(stripped_file):
+
+def add_res_tag_missing_check(stripped_file):
     """Checks if the add res tag is missing."""
     if re.findall(Regex.ADDITIONAL_RES, stripped_file):
         if stripped_file.count(Tags.ADD_RES) == 0:
             return True
 
 
-#TODO unittest
-def add_res_tag_multiple(stripped_file):
+def add_res_tag_multiple_check(stripped_file):
     """Checks if there are multiple add res tags."""
     if stripped_file.count(Tags.ADD_RES) > 1:
         return True
 
 
-#TODO unittest
-def add_res_tag_without_header(stripped_file):
+def add_res_tag_without_header_check(stripped_file):
     """Checks id add res header is missing."""
     if re.findall(Regex.ADD_RES, stripped_file):
         if not re.findall(Regex.ADDITIONAL_RES, stripped_file):
             return True
 
 
-'''def add_res_wrong_format(stripped_file):
+'''def add_res_wrong_format_check(stripped_file):
     if not re.findall(Regex.ADDITIONAL_RES, stripped_file):
         return
     if not stripped_file.count(Tags.ADD_RES) == 1:
@@ -114,17 +118,17 @@ def checks(report, stripped_file, original_file, file_path):
     if related_info_check(stripped_file):
         report.create_report('"Related information" section was', file_path)
 
-    if add_res_tag_missing(stripped_file):
+    if add_res_tag_missing_check(stripped_file):
         report.create_report('additional resources tag not', file_path)
 
-    if add_res_tag_multiple(stripped_file):
+    if add_res_tag_multiple_check(stripped_file):
         report.create_report('multiple additional resources tags were', file_path)
 
-    if add_res_tag_without_header(stripped_file):
+    if add_res_tag_without_header_check(stripped_file):
         report.create_report('additional resources tag without the Additional resources header was', file_path)
 
     #NOTE: DISABLED
-    #if add_res_wrong_format(stripped_file):
+    #if add_res_wrong_format_check(stripped_file):
     #    report.create_report('incorrectly formatted Additional recourses section', file_path)
 
     if vanilla_xref_check(stripped_file):

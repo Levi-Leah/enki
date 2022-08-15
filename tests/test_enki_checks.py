@@ -1,9 +1,59 @@
 import unittest
+from src.enki_regex import Regex
 from src.enki_checks import *
 from src.enki_msg import Report
+import os
 
 
 # class for every function
+class TestTooManyCommentsCheck(unittest.TestCase):
+    def setUp(self):
+        self.current_path = os.path.dirname(__file__)
+        self.fixtures_path = os.path.join(self.current_path, "fixtures")
+
+    def test_too_many_comments(self):
+        file_name = os.path.join(self.fixtures_path, "comments.adoc")
+        report = Report()
+
+        with open(file_name, 'r') as file:
+            original = file.read()
+            stripped = Regex.MULTI_LINE_COMMENT.sub('', original)
+            stripped = Regex.SINGLE_LINE_COMMENT.sub('', stripped)
+
+
+            result = too_many_comments_check(original, stripped, report, file_name)
+            self.assertIn('Over 1/3 of the file is comments. Too many comments', report.report)
+
+    def test_few_comments(self):
+        file_name = os.path.join(self.fixtures_path, "few-comments.adoc")
+        report = Report()
+
+        with open(file_name, 'r') as file:
+            original = file.read()
+            stripped = Regex.MULTI_LINE_COMMENT.sub('', original)
+            stripped = Regex.SINGLE_LINE_COMMENT.sub('', stripped)
+
+
+            result = too_many_comments_check(original, stripped, report, file_name)
+            self.assertNotIn('Over 1/3 of the file is comments. Too many comments', report.report)
+
+
+class TestFootnoteRefCheck(unittest.TestCase):
+    def test_deprecated_footnote(self):
+        file_contents = """
+footnoteref:[Some text]
+"""
+        result = footnote_ref_check(file_contents)
+        self.assertTrue(result, "Should return True when file has a deprecated footnoteref.")
+
+    def test_no_footnote(self):
+        file_contents = """
+No footnote.
+"""
+        result = footnote_ref_check(file_contents)
+        self.assertFalse(result, "Should return False when file has no deprecated footnoteref.")
+
+
 class TestUnterminatedConditionalCheck(unittest.TestCase):
     def test_closed_conditionals(self):
         file_contents = """
@@ -233,6 +283,81 @@ Sample text."""
 Sample text."""
         result = related_info_check(file_contents)
         self.assertFalse(result, "Should return False when file has no related information` section.")
+
+
+class TestAddResTagMissingCheck(unittest.TestCase):
+    def test_add_res_tag_missing_check_header_present(self):
+        file_contents = """= Heading
+
+.Additional resources
+* link:some-link.com"""
+        result = add_res_tag_missing_check(file_contents)
+        self.assertTrue(result, 'Should return True when [role="_additional-resources"] tag is missing.')
+
+    def test_add_res_tag_present_header_present(self):
+        file_contents = """= Heading
+
+[role="_additional-resources"]
+.Additional resources
+* link:some-link.com"""
+        result = add_res_tag_missing_check(file_contents)
+        self.assertFalse(result, 'Should return False when [role="_additional-resources"] tag is present.')
+
+    def test_add_res_tag_present_header_missing(self):
+        file_contents = """= Heading
+
+[role="_additional-resources"]
+
+* link:some-link.com"""
+        result = add_res_tag_missing_check(file_contents)
+        self.assertFalse(result, 'Should return False when add res header is present.')
+
+
+class TestAddResTagMultipleCheck(unittest.TestCase):
+    def test_multiple_add_res_tags(self):
+        file_contents = """= Heading
+
+[role="_additional-resources"]
+[role="_additional-resources"]
+"""
+        result = add_res_tag_multiple_check(file_contents)
+        self.assertTrue(result, 'Should return True when there are multiple [role="_additional-resources"] tags.')
+
+    def test_single_add_res_tag(self):
+        file_contents = """= Heading
+
+[role="_additional-resources"]
+"""
+        result = add_res_tag_multiple_check(file_contents)
+        self.assertFalse(result, 'Should return False when there is one or less [role="_additional-resources"] tags.')
+
+
+class TestAddResTagWithoutHeader(unittest.TestCase):
+    def test_add_res_tag_present_header_missing(self):
+        file_contents = """= Heading
+
+[role="_additional-resources"]
+
+* link:some-link.com"""
+        result = add_res_tag_without_header_check(file_contents)
+        self.assertTrue(result, 'Should return True when add res tag is present but add res header is missing.')
+
+    def test_add_res_tag_present_header_present(self):
+        file_contents = """= Heading
+
+[role="_additional-resources"]
+.Additional resources
+* link:some-link.com"""
+        result = add_res_tag_without_header_check(file_contents)
+        self.assertFalse(result, 'Should return False when add res tag and header are present.')
+
+
+    def test_add_res_tag_missing_header_missing(self):
+        file_contents = """= Heading
+
+* link:some-link.com"""
+        result = add_res_tag_without_header_check(file_contents)
+        self.assertFalse(result, 'Should return False when add res tag and header are missing.')
 
 
 # run all the tests in this file
