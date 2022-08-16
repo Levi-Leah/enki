@@ -72,7 +72,7 @@ def abstarct_tag_multiple_check(stripped_file):
 
 
 def related_info_check(stripped_file):
-    """Checks if releted info section is present."""
+    """Checks if related info section is present."""
     if re.findall(Regex.RELATED_INFO, stripped_file):
         return True
 
