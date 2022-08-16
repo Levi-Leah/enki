@@ -8,7 +8,7 @@ from enki_regex import Regex
 
 
 def sort_files(files):
-    """Get a list of assemblies, modules, and unidentifiyed files."""
+    """Get a list of assemblies, modules, and unidentified files."""
     prefix_assemblies = []
     prefix_modules = []
     undefined_content = []
