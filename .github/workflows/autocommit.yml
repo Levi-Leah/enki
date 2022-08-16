@@ -5,7 +5,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Install dependencies and updae pdate requirements.txt
+      - name: Install dependencies and updae udate requirements.txt
         run: |
           pip install pipreqs
           pipreqs --force
