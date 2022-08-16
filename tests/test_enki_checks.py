@@ -223,23 +223,6 @@ include::proc_some-module.adoc[]"""
         self.assertNotIn('Nesting in modules', report.report)
 
 
-class TestAbstractTagMultipleCheck(unittest.TestCase):
-    def test_multiple_tags_present(self):
-        file_contents = """= Heading
-[role="_abstract"]
-[role="_abstract"]
-This is examle abstract."""
-        result = abstarct_tag_multiple_check(file_contents)
-        self.assertTrue(result, "Should return True when file has multiple abstract tags.")
-
-    def test_no_multiple_tags_present(self):
-        file_contents = """= Heading
-[role="_abstract"]
-This is examle abstract."""
-        result = abstarct_tag_multiple_check(file_contents)
-        self.assertFalse(result, "Should return False when file doesn't have multiple abstract tag.")
-
-
 class TestRelatedInfoCheck(unittest.TestCase):
     def test_module_section_present(self):
         file_contents = """= Heading
@@ -263,54 +246,6 @@ Sample text."""
 Sample text."""
         result = related_info_check(file_contents)
         self.assertFalse(result, "Should return False when file has no related information` section.")
-
-
-class TestAddResTagMultipleCheck(unittest.TestCase):
-    def test_multiple_add_res_tags(self):
-        file_contents = """= Heading
-
-[role="_additional-resources"]
-[role="_additional-resources"]
-"""
-        result = add_res_tag_multiple_check(file_contents)
-        self.assertTrue(result, 'Should return True when there are multiple [role="_additional-resources"] tags.')
-
-    def test_single_add_res_tag(self):
-        file_contents = """= Heading
-
-[role="_additional-resources"]
-"""
-        result = add_res_tag_multiple_check(file_contents)
-        self.assertFalse(result, 'Should return False when there is one or less [role="_additional-resources"] tags.')
-
-
-class TestAddResTagWithoutHeader(unittest.TestCase):
-    def test_add_res_tag_present_header_missing(self):
-        file_contents = """= Heading
-
-[role="_additional-resources"]
-
-* link:some-link.com"""
-        result = add_res_tag_without_header_check(file_contents)
-        self.assertTrue(result, 'Should return True when add res tag is present but add res header is missing.')
-
-    def test_add_res_tag_present_header_present(self):
-        file_contents = """= Heading
-
-[role="_additional-resources"]
-.Additional resources
-* link:some-link.com"""
-        result = add_res_tag_without_header_check(file_contents)
-        self.assertFalse(result, 'Should return False when add res tag and header are present.')
-
-
-    def test_add_res_tag_missing_header_missing(self):
-        file_contents = """= Heading
-
-* link:some-link.com"""
-        result = add_res_tag_without_header_check(file_contents)
-        self.assertFalse(result, 'Should return False when add res tag and header are missing.')
-
 
 # run all the tests in this file
 if __name__ == '__main__':

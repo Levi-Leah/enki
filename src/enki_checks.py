@@ -59,30 +59,10 @@ def nesting_in_modules_check(report, stripped_file, file_path):
             report.create_report('Nesting in modules', file_path)
 
 
-def abstarct_tag_multiple_check(stripped_file):
-    """Checks if the abstract tag is set more than once."""
-    if stripped_file.count(Tags.ABSTRACT) > 1:
-        return True
-
-
 def related_info_check(stripped_file):
     """Checks if related info section is present."""
     if re.findall(Regex.RELATED_INFO, stripped_file):
         return True
-
-
-def add_res_tag_multiple_check(stripped_file):
-    """Checks if there are multiple add res tags."""
-    if stripped_file.count(Tags.ADD_RES) > 1:
-        return True
-
-
-def add_res_tag_without_header_check(stripped_file):
-    """Checks id add res header is missing."""
-    if re.findall(Regex.ADD_RES, stripped_file):
-        if not re.findall(Regex.ADDITIONAL_RES, stripped_file):
-            return True
-
 
 '''def add_res_wrong_format_check(stripped_file):
     if not re.findall(Regex.ADDITIONAL_RES, stripped_file):
@@ -105,12 +85,6 @@ def checks(report, stripped_file, original_file, file_path):
     if related_info_check(stripped_file):
         report.create_report('"Related information" section', file_path)
 
-    if add_res_tag_multiple_check(stripped_file):
-        report.create_report('Multiple additional resources tags', file_path)
-
-    if add_res_tag_without_header_check(stripped_file):
-        report.create_report('Additional resources tag without the Additional resources header', file_path)
-
     #NOTE: DISABLED
     #if add_res_wrong_format_check(stripped_file):
     #    report.create_report('incorrectly formatted Additional recourses section', file_path)
@@ -124,9 +98,6 @@ def checks(report, stripped_file, original_file, file_path):
 
     if human_readable_label_check(stripped_file):
         report.create_report('Xrefs or links without the human readable label', file_path)
-
-    if abstarct_tag_multiple_check(stripped_file):
-        report.create_report('Multiple abstract tags', file_path)
 
     if empty_line_after_include_check(original_file):
         report.create_report('No empty line after the include statement', file_path)
