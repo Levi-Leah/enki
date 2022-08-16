@@ -45,7 +45,7 @@ Command-line validation tool.
     Replace `<PATH>` with the path to files or directories you want to validate.
 
     **Note**
-    enki does not descend into symlinks.
+    `enki` does not descend into symlinks.
 
 
 ## Examples
@@ -70,6 +70,25 @@ Command-line validation tool.
     ```bash
     enki validate path/to/*adoc
     ```
+
+## Error messages
+
+`enki` has the following error levels:
+
+- enki errors
+- validation errors
+
+### enki errors
+
+enki error have the `ENKI ERROR:` prefix and occur when `enki` is unable to perform the validation.
+
+For more information, see [enki errors](docs/enki-errors.md).
+
+### Validation errors
+
+Validation error have the `VALIDATION ERROR:` prefix and occur when the files you are validating did not pass the validation checks.
+
+For more information, see [validation errors](docs/validation-errors.md).
 
 ## Reporting a bug
 [Issue tracker](https://github.com/Levi-Leah/enki/issues)

@@ -131,26 +131,6 @@ class TestVanillaXrefCheck(unittest.TestCase):
         self.assertFalse(result, "Should return False when file has no vanilla xref.")
 
 
-class TestInlineAnchorCheck(unittest.TestCase):
-    def test_tag_present(self):
-        file_contents = """= Heading[[inline-anchor]]
-
-[role="_abstract"]
-This is examle abstract."""
-
-        result = inline_anchor_check(file_contents)
-        self.assertTrue(result, "Should return True when file has an inline anchor.")
-
-    def test_tag_not_present(self):
-        file_contents = """= Heading
-
-[role="_abstract"]
-This is examle abstract."""
-
-        result = inline_anchor_check(file_contents)
-        self.assertFalse(result, "Should return False when file has no inline anchor.")
-
-
 class TestHumanReadableLabelCheck(unittest.TestCase):
     def test_label_present_xref(self):
         file_contents = """= Heading
@@ -221,7 +201,7 @@ Some sample text.
 include::assembly_some-assembly.adoc[]"""
 
         result = nesting_in_modules_check(report, file_contents, self.file_path)
-        self.assertIn('nesting in modules. nesting', report.report)
+        self.assertIn('Nesting in modules', report.report)
 
     def test_nested_module_in_module(self):
         report = Report()
@@ -232,7 +212,7 @@ Some sample text.
 include::proc_some-module.adoc[]"""
 
         result = nesting_in_modules_check(report, file_contents, self.file_path)
-        self.assertIn('nesting in modules. nesting', report.report)
+        self.assertIn('Nesting in modules', report.report)
 
     def test_no_nested_in(self):
         report = Report()
@@ -240,7 +220,7 @@ include::proc_some-module.adoc[]"""
         file_contents = ""
 
         result = nesting_in_modules_check(report, file_contents, self.file_path)
-        self.assertNotIn('nesting in modules. nesting', report.report)
+        self.assertNotIn('Nesting in modules', report.report)
 
 
 class TestAbstractTagMultipleCheck(unittest.TestCase):
@@ -283,34 +263,6 @@ Sample text."""
 Sample text."""
         result = related_info_check(file_contents)
         self.assertFalse(result, "Should return False when file has no related information` section.")
-
-
-class TestAddResTagMissingCheck(unittest.TestCase):
-    def test_add_res_tag_missing_check_header_present(self):
-        file_contents = """= Heading
-
-.Additional resources
-* link:some-link.com"""
-        result = add_res_tag_missing_check(file_contents)
-        self.assertTrue(result, 'Should return True when [role="_additional-resources"] tag is missing.')
-
-    def test_add_res_tag_present_header_present(self):
-        file_contents = """= Heading
-
-[role="_additional-resources"]
-.Additional resources
-* link:some-link.com"""
-        result = add_res_tag_missing_check(file_contents)
-        self.assertFalse(result, 'Should return False when [role="_additional-resources"] tag is present.')
-
-    def test_add_res_tag_present_header_missing(self):
-        file_contents = """= Heading
-
-[role="_additional-resources"]
-
-* link:some-link.com"""
-        result = add_res_tag_missing_check(file_contents)
-        self.assertFalse(result, 'Should return False when add res header is present.')
 
 
 class TestAddResTagMultipleCheck(unittest.TestCase):

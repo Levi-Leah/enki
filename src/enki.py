@@ -64,7 +64,7 @@ if args.command == 'validate':
 
     if unsupported_files:
         separator = "\n\t"
-        print('\nENKI ERROR: unsupported file format. The following files cannot be validated:')
+        print('\nENKI ERROR: Unsupported file format. The following files cannot be validated:')
         print('\t' + separator.join(unsupported_files))
         sys.exit(2)
 
