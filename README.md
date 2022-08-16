@@ -80,13 +80,13 @@ Command-line validation tool.
 
 ### enki errors
 
-enki error have the `ENKI ERROR:` prefix and occur when `enki` is unable to perform the validation.
+enki errors have the `ENKI ERROR:` prefix and occur when `enki` is unable to perform the validation.
 
 For more information, see [enki errors](docs/enki-errors.md).
 
 ### Validation errors
 
-Validation error have the `VALIDATION ERROR:` prefix and occur when the files you are validating did not pass the validation checks.
+Validation errors have the `VALIDATION ERROR:` prefix and occur when the files you are validating did not pass the validation checks.
 
 For more information, see [validation errors](docs/validation-errors.md).
 
