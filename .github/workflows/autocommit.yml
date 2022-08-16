@@ -1,0 +1,17 @@
+name: Push commit
+on: push
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install dependencies and updae pdate requirements.txt
+        run: |
+          pip install pipreqs
+          pipreqs --force
+      - name: Commit changes
+        run: |
+          git config --global user.name 'Levi V'
+          git config --global user.email 'levi@redhat.com'
+          git commit -am "Automated update to requirements.txt"
+          git push
