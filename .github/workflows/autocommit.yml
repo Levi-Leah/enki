@@ -8,8 +8,14 @@ jobs:
       - name: Install dependencies and updae udate requirements.txt
         run: |
           pip install pipreqs
+
+      - name: Run pipreqs
+        id: req-txt-update
+        run: |
           pipreqs --force
+
       - name: Commit changes
+        if: steps.req-txt-update.outcome == 'succsess'
         run: |
           git config --global user.name 'Levi V'
           git config --global user.email 'levi@redhat.com'
