@@ -22,7 +22,7 @@ class TestTooManyCommentsCheck(unittest.TestCase):
 
 
             result = too_many_comments_check(original, stripped, report, file_name)
-            self.assertIn('Over 1/3 of the file is comments. Too many comments', report.report)
+            self.assertIn('More than 1/3 of the lines are comments. Too many comments', report.report)
 
     def test_few_comments(self):
         file_name = os.path.join(self.fixtures_path, "few-comments.adoc")
