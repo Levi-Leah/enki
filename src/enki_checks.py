@@ -5,9 +5,9 @@ from enki_regex import Regex, Tags
 
 
 def too_many_comments_check(original_file, stripped_file, report, file_path):
-    """Checks if more than 1/3 of the file is comments."""
-    if stripped_file.count('\n') < original_file.count('\n')*0.75:
-        report.create_report('Over 1/3 of the file is comments. Too many comments', file_path)
+    """Checks if more than 1/3 (34%) of the lines in a file are comments."""
+    if stripped_file.count('\n') < original_file.count('\n')*0.66:
+        report.create_report('More than 1/3 of the lines are comments. Too many comments', file_path)
 
 
 def unterminated_conditional_check(stripped_file):
