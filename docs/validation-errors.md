@@ -9,7 +9,7 @@
 | VALIDATION ERROR: Vanilla xrefs found | The file contains vanilla xrefs (e.g. `<<some_id>>`). |
 | VALIDATION ERROR: Xrefs or links without the human readable label found | The file contains xrefs or links without the human readable label (e.g. `xref:some_id[]`, `link:some-link.com[]`). |
 | VALIDATION ERROR: Nesting in modules found | The module contains includes of files other than snippets (e.g. modules or assemblies). |
-| VALIDATION ERROR: "Related information" section found | The file contains `Related information` section instead of the `Additional recourse` section. |
+| VALIDATION ERROR: "Related information" section found | The file contains `Related information` section instead of the `Additional recourses` section. |
 
 <!--| VALIDATION ERROR: |
 

@@ -247,6 +247,7 @@ Sample text."""
         result = related_info_check(file_contents)
         self.assertFalse(result, "Should return False when file has no related information` section.")
 
+
 # run all the tests in this file
 if __name__ == '__main__':
     unittest.main()

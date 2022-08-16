@@ -43,7 +43,7 @@ def human_readable_label_check(stripped_file):
         return True
 
 
-#NOTE: DISABLED
+# NOTE: DISABLED
 def html_markup_check(stripped_file):
     """Check if HTML markup is present in the file."""
     if re.findall(Regex.HTML_MARKUP, stripped_file):
@@ -64,13 +64,15 @@ def related_info_check(stripped_file):
     if re.findall(Regex.RELATED_INFO, stripped_file):
         return True
 
-'''def add_res_wrong_format_check(stripped_file):
+
+# NOTE: DISABLED
+def add_res_wrong_format_check(stripped_file):
     if not re.findall(Regex.ADDITIONAL_RES, stripped_file):
         return
     if not stripped_file.count(Tags.ADD_RES) == 1:
         return
     if not re.findall(Regex.CORRECT_ADDITIONAL_RES_SECTION, stripped_file):
-        return True'''
+        return True
 
 
 def checks(report, stripped_file, original_file, file_path):
@@ -85,14 +87,14 @@ def checks(report, stripped_file, original_file, file_path):
     if related_info_check(stripped_file):
         report.create_report('"Related information" section', file_path)
 
-    #NOTE: DISABLED
+    # NOTE: DISABLED
     #if add_res_wrong_format_check(stripped_file):
     #    report.create_report('incorrectly formatted Additional recourses section', file_path)
 
     if vanilla_xref_check(stripped_file):
         report.create_report('Vanilla xrefs', file_path)
 
-    #NOTE: DISABLED
+    # NOTE: DISABLED
     #if html_markup_check(stripped_file):
     #    report.create_report('HTML markup', file_path)
 
