@@ -12,7 +12,7 @@ def too_many_comments_check(original_file, stripped_file, report, file_path):
 
 def unterminated_conditional_check(stripped_file):
     """Check if the number of opening conditionals matches
-    the ammount of closing conditionals."""
+    the number of closing conditionals."""
     opening_conditional = re.findall(Regex.OPENING_CONDITIONAL, stripped_file)
     closing_conditional = re.findall(Regex.CLOSING_CONDITIONAL, stripped_file)
     if len(opening_conditional) != len(closing_conditional):
