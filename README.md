@@ -44,40 +44,32 @@ Command-line validation tool.
     ```
     Replace `<PATH>` with the path to files or directories you want to validate.
 
-* To generate a `build.yml` file from a template, run:
+    **Note**
+    enki does not descend into symlinks.
+
+
+## Examples
+
+* To validate all files in the directory, run:
     ```bash
-    enki generate <PATH>
+    enki validate path/
     ```
-    Replace `<PATH>` with the path to a directory where you want to generate the `build.yml` file.
 
-    ---
-    **Examples**
+* To validate a specific file or files, run:
+    ```bash
+    enki validate path/to/file.adoc
+    enki validate path/to/file.adoc path/to/another-file.adoc
+    ```
 
-    * To validate the `build.yml` file and its content, run:
-        ```bash
-        enki validate path/to/build.yml #Validates build.yml file and content specifiyed in it
-        ```
+* To validate all files that match a global pattern, run:
+    ```bash
+    enki validate path/to/**/**/*adoc
+    ```
 
-    * To validate all files in the directory, run:
-        ```bash
-        enki validate path/
-        ```
-
-    * To validate a specific file or files, run:
-        ```bash
-        enki validate path/to/file.adoc
-        enki validate path/to/file.adoc path/to/another-file.adoc
-        ```
-
-    * To validate all files that match a global pattern, run:
-        ```bash
-        enki validate path/to/**/**/*adoc
-        ```
-
-    * To validate all files that match the special character, run:
-        ```bash
-        enki validate path/to/*adoc
-        ```
+* To validate all files that match the special character, run:
+    ```bash
+    enki validate path/to/*adoc
+    ```
 
 ## Reporting a bug
 [Issue tracker](https://github.com/Levi-Leah/enki/issues)
