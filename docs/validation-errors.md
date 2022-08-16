@@ -9,7 +9,7 @@
     The number of the opening conditional statements (e.g. `ifdef`, `ifndef`, `ifeval`) does not match the number of the closing conditional statements (e.g. `endif`).
 
 
-- **VALIDATION ERROR: Deprecated footnote referenceDeprecated \`footnoteref` markup found**
+- **VALIDATION ERROR: Deprecated \`footnoteref` markup found**
 
     The file contains the deprecated footnote reference (e.g. `footnoteref:[some text]`).
 
