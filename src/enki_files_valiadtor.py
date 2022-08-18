@@ -47,7 +47,7 @@ def validate(all_files, report, undefined_content, prefix_assemblies, prefix_mod
             # code blocks
             # internal/single line conditionals
             # are replaced
-            too_many_comments_check(original, stripped, report, path)
+            too_many_comments_check(original, stripped, report, relative_path)
 
             stripped = Regex.CODE_BLOCK.sub('', stripped)
             stripped = Regex.INTERNAL_IFDEF.sub('', stripped)
