@@ -10,14 +10,15 @@ jobs:
           pip install pipreqs
 
       - name: Run pipreqs
-        id: req-txt-update
         run: |
           pipreqs --force
 
       - name: Commit changes
-        if: steps.req-txt-update.outcome == 'succsess'
         run: |
-          git config --global user.name 'Levi V'
-          git config --global user.email 'levi@redhat.com'
-          git commit -am "Automated update to requirements.txt"
-          git push
+          if git diff --name-only | grep 'requirements.txt' > /dev/null; then
+            echo 'requirements.txt updated'
+            git config --global user.name 'Levi V'
+            git config --global user.email 'levi@redhat.com'
+            git commit -am "Automated update to requirements.txt"
+            git push
+          fi
