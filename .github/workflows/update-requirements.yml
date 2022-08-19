@@ -15,20 +15,17 @@ jobs:
 
       - name: Commit changes
         run: |
-          if [ ! -f requirements.txt ]; then
-            echo 'requirements.txt does not exist'
-            exit 0
-          fi
-
           if git diff --name-only | grep 'requirements.txt' > /dev/null; then
             echo 'requirements.txt updated'
-            git config --global user.name 'Levi V'
-            git config --global user.email 'levi@redhat.com'
-            git commit -am "Automated update to requirements.txt"
-            git push
+            if [ ! -s requirements.txt ] ; then
+              git config --global user.name 'Levi V'
+              git config --global user.email 'levi@redhat.com'
+              git commit -am "Automated update to requirements.txt"
+              git push
+            fi
           fi
 
-          if [ -s requirements.txt ] ; then
+          if [[ -f requirements.txt && ! -s requirements.txt ]] ; then
             echo 'requirements.txt is empty'
             rm requirements.txt
             git config --global user.name 'Levi V'
