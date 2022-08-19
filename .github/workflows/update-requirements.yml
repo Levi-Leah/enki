@@ -17,19 +17,17 @@ jobs:
         run: |
           if git diff --name-only | grep 'requirements.txt' > /dev/null; then
             echo 'requirements.txt updated'
-            if [ ! -s requirements.txt ] ; then
-              git config --global user.name 'Levi V'
-              git config --global user.email 'levi@redhat.com'
-              git commit -am "Automated update to requirements.txt"
-              git push
-            fi
           fi
 
           if [[ -f requirements.txt && -s requirements.txt ]] ; then
-            echo 'requirements.txt is empty'
             rm requirements.txt
+            echo 'requirements.txt removed'
+          fi
+
+          if [ -n "$(git status --porcelain)" ]; then
+            echo 'changes detected'
             git config --global user.name 'Levi V'
             git config --global user.email 'levi@redhat.com'
-            git commit -am "Automated removal of requirements.txt"
+            git commit -am "Automated update to the requirements.txt"
             git push
           fi
