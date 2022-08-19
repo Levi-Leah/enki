@@ -15,8 +15,16 @@ jobs:
 
       - name: Commit changes
         run: |
+        # check if requirements.txt is updated
           if git diff --name-only | grep 'requirements.txt' > /dev/null; then
             echo 'requirements.txt updated'
+
+        # check if requirements.txt is empty
+            if [ -s requirements.txt ] ; then
+              echo 'requirements.txt is empty'
+              rm requirements.txt
+            fi
+
             git config --global user.name 'Levi V'
             git config --global user.email 'levi@redhat.com'
             git commit -am "Automated update to requirements.txt"
