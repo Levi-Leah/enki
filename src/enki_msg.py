@@ -1,18 +1,3 @@
-#!/usr/bin/env/ python3
-
-from cerberus import errors
-from cerberus.errors import BasicErrorHandler
-
-
-class CustomErrorHandler(BasicErrorHandler):
-    """Custom error messages."""
-
-    messages = errors.BasicErrorHandler.messages.copy()
-    messages[errors.REQUIRED_FIELD.code] = "key is missing"
-    messages[errors.UNKNOWN_FIELD.code] = "unsupported key"
-    messages[errors.NOT_NULLABLE.code] = "value can't be empty"
-
-
 class Report():
     """Create and print report. thank u J."""
 
@@ -28,11 +13,17 @@ class Report():
             self.report[category] = []
         self.report[category].append(file_path)
 
-    def print_report(self):
-
+    def print_report(self, output=None):
         """Print report."""
+
+        if output == 'oneline':
+            for category, files in self.report.items():
+                for file in files:
+                    print("{}: ERROR: {} found.".format(file, category))
+            return
+
         separator = "\n\t"
 
         for category, files in self.report.items():
-            print("\nVALIDATION ERROR: {} found in the following files:".format(category))
+            print("\nERROR: {} found in the following files:".format(category))
             print('\t' + separator.join(files))

@@ -1,4 +1,3 @@
-#!/usr/bin/env/ python3
 import os
 import re
 import sys
@@ -77,13 +76,16 @@ def validate(all_files, report, undefined_content, prefix_assemblies, prefix_mod
     return report
 
 
-def validating_files(files):
+def validating_files(files, output=None):
     """Print the result of validation and exit with an error."""
     report = Report()
 
     prefix_assemblies, prefix_modules, undefined_content = sort_files(files)
     file_validation = validate(files, report, undefined_content, prefix_assemblies, prefix_modules)
 
-    if file_validation.count != 0:
-        file_validation.print_report()
-        sys.exit(2)
+    if file_validation.count == 0:
+        sys.exit(0)
+
+    file_validation.print_report(output)
+
+    sys.exit(2)

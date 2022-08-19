@@ -10,6 +10,7 @@ parser = argparse.ArgumentParser(prog='enki')
 subparsers = parser.add_subparsers(dest='command')
 
 parser_a = subparsers.add_parser("validate", help="Perform validation.")
+parser_a.add_argument("--oneline", action="store_true", help="Print one validation error per line.")
 parser_a.add_argument("path", nargs='+', type=Path, help='Path to files.')
 
 if len(sys.argv) == 1:
@@ -21,7 +22,7 @@ args = parser.parse_args()
 
 for item in args.path:
     if not os.path.exists(item):
-        print(f"\nENKI ERROR: '{item}' doesn't exist in your repository.")
+        print(f"\nERROR: '{item}' doesn't exist in your repository.")
         args.path.remove(item)
         sys.exit(2)
 
@@ -64,9 +65,12 @@ if args.command == 'validate':
 
     if unsupported_files:
         separator = "\n\t"
-        print('\nENKI ERROR: Unsupported file format. The following files cannot be validated:')
+        print('\nERROR: Unsupported file format. The following files cannot be validated:')
         print('\t' + separator.join(unsupported_files))
         sys.exit(2)
 
     if files:
-        validating_files(files)
+        if args.oneline:
+            validating_files(files, output='oneline')
+        else:
+            validating_files(files)
