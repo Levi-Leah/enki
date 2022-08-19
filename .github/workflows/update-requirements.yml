@@ -25,7 +25,7 @@ jobs:
             fi
           fi
 
-          if [[ -f requirements.txt && ! -s requirements.txt ]] ; then
+          if [[ -f requirements.txt && -s requirements.txt ]] ; then
             echo 'requirements.txt is empty'
             rm requirements.txt
             git config --global user.name 'Levi V'
