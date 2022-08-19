@@ -9,9 +9,9 @@ from enki_files_valiadtor import validating_files
 parser = argparse.ArgumentParser(prog='enki')
 subparsers = parser.add_subparsers(dest='command')
 
-parser_a = subparsers.add_parser("validate", help="Perform validation.")
-parser_a.add_argument("--oneline", action="store_true", help="Print one validation error per line.")
-parser_a.add_argument("path", nargs='+', type=Path, help='Path to files.')
+parser_a = subparsers.add_parser("validate", help="perform validation")
+parser_a.add_argument("--oneline", action="store_true", help="print one validation error per line")
+parser_a.add_argument("path", nargs='+', type=Path, help='path to files')
 
 if len(sys.argv) == 1:
     parser.print_help()

@@ -44,9 +44,14 @@ Command-line validation tool.
     ```
     Replace `<PATH>` with the path to files or directories you want to validate.
 
-    **Note**
-    `enki` does not descend into symlinks.
+* To print one validation error per line, run:
+    ```bash
+    enki validate --oneline <PATH>
+    ```
+    Replace `<PATH>` with the path to files or directories you want to validate.
 
+**Note**
+`enki` does not descend into symlinks.
 
 ## Examples
 
@@ -58,7 +63,6 @@ Command-line validation tool.
 * To validate a specific file or files, run:
     ```bash
     enki validate path/to/file.adoc
-    enki validate path/to/file.adoc path/to/another-file.adoc
     ```
 
 * To validate all files that match a global pattern, run:
@@ -71,24 +75,29 @@ Command-line validation tool.
     enki validate path/to/*adoc
     ```
 
+* To validate files and print one validation error per line, run:
+    ```bash
+    enki validate --oneline path/to/*adoc
+    ```
+
 ## Error messages
 
-`enki` has the following error levels:
+`enki` has the following errors:
 
 - enki errors
 - validation errors
 
 ### enki errors
 
-enki errors have the `ENKI ERROR:` prefix and occur when `enki` is unable to perform the validation.
+enki errors occur when `enki` is unable to perform the validation.
 
-For more information, see [enki errors](docs/enki-errors.md).
+For more information, see [enki error messages](docs/error-msg.md).
 
 ### Validation errors
 
-Validation errors have the `VALIDATION ERROR:` prefix and occur when the files you are validating did not pass the validation checks.
+Validation errors occur when the files you are validating did not pass the validation checks.
 
-For more information, see [validation errors](docs/validation-errors.md).
+For more information, see [validation error messages](docs/error-msg.md).
 
 ## Reporting a bug
 [Issue tracker](https://github.com/Levi-Leah/enki/issues)
