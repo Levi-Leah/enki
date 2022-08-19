@@ -15,10 +15,10 @@ jobs:
 
       - name: Commit changes
         run: |
-        if [ ! -f requirements.txt ]; then
-          echo 'requirements.txt does not exist'
-          exit 0
-        fi
+          if [ ! -f requirements.txt ]; then
+            echo 'requirements.txt does not exist'
+            exit 0
+          fi
 
           if git diff --name-only | grep 'requirements.txt' > /dev/null; then
             echo 'requirements.txt updated'
