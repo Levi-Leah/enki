@@ -1,9 +1,59 @@
 import unittest
+from src.enki_regex import Regex
 from src.enki_checks import *
 from src.enki_msg import Report
+import os
 
 
 # class for every function
+class TestTooManyCommentsCheck(unittest.TestCase):
+    def setUp(self):
+        self.current_path = os.path.dirname(__file__)
+        self.fixtures_path = os.path.join(self.current_path, "fixtures")
+
+    def test_too_many_comments(self):
+        file_name = os.path.join(self.fixtures_path, "comments.adoc")
+        report = Report()
+
+        with open(file_name, 'r') as file:
+            original = file.read()
+            stripped = Regex.MULTI_LINE_COMMENT.sub('', original)
+            stripped = Regex.SINGLE_LINE_COMMENT.sub('', stripped)
+
+
+            result = too_many_comments_check(original, stripped, report, file_name)
+            self.assertIn('More than 1/3 of the lines are comments. Too many comments', report.report)
+
+    def test_few_comments(self):
+        file_name = os.path.join(self.fixtures_path, "few-comments.adoc")
+        report = Report()
+
+        with open(file_name, 'r') as file:
+            original = file.read()
+            stripped = Regex.MULTI_LINE_COMMENT.sub('', original)
+            stripped = Regex.SINGLE_LINE_COMMENT.sub('', stripped)
+
+
+            result = too_many_comments_check(original, stripped, report, file_name)
+            self.assertNotIn('Over 1/3 of the file is comments. Too many comments', report.report)
+
+
+class TestFootnoteRefCheck(unittest.TestCase):
+    def test_deprecated_footnote(self):
+        file_contents = """
+footnoteref:[Some text]
+"""
+        result = footnote_ref_check(file_contents)
+        self.assertTrue(result, "Should return True when file has a deprecated footnoteref.")
+
+    def test_no_footnote(self):
+        file_contents = """
+No footnote.
+"""
+        result = footnote_ref_check(file_contents)
+        self.assertFalse(result, "Should return False when file has no deprecated footnoteref.")
+
+
 class TestUnterminatedConditionalCheck(unittest.TestCase):
     def test_closed_conditionals(self):
         file_contents = """
@@ -17,7 +67,7 @@ ifdef::context[]
 endif::[]
 endif::[]
 """
-        result = undetermined_conditional_check(file_contents)
+        result = unterminated_conditional_check(file_contents)
         self.assertFalse(result, "Should return False when all conditionals are closed.")
 
 
@@ -33,7 +83,7 @@ ifdef::context[]
 
 endif::[]
 """
-        result = undetermined_conditional_check(file_contents)
+        result = unterminated_conditional_check(file_contents)
         self.assertTrue(result, "Should return True when all conditionals are not closed.")
 
 
@@ -81,74 +131,42 @@ class TestVanillaXrefCheck(unittest.TestCase):
         self.assertFalse(result, "Should return False when file has no vanilla xref.")
 
 
-class TestInlineAnchorCheck(unittest.TestCase):
-    def test_tag_present(self):
-        file_contents = """= Heading[[inline-anchor]]
-
-[role="_abstract"]
-This is examle abstract."""
-
-        result = inline_anchor_check(file_contents)
-        self.assertTrue(result, "Should return True when file has an inline anchor.")
-
-    def test_tag_not_present(self):
-        file_contents = """= Heading
-
-[role="_abstract"]
-This is examle abstract."""
-
-        result = inline_anchor_check(file_contents)
-        self.assertFalse(result, "Should return False when file has no inline anchor.")
-
-
-class TestExperimentalTagCheck(unittest.TestCase):
-    def test_tag_present(self):
-        file_contents = """:experimental:
-= Heading
-
-Some btn:[button]."""
-        result = experimental_tag_check(file_contents)
-        self.assertFalse(result, "Should return False when file has no inline anchor.")
-
-
-class TestHumanReadableLabelCheckXref(unittest.TestCase):
-    def test_label_present(self):
+class TestHumanReadableLabelCheck(unittest.TestCase):
+    def test_label_present_xref(self):
         file_contents = """= Heading
 
 [role="_abstract"]
 This is examle abstract and xref:human-readable_label[present]."""
 
-        result = human_readable_label_check_xrefs(file_contents)
+        result = human_readable_label_check(file_contents)
         self.assertIsNone(result, "Should return None when xref has a human readable label.")
 
-    def test_label_not_present(self):
+    def test_label_not_present_xref(self):
         file_contents = """= Heading
 
 [role="_abstract"]
 This is examle abstract and xref:human-readable_label[present].
 xref:human-readable-label_not-present[]."""
 
-        result = human_readable_label_check_xrefs(file_contents)
+        result = human_readable_label_check(file_contents)
         self.assertTrue(result, "Should return True when xref has no human readable label.")
 
-
-class TestHumanReadableLabelCheckLinks(unittest.TestCase):
-    def test_label_present(self):
+    def test_label_present_link(self):
         file_contents = """= Heading
 
 [role="_abstract"]
 This is examle abstract and http://www.sample-link.com[present]."""
 
-        result = human_readable_label_check_links(file_contents)
+        result = human_readable_label_check(file_contents)
         self.assertIsNone(result, "Should return None when link has a human readable label.")
 
-    def test_label_not_present(self):
+    def test_label_not_present_link(self):
         file_contents = """= Heading
 
 [role="_abstract"]
 This is examle abstract and http://www.sample-link.com[]."""
 
-        result = human_readable_label_check_links(file_contents)
+        result = human_readable_label_check(file_contents)
         self.assertTrue(result, "Should return True when link has no human readable label.")
 
 
@@ -183,7 +201,7 @@ Some sample text.
 include::assembly_some-assembly.adoc[]"""
 
         result = nesting_in_modules_check(report, file_contents, self.file_path)
-        self.assertIn('nesting in modules. nesting', report.report)
+        self.assertIn('Nesting in modules', report.report)
 
     def test_nested_module_in_module(self):
         report = Report()
@@ -194,7 +212,7 @@ Some sample text.
 include::proc_some-module.adoc[]"""
 
         result = nesting_in_modules_check(report, file_contents, self.file_path)
-        self.assertIn('nesting in modules. nesting', report.report)
+        self.assertIn('Nesting in modules', report.report)
 
     def test_no_nested_in(self):
         report = Report()
@@ -202,69 +220,7 @@ include::proc_some-module.adoc[]"""
         file_contents = ""
 
         result = nesting_in_modules_check(report, file_contents, self.file_path)
-        self.assertNotIn('nesting in modules. nesting', report.report)
-
-
-class TestAddResSectionModuleCheck(unittest.TestCase):
-    def setUp(self):
-        self.file_path = "some/path"
-
-    def test_add_res_section_none(self):
-        report = Report()
-        file_contents = ""
-
-        result = add_res_section_module_check(report, file_contents, self.file_path)
-        self.assertNotIn('Additional resources section for modules should be `.Additional resources`. Wrong section name was', report.report)
-
-    def test_add_res_section_wrong(self):
-        report = Report()
-        file_contents = "== Additional resources"
-
-        result = add_res_section_module_check(report, file_contents, self.file_path)
-        self.assertIn('Additional resources section for modules should be `.Additional resources`. Wrong section name was', report.report)
-
-    def test_add_res_section_correct(self):
-        report = Report()
-        file_contents = ".Additional resources"
-
-        result = add_res_section_module_check(report, file_contents, self.file_path)
-        self.assertNotIn('Additional resources section for modules should be `.Additional resources`. Wrong section name was', report.report)
-
-
-class TestLvloffsetCheck(unittest.TestCase):
-    def test_lvloffset_tag_not_present(self):
-        file_contents = """= Heading
-
-include::some-include.adoc[]"""
-
-        result = lvloffset_check(file_contents)
-        self.assertIsNone(result, "Should return None when file has no :leveloffset: tag.")
-
-    def test_lvloffset_tag_present(self):
-        file_contents = """= Heading
-
-:leveloffset:
-include::some-include.adoc[]"""
-
-        result = lvloffset_check(file_contents)
-        self.assertTrue(result, "Should return True when file has no :leveloffset: tag.")
-
-
-class TestAbstractTagMultipleCheck(unittest.TestCase):
-    def test_multiple_tags_present(self):
-        file_contents = """= Heading
-[role="_abstract"]
-[role="_abstract"]
-This is examle abstract."""
-        result = abstarct_tag_multiple_check(file_contents)
-        self.assertTrue(result, "Should return True when file has multiple abstract tags.")
-
-    def test_no_multiple_tags_present(self):
-        file_contents = """= Heading
-[role="_abstract"]
-This is examle abstract."""
-        result = abstarct_tag_multiple_check(file_contents)
-        self.assertFalse(result, "Should return False when file doesn't have multiple abstract tag.")
+        self.assertNotIn('Nesting in modules', report.report)
 
 
 class TestRelatedInfoCheck(unittest.TestCase):

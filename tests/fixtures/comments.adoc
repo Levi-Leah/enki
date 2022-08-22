@@ -1,0 +1,10 @@
+This is text.
+
+
+////
+this is
+a very big
+multi-line comment
+////
+
+// this is a single line comment

@@ -1,0 +1,33 @@
+name: Update requirements.txt
+on: push
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install dependencies
+        run: |
+          pip install pipreqs
+
+      - name: Run pipreqs
+        run: |
+          pipreqs --force
+
+      - name: Commit changes
+        run: |
+          if git diff --name-only | grep 'requirements.txt' > /dev/null; then
+            echo 'requirements.txt updated'
+          fi
+
+          if [[ -f requirements.txt && -s requirements.txt ]] ; then
+            rm requirements.txt
+            echo 'requirements.txt removed'
+          fi
+
+          if [ -n "$(git status --porcelain)" ]; then
+            echo 'changes detected'
+            git config --global user.name 'Levi V'
+            git config --global user.email 'levi@redhat.com'
+            git commit -am "Automated update to the requirements.txt"
+            git push
+          fi

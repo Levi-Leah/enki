@@ -44,40 +44,60 @@ Command-line validation tool.
     ```
     Replace `<PATH>` with the path to files or directories you want to validate.
 
-* To generate a `build.yml` file from a template, run:
+* To print one validation error per line, run:
     ```bash
-    enki generate <PATH>
+    enki validate --oneline <PATH>
     ```
-    Replace `<PATH>` with the path to a directory where you want to generate the `build.yml` file.
+    Replace `<PATH>` with the path to files or directories you want to validate.
 
-    ---
-    **Examples**
+**Note**
+`enki` does not descend into symlinks.
 
-    * To validate the `build.yml` file and its content, run:
-        ```bash
-        enki validate path/to/build.yml #Validates build.yml file and content specifiyed in it
-        ```
+## Examples
 
-    * To validate all files in the directory, run:
-        ```bash
-        enki validate path/
-        ```
+* To validate all files in the directory, run:
+    ```bash
+    enki validate path/
+    ```
 
-    * To validate a specific file or files, run:
-        ```bash
-        enki validate path/to/file.adoc
-        enki validate path/to/file.adoc path/to/another-file.adoc
-        ```
+* To validate a specific file or files, run:
+    ```bash
+    enki validate path/to/file.adoc
+    ```
 
-    * To validate all files that match a global pattern, run:
-        ```bash
-        enki validate path/to/**/**/*adoc
-        ```
+* To validate all files that match a global pattern, run:
+    ```bash
+    enki validate path/to/**/**/*adoc
+    ```
 
-    * To validate all files that match the special character, run:
-        ```bash
-        enki validate path/to/*adoc
-        ```
+* To validate all files that match the special character, run:
+    ```bash
+    enki validate path/to/*adoc
+    ```
+
+* To validate files and print one validation error per line, run:
+    ```bash
+    enki validate --oneline path/to/*adoc
+    ```
+
+## Error messages
+
+`enki` has the following errors:
+
+- enki errors
+- validation errors
+
+### enki errors
+
+enki errors occur when `enki` is unable to perform the validation.
+
+For more information, see [enki error messages](docs/error-msg.md).
+
+### Validation errors
+
+Validation errors occur when the files you are validating did not pass the validation checks.
+
+For more information, see [validation error messages](docs/error-msg.md).
 
 ## Reporting a bug
 [Issue tracker](https://github.com/Levi-Leah/enki/issues)
