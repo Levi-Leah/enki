@@ -52,9 +52,12 @@ def nesting_in_modules_check(report, stripped_file, file_path):
     """Check if modules contains nested content."""
     includes = re.findall(Regex.INCLUDE_STATEMENT, stripped_file)
 
+    error = 0
     for i in includes:
         if not Regex.SNIPPET_INCLUDE.match(i):
-            report.create_report('Nesting in modules', file_path)
+            error += 1
+    if error != 0:
+        report.create_report('Nesting in modules', file_path)
 
 
 def related_info_check(stripped_file):
