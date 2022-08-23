@@ -21,7 +21,7 @@
 # Link error messages
 | Error message  | Description |
 | ------------- | ------------- |
-| 404 | Page not found. |
-| 403 | Restricted or forbidden access. Most likely, link is behind pay wall. |
+| 404 | Broken link. |
+| 403 | Restricted or forbidden access. Most likely, the link is behind pay wall. |
 | Bad URI | The link uses xref syntax. (e.g. `xref:http:://some-link.com[]`) |
 | Invalid URL | Most likely, the link contains an unresolved attribute (e.g. link:http:://some-link-{attribute}.com[]). |
