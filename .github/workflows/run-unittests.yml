@@ -16,7 +16,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Set up Python 3.10
+    - name: Set up CPython
       uses: actions/setup-python@v2
       with:
         python-version: "3.10"
@@ -24,7 +24,40 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install flake8
+        pip install pipreqs
+
+    - name: Run pipreqs
+      run: |
+        pipreqs --force
+
+    - name: Commit changes
+      run: |
+        if git diff --name-only | grep 'requirements.txt' > /dev/null; then
+            echo 'requirements.txt updated'
+        fi
+
+        if [[ -f requirements.txt && -s requirements.txt ]] ; then
+          echo 'requirements.txt is not empty'
+        else
+          echo 'requirements.txt is empty'
+          requirements.txt
+          echo 'requirements.txt removed'
+        fi
+
+        if [[ "$(git ls-files . --exclude-standard --others)" == "requirements.txt" ]]; then
+          echo 'changes detected'
+          git config --global user.name 'Levi V'
+          git config --global user.email 'levi@redhat.com'
+          git add requirements.txt
+          git commit -m "Automated update to the requirements.txt"
+          git push
+          echo 'changes commited'
+        fi
+
+    - name: Install requirements.txt
+      run: |
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
