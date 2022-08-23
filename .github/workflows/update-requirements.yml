@@ -31,7 +31,8 @@ jobs:
             echo 'changes detected'
             git config --global user.name 'Levi V'
             git config --global user.email 'levi@redhat.com'
-            git commit -am "Automated update to the requirements.txt"
+            git add requirements.txt
+            git commit -m "Automated update to the requirements.txt"
             git push
             echo 'changes commited'
           fi
