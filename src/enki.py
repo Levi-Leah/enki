@@ -11,6 +11,7 @@ subparsers = parser.add_subparsers(dest='command')
 
 parser_a = subparsers.add_parser("validate", help="perform validation")
 parser_a.add_argument("--oneline", action="store_true", help="print one validation error per line")
+parser_a.add_argument("--gitlab", action="store_true", help="print validation errors in xml format")
 parser_a.add_argument("path", nargs='+', type=Path, help='path to files')
 
 if len(sys.argv) == 1:
@@ -72,5 +73,7 @@ if args.command == 'validate':
     if files:
         if args.oneline:
             validating_files(files, output='oneline')
+        elif args.gitlab:
+            validating_files(files, output='gitlab')
         else:
             validating_files(files)
