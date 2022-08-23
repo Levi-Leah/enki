@@ -17,3 +17,11 @@
 | ERROR: Xrefs or links without the human readable label found | The file contains xrefs or links without the human readable label (e.g. `xref:some_id[]`, `link:some-link.com[]`). |
 | ERROR: Nesting in modules found | The module contains includes of files other than snippets (e.g. modules or assemblies). |
 | ERROR: "Related information" section found | The file contains `Related information` section instead of the `Additional recourses` section. |
+
+# Link error messages
+| Error message  | Description |
+| ------------- | ------------- |
+| 404 | Broken link. |
+| 403 | Restricted or forbidden access. Most likely, the link is behind pay wall. |
+| Bad URI | The link uses xref syntax. (e.g. `xref:http:://some-link.com[]`) |
+| Invalid URL | Most likely, the link contains an unresolved attribute (e.g. link:http:://some-link-{attribute}.com[]). |
