@@ -1,0 +1,2 @@
+junit_xml==1.9
+junit_xml_output==2.0.0
