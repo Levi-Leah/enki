@@ -27,7 +27,7 @@ jobs:
             echo 'requirements.txt removed'
           fi
 
-          if [ -n "$(git status --porcelain)" ]; then
+          if [[ "$(git ls-files . --exclude-standard --others)" == "requirements.txt" ]]; then
             echo 'changes detected'
             git config --global user.name 'Levi V'
             git config --global user.email 'levi@redhat.com'
