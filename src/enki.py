@@ -10,10 +10,11 @@ from enki_files_valiadtor import validating_files
 parser = argparse.ArgumentParser(prog='enki')
 subparsers = parser.add_subparsers(dest='command')
 
-parser_a = subparsers.add_parser("validate", help="perform content validation")
-parser_a.add_argument("--oneline", action="store_true", help="print one validation error per line")
-parser_a.add_argument("--gitlab", action="store_true", help="print validation errors in xml format")
-parser_a.add_argument("--links", action="store_true", help="perform links validation")
+parser_a = subparsers.add_parser("validate", help="perform validation")
+group_a = parser_a.add_mutually_exclusive_group()
+group_a.add_argument("--oneline", action="store_true", help="print one validation error per line")
+group_a.add_argument("--gitlab", action="store_true", help="print validation errors in xml format")
+group_a.add_argument("--links", action="store_true", help="perform links validation")
 parser_a.add_argument("path", nargs='+', type=Path, help='path to files')
 
 if len(sys.argv) == 1:

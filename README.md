@@ -50,6 +50,14 @@ Command-line validation tool.
     ```
     Replace `<PATH>` with the path to files or directories you want to validate.
 
+* To validate the links, run:
+    ```bash
+    enki validate --links <PATH>
+    ```
+    **Note**
+    Validation can only be performed on `master.adoc` files.
+
+
 **Note**
 `enki` does not descend into symlinks.
 
@@ -80,12 +88,18 @@ Command-line validation tool.
     enki validate --oneline path/to/*adoc
     ```
 
+* To validate links, run:
+    ```bash
+    enki validate --links path/to/dir/
+    ```
+
 ## Error messages
 
 `enki` has the following errors:
 
 - enki errors
 - validation errors
+- link errors
 
 ### enki errors
 
@@ -98,6 +112,12 @@ For more information, see [enki error messages](docs/error-msg.md).
 Validation errors occur when the files you are validating did not pass the validation checks.
 
 For more information, see [validation error messages](docs/error-msg.md).
+
+### Link errors
+
+Link errors occur when the link can not be resolved.
+
+For more information, see [link error messages](docs/error-msg.md).
 
 ## Reporting a bug
 [Issue tracker](https://github.com/Levi-Leah/enki/issues)
