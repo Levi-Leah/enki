@@ -34,13 +34,12 @@ class Report():
 
             for category, files in self.report.items():
                 for file_path, function_name in files.items():
-                    test_cases.append(TestCase(str(function_name), 'ValidationChecks', '', '', '', '', 'timestamp', 'status', 'class', file_path, 'line', 'log', 'url'))
-                    # message, ?, type
-                    for test_case in test_cases:
-                        test_case.add_failure_info('Failure message', '', 'FAIL')
-                        test_case.add_error_info(f'{category} found', '' 'ERROR')
-                        ts = [TestSuite("ValidationErrors", test_cases)]
+                    test_case = TestCase(str(function_name), 'ValidationChecks', '', '', '', '', 'timestamp', 'status', 'class', file_path, 'line', 'log', 'url')
+                    test_case.add_failure_info('Failure message', '', 'FAIL')
+                    test_case.add_error_info(f'{category} found', '', 'ERROR')
+                    test_cases.append(test_case)
 
+            ts = [TestSuite("ValidationErrors", test_cases)]
             print(TestSuite.to_xml_string(ts, prettyprint=True))
 
             return
