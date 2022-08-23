@@ -16,11 +16,14 @@ jobs:
       - name: Commit changes
         run: |
           if git diff --name-only | grep 'requirements.txt' > /dev/null; then
-            echo 'requirements.txt updated'
+              echo 'requirements.txt updated'
           fi
 
           if [[ -f requirements.txt && -s requirements.txt ]] ; then
-            rm requirements.txt
+            echo 'requirements.txt is not empty'
+          else
+            echo 'requirements.txt is empty'
+            requirements.txt
             echo 'requirements.txt removed'
           fi
 
@@ -30,4 +33,5 @@ jobs:
             git config --global user.email 'levi@redhat.com'
             git commit -am "Automated update to the requirements.txt"
             git push
+            echo 'changes commited'
           fi
