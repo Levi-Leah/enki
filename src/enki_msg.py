@@ -1,5 +1,6 @@
 from junit_xml import TestSuite, TestCase
-import junit_xml_output
+from datetime import datetime
+import time
 
 
 class Report():
@@ -10,16 +11,14 @@ class Report():
         self.report = {}
         self.count = 0
 
-    def create_report(self, category, file_path, function_name):
+    def create_report(self, category, file_path):
         """Generate report."""
         self.count += 1
         if not category in self.report:
-            self.report[category] = {}
-        if file_path not in self.report[category]:
-            self.report[category][file_path] = []
-        self.report[category][file_path].append(function_name)
+            self.report[category] = []
+        self.report[category].append(file_path)
 
-    def print_report(self, output=None):
+    def print_report(self, output=None, start_time=None):
         """Print report."""
 
         if output == 'oneline':
@@ -31,12 +30,13 @@ class Report():
         if output == 'gitlab':
 
             test_cases = []
+            end_time = time.time()
 
             for category, files in self.report.items():
-                for file_path, function_name in files.items():
-                    test_case = TestCase(str(function_name), 'ValidationChecks', '', '', '', '', 'timestamp', 'status', 'class', file_path, 'line', 'log', 'url')
-                    test_case.add_failure_info('Failure message', '', 'FAIL')
-                    test_case.add_error_info(f'{category} found', '', 'ERROR')
+                for file in files:
+                    #time num, sys out, sys err, assertions num,
+                    test_case = TestCase(f'{category} found in {file}', 'ValidationTests', (end_time - start_time), '', '', '', datetime.timestamp(datetime.now()), 'status', 'class', file, 'line', 'log', 'url')
+                    test_case.add_failure_info(f'{category} found.', '', 'ERROR')
                     test_cases.append(test_case)
 
             ts = [TestSuite("ValidationErrors", test_cases)]

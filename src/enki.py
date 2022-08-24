@@ -4,8 +4,10 @@ import argparse
 from pathlib import Path
 import os
 import sys
+import time
 from enki_files_valiadtor import validating_files
 
+start = time.time()
 
 parser = argparse.ArgumentParser(prog='enki')
 subparsers = parser.add_subparsers(dest='command')
@@ -77,7 +79,7 @@ if args.command == 'validate':
         if args.oneline:
             validating_files(files, output='oneline')
         elif args.gitlab:
-            validating_files(files, output='gitlab')
+            validating_files(files, output='gitlab', start_time=start)
         elif args.links:
             lcheck_path = os.path.dirname(os.path.abspath(__file__)) + '/lcheck.rb'
 
