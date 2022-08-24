@@ -5,8 +5,15 @@ enki=$path_to_script'/src/enki.py'
 
 # install dependencies
 if test -f $path_to_script'/requirements.txt'; then
-    echo 'installing dependencies'
+    echo 'installing python dependencies'
     pip3 install -qr $path_to_script'/requirements.txt'
+fi
+
+if test -f $path_to_script'/Gemfile'; then
+    sudo gem install bundler
+    bundle install
+    echo 'installing ruby dependencies'
+    bundle install
 fi
 
 sed -i "\|enki\.py|d" ~/.bashrc

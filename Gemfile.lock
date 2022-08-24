@@ -1,0 +1,21 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    asciidoctor (2.0.17)
+    faraday (2.5.2)
+      faraday-net_http (>= 2.0, < 3.1)
+      ruby2_keywords (>= 0.0.4)
+    faraday-net_http (3.0.0)
+    ruby2_keywords (0.0.5)
+    thread (0.2.2)
+
+PLATFORMS
+  x86_64-linux
+
+DEPENDENCIES
+  asciidoctor
+  faraday
+  thread
+
+BUNDLED WITH
+   2.3.13
