@@ -32,7 +32,7 @@ class Report():
 
             for category, files in self.report.items():
                 for file in files:
-                    test_case = TestCase(category, 'ValidationChecks', '', '', '', '', 'timestamp', 'status', 'class', file, 'line', 'log', 'url')
+                    test_case = TestCase(f'{category} found in {file}', f'{category} found', '', '', '', '', 'timestamp', 'status', 'class', file, 'line', 'log', 'url')
                     test_case.add_failure_info(f'{category} found.', '', 'ERROR')
                     test_cases.append(test_case)
 
