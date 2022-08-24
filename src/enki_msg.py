@@ -34,7 +34,7 @@ class Report():
                 for file in files:
                     test_case = TestCase(category, 'ValidationChecks', '', '', '', '', 'timestamp', 'status', 'class', file, 'line', 'log', 'url')
                     test_case.add_failure_info(f'{category} found.', '', 'ERROR')
-                test_cases.append(test_case)
+                    test_cases.append(test_case)
 
             ts = [TestSuite("ValidationErrors", test_cases)]
             print(TestSuite.to_xml_string(ts, prettyprint=True))
