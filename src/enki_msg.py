@@ -28,17 +28,26 @@ class Report():
             return
 
         if output == 'gitlab':
+            # TODO: figure out how to display the correct total number of tests
 
             test_cases = []
+
             end_time = time.time()
+            duration = end_time - start_time
 
             for category, files in self.report.items():
                 for file in files:
-                    #time num, sys out, sys err, assertions num,
-                    test_case = TestCase(f'{category} found in {file}', 'ValidationTests', (end_time - start_time), '', '', '', datetime.timestamp(datetime.now()), 'status', 'class', file, 'line', 'log', 'url')
+                    # has to be unique; GitLab only displays once
+                    testcase_name = f'{category} found in {file}'
+                    testsuite_name = 'ValidationErrors'
+                    # args: sys out, sys err, assertions num
+                    time_stamp = datetime.timestamp(datetime.now())
+                    # args: status, class
+                    test_case = TestCase(testcase_name, testsuite_name, duration, '', '', '', time_stamp, '', '', file) # args: line, log, url
                     test_case.add_failure_info(f'{category} found.', '', 'ERROR')
                     test_cases.append(test_case)
 
+            # args: hostname, id, package, timestamp, ? num, file, log, url, sys out, sys err
             ts = [TestSuite("ValidationErrors", test_cases)]
             print(TestSuite.to_xml_string(ts, prettyprint=True))
 
