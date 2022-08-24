@@ -22,10 +22,10 @@ def footnote_ref_check(stripped_file):
     if re.findall(Regex.FOOTNOTE_REF, stripped_file):
         return True
 
-
-def empty_line_after_include_check(original_file):
+# FIXME: might not catch all cases cause of comment being removed
+def empty_line_after_include_check(stripped_file):
     """Checks if there's an empty line after every include statement."""
-    if re.findall(Regex.INCLUDE_STATEMENT, original_file) and not re.findall(Regex.EMPTY_LINE_AFTER_INCLUDE, original_file):
+    if re.findall(Regex.INCLUDE_STATEMENT, stripped_file) and not re.findall(Regex.EMPTY_LINE_AFTER_INCLUDE, stripped_file):
         return True
 
 
@@ -102,5 +102,5 @@ def checks(report, stripped_file, original_file, file_path):
     if human_readable_label_check(stripped_file):
         report.create_report('Xrefs or links without the human readable label', file_path)
 
-    if empty_line_after_include_check(original_file):
+    if empty_line_after_include_check(stripped_file):
         report.create_report('No empty line after the include statement', file_path)
