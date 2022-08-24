@@ -35,7 +35,7 @@ class Report():
             for category, files in self.report.items():
                 for file in files:
                     #time num, sys out, sys err, assertions num,
-                    test_case = TestCase(f'{category} found in {file}', f'{category} found', (end_time - start_time), '', '', '', datetime.timestamp(datetime.now()), 'status', 'class', file, 'line', 'log', 'url')
+                    test_case = TestCase(f'{category} found in {file}', 'ValidationTests', (end_time - start_time), '', '', '', datetime.timestamp(datetime.now()), 'status', 'class', file, 'line', 'log', 'url')
                     test_case.add_failure_info(f'{category} found.', '', 'ERROR')
                     test_cases.append(test_case)
 
