@@ -5,7 +5,7 @@ from enki_regex import Regex, Tags
 def too_many_comments_check(original_file, stripped_file, report, file_path):
     """Checks if more than 1/3 (34%) of the lines in a file are comments."""
     if stripped_file.count('\n') < original_file.count('\n')*0.66:
-        report.create_report('More than 1/3 of the lines are comments. Too many comments', file_path, 'too_many_comments_check')
+        report.create_report('More than 1/3 of the lines are comments. Too many comments', file_path)
 
 
 def unterminated_conditional_check(stripped_file):
@@ -57,7 +57,7 @@ def nesting_in_modules_check(report, stripped_file, file_path):
         if not Regex.SNIPPET_INCLUDE.match(i):
             error += 1
     if error != 0:
-        report.create_report('Nesting in modules', file_path, 'nesting_in_modules_check')
+        report.create_report('Nesting in modules', file_path)
 
 
 def related_info_check(stripped_file):
@@ -80,27 +80,27 @@ def checks(report, stripped_file, original_file, file_path):
     """Run the checks."""
 
     if unterminated_conditional_check(stripped_file):
-        report.create_report('Unterminated conditional statement', file_path, 'unterminated_conditional_check')
+        report.create_report('Unterminated conditional statement', file_path)
 
     if footnote_ref_check(stripped_file):
-        report.create_report('Deprecated `footnoteref` markup', file_path, 'footnote_ref_check')
+        report.create_report('Deprecated `footnoteref` markup', file_path)
 
     if related_info_check(stripped_file):
-        report.create_report('"Related information" section', file_path, 'related_info_check')
+        report.create_report('"Related information" section', file_path)
 
     # NOTE: DISABLED
     #if add_res_wrong_format_check(stripped_file):
-    #    report.create_report('incorrectly formatted Additional recourses section', file_path, 'add_res_wrong_format_check')
+    #    report.create_report('incorrectly formatted Additional recourses section', file_path)
 
     if vanilla_xref_check(stripped_file):
-        report.create_report('Vanilla xrefs', file_path, 'vanilla_xref_check')
+        report.create_report('Vanilla xrefs', file_path)
 
     # NOTE: DISABLED
     #if html_markup_check(stripped_file):
-    #    report.create_report('HTML markup', file_path, 'html_markup_check')
+    #    report.create_report('HTML markup', file_path)
 
     if human_readable_label_check(stripped_file):
-        report.create_report('Xrefs or links without the human readable label', file_path, 'human_readable_label_check')
+        report.create_report('Xrefs or links without the human readable label', file_path)
 
     if empty_line_after_include_check(original_file):
-        report.create_report('No empty line after the include statement', file_path, 'empty_line_after_include_check')
+        report.create_report('No empty line after the include statement', file_path)
