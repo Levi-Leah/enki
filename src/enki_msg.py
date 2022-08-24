@@ -1,5 +1,5 @@
 from junit_xml import TestSuite, TestCase
-import junit_xml_output
+from datetime import datetime
 
 
 class Report():
@@ -32,7 +32,8 @@ class Report():
 
             for category, files in self.report.items():
                 for file in files:
-                    test_case = TestCase(f'{category} found in {file}', f'{category} found', '', '', '', '', 'timestamp', 'status', 'class', file, 'line', 'log', 'url')
+                    #time num, sys out, sys err, assertions num,
+                    test_case = TestCase(f'{category} found in {file}', f'{category} found', '', '', '', '', datetime.timestamp(datetime.now()), 'status', 'class', file, 'line', 'log', 'url')
                     test_case.add_failure_info(f'{category} found.', '', 'ERROR')
                     test_cases.append(test_case)
 
