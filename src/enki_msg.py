@@ -1,5 +1,6 @@
 from junit_xml import TestSuite, TestCase
 from datetime import datetime
+import time
 
 
 class Report():
@@ -17,7 +18,7 @@ class Report():
             self.report[category] = []
         self.report[category].append(file_path)
 
-    def print_report(self, output=None):
+    def print_report(self, output=None, start_time=None):
         """Print report."""
 
         if output == 'oneline':
@@ -29,11 +30,12 @@ class Report():
         if output == 'gitlab':
 
             test_cases = []
+            end_time = time.time()
 
             for category, files in self.report.items():
                 for file in files:
                     #time num, sys out, sys err, assertions num,
-                    test_case = TestCase(f'{category} found in {file}', f'{category} found', '', '', '', '', datetime.timestamp(datetime.now()), 'status', 'class', file, 'line', 'log', 'url')
+                    test_case = TestCase(f'{category} found in {file}', f'{category} found', (end_time - start_time), '', '', '', datetime.timestamp(datetime.now()), 'status', 'class', file, 'line', 'log', 'url')
                     test_case.add_failure_info(f'{category} found.', '', 'ERROR')
                     test_cases.append(test_case)
 

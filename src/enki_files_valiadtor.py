@@ -76,7 +76,7 @@ def validate(all_files, report, undefined_content, prefix_assemblies, prefix_mod
     return report
 
 
-def validating_files(files, output=None):
+def validating_files(files, output=None, start_time=None):
     """Print the result of validation and exit with an error."""
     report = Report()
 
@@ -86,6 +86,6 @@ def validating_files(files, output=None):
     if file_validation.count == 0:
         sys.exit(0)
 
-    file_validation.print_report(output)
+    file_validation.print_report(output, start_time)
 
     sys.exit(2)
