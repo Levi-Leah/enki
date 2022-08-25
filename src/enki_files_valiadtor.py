@@ -86,6 +86,9 @@ def validating_files(files, output=None, start_time=None):
     if file_validation.count == 0:
         sys.exit(0)
 
-    file_validation.print_report(output, start_time)
+    if output == 'gitlab':
+        file_validation.print_report(output, start_time)
+        sys.exit(0)
 
+    file_validation.print_report(output, start_time)
     sys.exit(2)
