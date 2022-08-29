@@ -5,15 +5,19 @@ from pathlib import Path
 import os
 import sys
 import time
+import logging
 from enki_files_validator import validating_files
 
 
 def main() -> None:
     args = cli_args()
 
+    # Configure the level of logging output
+    logging.basicConfig(level=logging.INFO)
+
     for item in args.path:
         if not os.path.exists(item):
-            print(f"\nERROR: '{item}' doesn't exist in your repository.")
+            logging.error(f"'{item}' doesn't exist in your repository.")
             args.path.remove(item)
             sys.exit(2)
 
@@ -73,8 +77,8 @@ def validate(user_input: list[Path], args: argparse.Namespace) -> None:
 
     if unsupported_files:
         separator = "\n\t"
-        print('\nERROR: Unsupported file format. The following files cannot be validated:')
-        print('\t' + separator.join(unsupported_files))
+        logging.error('Unsupported file format. The following files cannot be validated:')
+        logging.error('\t' + separator.join(unsupported_files))
         sys.exit(2)
 
     if files:
@@ -96,11 +100,11 @@ def validate(user_input: list[Path], args: argparse.Namespace) -> None:
             validating_files(files, start)
 
 
-def expand_file_paths(item: Path) -> list[str]:
+def expand_file_paths(path: Path) -> list[str]:
     """Expand filepaths."""
     expanded_files = []
 
-    for dirpath, dirnames, filenames in os.walk(str(item) + '/'):
+    for dirpath, dirnames, filenames in os.walk(path):
         for name in filenames:
             if not name.startswith('_') and name.endswith('.adoc') and name != 'README.adoc':
                 file = os.path.realpath(os.path.join(dirpath, name))
