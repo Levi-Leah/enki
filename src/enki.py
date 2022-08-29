@@ -5,7 +5,7 @@ from pathlib import Path
 import os
 import sys
 import time
-from enki_files_valiadtor import validating_files
+from enki_files_validator import validating_files
 
 start = time.time()
 
