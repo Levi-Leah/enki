@@ -27,11 +27,11 @@ def sort_files(files: list[str]) -> tuple[list[str], list[str], list[str]]:
 
 
 def validate(
-    all_files: list[str],
-    report: Report,
-    undefined_content: list[str],
-    prefix_assemblies: list[str],
-    prefix_modules: list[str]) -> Report:
+        all_files: list[str],
+        report: Report,
+        undefined_content: list[str],
+        prefix_assemblies: list[str],
+        prefix_modules: list[str]) -> Report:
     """Run validation checks and return the report."""
 
     undetermined_file_type = []
@@ -86,7 +86,8 @@ def validating_files(files: list[str], start_time: float, output: str = None) ->
     report = Report()
 
     prefix_assemblies, prefix_modules, undefined_content = sort_files(files)
-    file_validation = validate(files, report, undefined_content, prefix_assemblies, prefix_modules)
+    file_validation = validate(
+        files, report, undefined_content, prefix_assemblies, prefix_modules)
 
     if file_validation.count == 0:
         sys.exit(0)

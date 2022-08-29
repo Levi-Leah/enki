@@ -4,20 +4,23 @@ from enki_regex import Regexes, Tags
 
 
 def too_many_comments_check(
-    original_file: str,
-    stripped_file: str,
-    report: Report,
-    file_path: str) -> None:
+        original_file: str,
+        stripped_file: str,
+        report: Report,
+        file_path: str) -> None:
     """Checks if more than 1/3 (34%) of the lines in a file are comments."""
     if stripped_file.count('\n') < original_file.count('\n')*0.66:
-        report.create_report('More than 1/3 of the lines are comments. Too many comments', file_path)
+        report.create_report(
+            'More than 1/3 of the lines are comments. Too many comments', file_path)
 
 
 def unterminated_conditional_check(stripped_file: str) -> bool:
     """Check if the number of opening conditionals matches
     the number of closing conditionals."""
-    opening_conditional = re.findall(Regexes.OPENING_CONDITIONAL, stripped_file)
-    closing_conditional = re.findall(Regexes.CLOSING_CONDITIONAL, stripped_file)
+    opening_conditional = re.findall(
+        Regexes.OPENING_CONDITIONAL, stripped_file)
+    closing_conditional = re.findall(
+        Regexes.CLOSING_CONDITIONAL, stripped_file)
     if len(opening_conditional) != len(closing_conditional):
         return True
     else:
@@ -32,6 +35,8 @@ def footnote_ref_check(stripped_file: str) -> bool:
         return False
 
 # FIXME: might not catch all cases cause of comment being removed
+
+
 def empty_line_after_include_check(stripped_file: str) -> bool:
     """Checks if there's an empty line after every include statement."""
     if re.findall(Regexes.INCLUDE_STATEMENT, stripped_file) and not re.findall(Regexes.EMPTY_LINE_AFTER_INCLUDE, stripped_file):
@@ -66,9 +71,9 @@ def html_markup_check(stripped_file: str) -> bool:
 
 
 def nesting_in_modules_check(
-    report: Report,
-    stripped_file: str,
-    file_path: str) -> None:
+        report: Report,
+        stripped_file: str,
+        file_path: str) -> None:
     """Check if modules contains nested content."""
     includes = re.findall(Regexes.INCLUDE_STATEMENT, stripped_file)
 
@@ -104,10 +109,10 @@ def add_res_wrong_format_check(stripped_file: str) -> bool:
 
 
 def checks(
-    report: Report,
-    stripped_file: str,
-    original_file: str,
-    file_path: str) -> None:
+        report: Report,
+        stripped_file: str,
+        original_file: str,
+        file_path: str) -> None:
     """Run the checks."""
 
     if unterminated_conditional_check(stripped_file):
@@ -120,18 +125,20 @@ def checks(
         report.create_report('"Related information" section', file_path)
 
     # NOTE: DISABLED
-    #if add_res_wrong_format_check(stripped_file):
+    # if add_res_wrong_format_check(stripped_file):
     #    report.create_report('incorrectly formatted Additional recourses section', file_path)
 
     if vanilla_xref_check(stripped_file):
         report.create_report('Vanilla xrefs', file_path)
 
     # NOTE: DISABLED
-    #if html_markup_check(stripped_file):
+    # if html_markup_check(stripped_file):
     #    report.create_report('HTML markup', file_path)
 
     if human_readable_label_check(stripped_file):
-        report.create_report('Xrefs or links without the human readable label', file_path)
+        report.create_report(
+            'Xrefs or links without the human readable label', file_path)
 
     if empty_line_after_include_check(stripped_file):
-        report.create_report('No empty line after the include statement', file_path)
+        report.create_report(
+            'No empty line after the include statement', file_path)

@@ -29,9 +29,12 @@ def cli_args() -> argparse.Namespace:
 
     parser_a = subparsers.add_parser("validate", help="perform validation")
     group_a = parser_a.add_mutually_exclusive_group()
-    group_a.add_argument("--oneline", action="store_true", help="print one validation error per line")
-    group_a.add_argument("--gitlab", action="store_true", help="print validation errors in xml format")
-    group_a.add_argument("--links", action="store_true", help="perform links validation")
+    group_a.add_argument("--oneline", action="store_true",
+                         help="print one validation error per line")
+    group_a.add_argument("--gitlab", action="store_true",
+                         help="print validation errors in xml format")
+    group_a.add_argument("--links", action="store_true",
+                         help="perform links validation")
     parser_a.add_argument("path", nargs='+', type=Path, help='path to files')
 
     if len(sys.argv) == 1:
@@ -80,7 +83,8 @@ def validate(user_input: list[Path], args: argparse.Namespace) -> None:
         elif args.gitlab:
             validating_files(files, start, output='gitlab')
         elif args.links:
-            lcheck_path = os.path.dirname(os.path.abspath(__file__)) + '/lcheck.rb'
+            lcheck_path = os.path.dirname(
+                os.path.abspath(__file__)) + '/lcheck.rb'
 
             master_adocs = []
             for file in files:

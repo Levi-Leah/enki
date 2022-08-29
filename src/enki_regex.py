@@ -56,7 +56,8 @@ class Regexes:
     # ifdef::condition[description!]
     # ifndef::condition[description!]
     #
-    SINGLE_LINE_CONDITIONAL = re.compile(r'(ifdef|ifndef)::[\S]*\[(?!\])(.*)\]')
+    SINGLE_LINE_CONDITIONAL = re.compile(
+        r'(ifdef|ifndef)::[\S]*\[(?!\])(.*)\]')
 
     # Empty line after
     #
@@ -101,7 +102,6 @@ class Regexes:
     #
     SNIPPET_TYPE = re.compile(r':_content-type: SNIPPET')
 
-
     # Vanilla xrefs
     #
     # Matches any vanilla xref
@@ -136,7 +136,8 @@ class Regexes:
     # Example
     #   // This is a single-line comment
     #
-    SINGLE_LINE_COMMENT = re.compile(r'(?<!\/\/)(?<!\/)^\/\/(?!\/\/).*\n', re.M)
+    SINGLE_LINE_COMMENT = re.compile(
+        r'(?<!\/\/)(?<!\/)^\/\/(?!\/\/).*\n', re.M)
 
     # In-line anchor
     #
@@ -202,7 +203,8 @@ class Regexes:
     #   https://link.com[Human readable label]
     #   link:https://link.com[Human readable label]
     #
-    HUMAN_READABLE_LABEL = re.compile(r'xref:[\S]*\[\]|\b(?:https?|file|ftp|irc):\/\/[^\s\[\]<]*\[\]')
+    HUMAN_READABLE_LABEL = re.compile(
+        r'xref:[\S]*\[\]|\b(?:https?|file|ftp|irc):\/\/[^\s\[\]<]*\[\]')
 
     # Include statement
     # Matches all includes
@@ -233,7 +235,8 @@ class Regexes:
     #   = Related information
     #   .Related information
     #
-    RELATED_INFO = re.compile(r'= Related information|\.Related information', re.IGNORECASE)
+    RELATED_INFO = re.compile(
+        r'= Related information|\.Related information', re.IGNORECASE)
 
     # Additional information resources section
     #
@@ -244,7 +247,8 @@ class Regexes:
     #   == Additional information
     #   .Additional information
     #
-    ADDITIONAL_RES = re.compile(r'== Additional resources|\.Additional resources', re.IGNORECASE)
+    ADDITIONAL_RES = re.compile(
+        r'== Additional resources|\.Additional resources', re.IGNORECASE)
 
     '''CORRECT_ADDITIONAL_RES_SECTION = re.compile(r'\[role="_additional-resources"\]\n+((ifdef|ifndef|ifeval|endif)::.*\]\n+)*?(== Additional resources|\.Additional resources)\n+((ifdef|ifndef|ifeval|endif)::.*\]\n+)*?((\* .*\n+((ifdef|ifndef|ifeval|endif)::.*\]\n+)*?(^//.*\n+)*?((\/{4,})(.*\n)*?(\/{4,})\n+)*?)*\z)', re.IGNORECASE)'''
 
