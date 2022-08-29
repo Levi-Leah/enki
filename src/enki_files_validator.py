@@ -6,7 +6,7 @@ from enki_checks import checks, nesting_in_modules_check, too_many_comments_chec
 from enki_regex import Regex
 
 
-def sort_files(files):
+def sort_files(files: list[str]) -> tuple[list[str], list[str], list[str]]:
     """Get a list of assemblies, modules, and unidentified files."""
     prefix_assemblies = []
     prefix_modules = []
@@ -26,7 +26,12 @@ def sort_files(files):
     return prefix_assemblies, prefix_modules, undefined_content
 
 
-def validate(all_files, report, undefined_content, prefix_assemblies, prefix_modules):
+def validate(
+    all_files: list[str],
+    report: Report,
+    undefined_content: list[str],
+    prefix_assemblies: list[str],
+    prefix_modules: list[str]) -> Report:
     """Run validation checks and return the report."""
 
     undetermined_file_type = []
@@ -76,7 +81,7 @@ def validate(all_files, report, undefined_content, prefix_assemblies, prefix_mod
     return report
 
 
-def validating_files(files, output=None, start_time=None):
+def validating_files(files: list[str], output: str = None, start_time: float = None) -> None:
     """Print the result of validation and exit with an error."""
     report = Report()
 

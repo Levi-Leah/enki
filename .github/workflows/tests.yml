@@ -68,8 +68,7 @@ jobs:
 
     - name: Check for type errors
       run: |
-        export MYPYPATH=.:src
-        mypy src/enki.py --ignore-missing-imports
+        MYPYPATH=.:src mypy src/enki.py --ignore-missing-imports
 
     - name: Run unittests
       run: |

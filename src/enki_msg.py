@@ -8,17 +8,17 @@ class Report():
 
     def __init__(self):
         """Create placeholder for problem description."""
-        self.report = {}
+        self.report: dict[str, list[str]] = {}
         self.count = 0
 
-    def create_report(self, category, file_path):
+    def create_report(self, category: str, file_path: str) -> None:
         """Generate report."""
         self.count += 1
         if not category in self.report:
             self.report[category] = []
         self.report[category].append(file_path)
 
-    def print_report(self, output=None, start_time=None):
+    def print_report(self, output: str = None, start_time: float = None) -> None:
         """Print report."""
 
         if output == 'oneline':

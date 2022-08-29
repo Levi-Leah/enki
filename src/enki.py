@@ -35,7 +35,7 @@ for item in args.path:
 user_input = args.path
 
 
-def expand_file_paths(item):
+def expand_file_paths(item: Path) -> list[str]:
     """Expand filepaths."""
     expanded_files = []
 

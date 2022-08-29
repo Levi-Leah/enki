@@ -2,7 +2,6 @@ import re
 
 
 class Tags:
-
     """Define tags."""
     ABSTRACT = '[role="_abstract"]'
     ADD_RES = '[role="_additional-resources"]'
