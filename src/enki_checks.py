@@ -1,6 +1,6 @@
 import re
 from enki_msg import Report
-from enki_regex import Regex, Tags
+from enki_regex import Regexes, Tags
 
 
 def too_many_comments_check(
@@ -16,8 +16,8 @@ def too_many_comments_check(
 def unterminated_conditional_check(stripped_file: str) -> bool:
     """Check if the number of opening conditionals matches
     the number of closing conditionals."""
-    opening_conditional = re.findall(Regex.OPENING_CONDITIONAL, stripped_file)
-    closing_conditional = re.findall(Regex.CLOSING_CONDITIONAL, stripped_file)
+    opening_conditional = re.findall(Regexes.OPENING_CONDITIONAL, stripped_file)
+    closing_conditional = re.findall(Regexes.CLOSING_CONDITIONAL, stripped_file)
     if len(opening_conditional) != len(closing_conditional):
         return True
     else:
@@ -26,7 +26,7 @@ def unterminated_conditional_check(stripped_file: str) -> bool:
 
 def footnote_ref_check(stripped_file: str) -> bool:
     """Checks if deprecated foornoteref is present."""
-    if re.findall(Regex.FOOTNOTE_REF, stripped_file):
+    if re.findall(Regexes.FOOTNOTE_REF, stripped_file):
         return True
     else:
         return False
@@ -34,7 +34,7 @@ def footnote_ref_check(stripped_file: str) -> bool:
 # FIXME: might not catch all cases cause of comment being removed
 def empty_line_after_include_check(stripped_file: str) -> bool:
     """Checks if there's an empty line after every include statement."""
-    if re.findall(Regex.INCLUDE_STATEMENT, stripped_file) and not re.findall(Regex.EMPTY_LINE_AFTER_INCLUDE, stripped_file):
+    if re.findall(Regexes.INCLUDE_STATEMENT, stripped_file) and not re.findall(Regexes.EMPTY_LINE_AFTER_INCLUDE, stripped_file):
         return True
     else:
         return False
@@ -42,7 +42,7 @@ def empty_line_after_include_check(stripped_file: str) -> bool:
 
 def vanilla_xref_check(stripped_file: str) -> bool:
     """Check if the file contains vanilla xrefs."""
-    if re.findall(Regex.VANILLA_XREF, stripped_file):
+    if re.findall(Regexes.VANILLA_XREF, stripped_file):
         return True
     else:
         return False
@@ -50,7 +50,7 @@ def vanilla_xref_check(stripped_file: str) -> bool:
 
 def human_readable_label_check(stripped_file: str) -> bool:
     "Check if the human readable label is present in xrefs."""
-    if re.findall(Regex.HUMAN_READABLE_LABEL, stripped_file):
+    if re.findall(Regexes.HUMAN_READABLE_LABEL, stripped_file):
         return True
     else:
         return False
@@ -59,7 +59,7 @@ def human_readable_label_check(stripped_file: str) -> bool:
 # NOTE: DISABLED
 def html_markup_check(stripped_file: str) -> bool:
     """Check if HTML markup is present in the file."""
-    if re.findall(Regex.HTML_MARKUP, stripped_file):
+    if re.findall(Regexes.HTML_MARKUP, stripped_file):
         return True
     else:
         return False
@@ -70,11 +70,11 @@ def nesting_in_modules_check(
     stripped_file: str,
     file_path: str) -> None:
     """Check if modules contains nested content."""
-    includes = re.findall(Regex.INCLUDE_STATEMENT, stripped_file)
+    includes = re.findall(Regexes.INCLUDE_STATEMENT, stripped_file)
 
     error = 0
     for i in includes:
-        if not Regex.SNIPPET_INCLUDE.match(i):
+        if not Regexes.SNIPPET_INCLUDE.match(i):
             error += 1
     if error != 0:
         report.create_report('Nesting in modules', file_path)
@@ -82,7 +82,7 @@ def nesting_in_modules_check(
 
 def related_info_check(stripped_file: str) -> bool:
     """Checks if related info section is present."""
-    if re.findall(Regex.RELATED_INFO, stripped_file):
+    if re.findall(Regexes.RELATED_INFO, stripped_file):
         return True
     else:
         return False

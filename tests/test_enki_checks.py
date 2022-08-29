@@ -1,5 +1,5 @@
 import unittest
-from src.enki_regex import Regex
+from src.enki_regex import Regexes
 from src.enki_checks import *
 from src.enki_msg import Report
 import os
@@ -17,8 +17,8 @@ class TestTooManyCommentsCheck(unittest.TestCase):
 
         with open(file_name, 'r') as file:
             original = file.read()
-            stripped = Regex.MULTI_LINE_COMMENT.sub('', original)
-            stripped = Regex.SINGLE_LINE_COMMENT.sub('', stripped)
+            stripped = Regexes.MULTI_LINE_COMMENT.sub('', original)
+            stripped = Regexes.SINGLE_LINE_COMMENT.sub('', stripped)
 
 
             result = too_many_comments_check(original, stripped, report, file_name)
@@ -30,8 +30,8 @@ class TestTooManyCommentsCheck(unittest.TestCase):
 
         with open(file_name, 'r') as file:
             original = file.read()
-            stripped = Regex.MULTI_LINE_COMMENT.sub('', original)
-            stripped = Regex.SINGLE_LINE_COMMENT.sub('', stripped)
+            stripped = Regexes.MULTI_LINE_COMMENT.sub('', original)
+            stripped = Regexes.SINGLE_LINE_COMMENT.sub('', stripped)
 
 
             result = too_many_comments_check(original, stripped, report, file_name)

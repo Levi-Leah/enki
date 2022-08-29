@@ -9,7 +9,7 @@ class Tags:
     LVLOFFSET = ':leveloffset:'
 
 
-class Regex:
+class Regexes:
     """Define regular expressions for the checks."""
 
     # Additional resources tag

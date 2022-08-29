@@ -3,7 +3,7 @@ import re
 import sys
 from enki_msg import Report
 from enki_checks import checks, nesting_in_modules_check, too_many_comments_check
-from enki_regex import Regex
+from enki_regex import Regexes
 
 
 def sort_files(files: list[str]) -> tuple[list[str], list[str], list[str]]:
@@ -44,8 +44,8 @@ def validate(
 
         with open(path, 'r') as file:
             original = file.read()
-            stripped = Regex.MULTI_LINE_COMMENT.sub('', original)
-            stripped = Regex.SINGLE_LINE_COMMENT.sub('', stripped)
+            stripped = Regexes.MULTI_LINE_COMMENT.sub('', original)
+            stripped = Regexes.SINGLE_LINE_COMMENT.sub('', stripped)
 
             # this check should run before
             # code blocks
@@ -53,27 +53,27 @@ def validate(
             # are replaced
             too_many_comments_check(original, stripped, report, relative_path)
 
-            stripped = Regex.CODE_BLOCK.sub('', stripped)
-            stripped = Regex.INTERNAL_IFDEF.sub('', stripped)
-            stripped = Regex.SINGLE_LINE_CONDITIONAL.sub('', stripped)
+            stripped = Regexes.CODE_BLOCK.sub('', stripped)
+            stripped = Regexes.INTERNAL_IFDEF.sub('', stripped)
+            stripped = Regexes.SINGLE_LINE_CONDITIONAL.sub('', stripped)
 
             checks(report, stripped, original, relative_path)
 
             if path in undefined_content:
-                if re.findall(Regex.MODULE_TYPE, stripped):
+                if re.findall(Regexes.MODULE_TYPE, stripped):
                     nesting_in_modules_check(report, stripped, relative_path)
-                elif re.findall(Regex.SNIPPET_TYPE, stripped):
+                elif re.findall(Regexes.SNIPPET_TYPE, stripped):
                     continue
                 else:
                     undetermined_file_type.append(relative_path)
 
             if path in prefix_assemblies:
-                if re.findall(Regex.MODULE_TYPE, stripped):
+                if re.findall(Regexes.MODULE_TYPE, stripped):
                     confused_files.append(relative_path)
                     nesting_in_modules_check(report, stripped, relative_path)
 
             if path in prefix_modules:
-                if re.findall(Regex.ASSEMBLY_TYPE, stripped):
+                if re.findall(Regexes.ASSEMBLY_TYPE, stripped):
                     confused_files.append(path)
                 else:
                     nesting_in_modules_check(report, stripped, relative_path)
