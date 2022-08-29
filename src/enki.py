@@ -13,7 +13,7 @@ def main() -> None:
     args = cli_args()
 
     # Configure the level of logging output
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
 
     for item in args.path:
         if not os.path.exists(item):
