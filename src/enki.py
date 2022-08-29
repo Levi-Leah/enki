@@ -7,67 +7,66 @@ import sys
 import time
 from enki_files_validator import validating_files
 
-start = time.time()
 
-parser = argparse.ArgumentParser(prog='enki')
-subparsers = parser.add_subparsers(dest='command')
+def main() -> None:
+    args = cli_args()
 
-parser_a = subparsers.add_parser("validate", help="perform validation")
-group_a = parser_a.add_mutually_exclusive_group()
-group_a.add_argument("--oneline", action="store_true", help="print one validation error per line")
-group_a.add_argument("--gitlab", action="store_true", help="print validation errors in xml format")
-group_a.add_argument("--links", action="store_true", help="perform links validation")
-parser_a.add_argument("path", nargs='+', type=Path, help='path to files')
+    for item in args.path:
+        if not os.path.exists(item):
+            print(f"\nERROR: '{item}' doesn't exist in your repository.")
+            args.path.remove(item)
+            sys.exit(2)
 
-if len(sys.argv) == 1:
-    parser.print_help()
-    sys.exit(1)
+    user_input = args.path
 
-args = parser.parse_args()
+    if args.command == 'validate':
+        validate(user_input, args)
 
 
-for item in args.path:
-    if not os.path.exists(item):
-        print(f"\nERROR: '{item}' doesn't exist in your repository.")
-        args.path.remove(item)
-        sys.exit(2)
+def cli_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(prog='enki')
+    subparsers = parser.add_subparsers(dest='command')
 
-user_input = args.path
+    parser_a = subparsers.add_parser("validate", help="perform validation")
+    group_a = parser_a.add_mutually_exclusive_group()
+    group_a.add_argument("--oneline", action="store_true", help="print one validation error per line")
+    group_a.add_argument("--gitlab", action="store_true", help="print validation errors in xml format")
+    group_a.add_argument("--links", action="store_true", help="perform links validation")
+    parser_a.add_argument("path", nargs='+', type=Path, help='path to files')
 
+    if len(sys.argv) == 1:
+        parser.print_help()
+        sys.exit(1)
 
-def expand_file_paths(item: Path) -> list[str]:
-    """Expand filepaths."""
-    expanded_files = []
+    args = parser.parse_args()
 
-    for dirpath, dirnames, filenames in os.walk(str(item) + '/'):
-        for name in filenames:
-            if not name.startswith('_') and name.endswith('.adoc') and name != 'README.adoc':
-                file = os.path.realpath(os.path.join(dirpath, name))
-                if file not in expanded_files:
-                    expanded_files.append(file)
-
-    return expanded_files
+    return args
 
 
-if args.command == 'validate':
+def validate(user_input: list[Path], args: argparse.Namespace) -> None:
+    """
+    Validate files specified on the command line as user_input.
+    """
     files = []
     unsupported_files = []
 
-    for item in user_input:
+    start = time.time()
 
-        item = str(item)
+    for path in user_input:
 
-        if os.path.isdir(item):
-            expanded_files = expand_file_paths(item)
+        str_path = str(path)
+
+        if path.is_dir():
+            expanded_files = expand_file_paths(path)
             for file in expanded_files:
                 if file not in files:
                     files.append(file)
-        elif item.endswith('.adoc'):
-            file = os.path.realpath(item)
+        elif path.suffix == '.adoc':
+            file = os.path.realpath(path)
             if file not in files:
                 files.append(file)
         else:
-            unsupported_files.append(item)
+            unsupported_files.append(str_path)
 
     if unsupported_files:
         separator = "\n\t"
@@ -91,3 +90,22 @@ if args.command == 'validate':
 
         else:
             validating_files(files, start)
+
+
+def expand_file_paths(item: Path) -> list[str]:
+    """Expand filepaths."""
+    expanded_files = []
+
+    for dirpath, dirnames, filenames in os.walk(str(item) + '/'):
+        for name in filenames:
+            if not name.startswith('_') and name.endswith('.adoc') and name != 'README.adoc':
+                file = os.path.realpath(os.path.join(dirpath, name))
+                if file not in expanded_files:
+                    expanded_files.append(file)
+
+    return expanded_files
+
+
+# Run the program
+if __name__ == '__main__':
+    main()
