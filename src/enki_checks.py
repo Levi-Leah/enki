@@ -10,7 +10,7 @@ def too_many_comments_check(
         report: Report,
         file_path: str) -> None:
     """Checks if more than 1/3 (34%) of the lines in a file are comments."""
-    if stripped_file.count('\n') < original_file.count('\n')*0.66:
+    if len(stripped_file.splitlines()) < len(original_file.splitlines()) * 0.66:
         report.create_report(
             'More than 1/3 of the lines are comments. Too many comments', file_path)
 
