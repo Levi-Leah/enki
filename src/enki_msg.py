@@ -1,7 +1,8 @@
-from junit_xml import TestSuite, TestCase
 from datetime import datetime
-import time
 import logging
+import time
+
+from junit_xml import TestSuite, TestCase
 
 
 class Report():
@@ -25,7 +26,7 @@ class Report():
         if output == 'oneline':
             for category, files in self.report.items():
                 for file in files:
-                    logging.error("{}: {} found.".format(file, category))
+                    logging.error(f"{file}: {category} found.")
             return
 
         if output == 'gitlab':
@@ -50,5 +51,5 @@ class Report():
         separator = "\n\t"
 
         for category, files in self.report.items():
-            logging.error("{} found in the following files:".format(category))
+            logging.error(f"{category} found in the following files:")
             logging.error('\t' + separator.join(files))

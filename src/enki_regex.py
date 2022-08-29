@@ -250,7 +250,8 @@ class Regexes:
     ADDITIONAL_RES = re.compile(
         r'== Additional resources|\.Additional resources', re.IGNORECASE)
 
-    '''CORRECT_ADDITIONAL_RES_SECTION = re.compile(r'\[role="_additional-resources"\]\n+((ifdef|ifndef|ifeval|endif)::.*\]\n+)*?(== Additional resources|\.Additional resources)\n+((ifdef|ifndef|ifeval|endif)::.*\]\n+)*?((\* .*\n+((ifdef|ifndef|ifeval|endif)::.*\]\n+)*?(^//.*\n+)*?((\/{4,})(.*\n)*?(\/{4,})\n+)*?)*\z)', re.IGNORECASE)'''
+    # CORRECT_ADDITIONAL_RES_SECTION = re.compile(
+    #     r'\[role="_additional-resources"\]\n+((ifdef|ifndef|ifeval|endif)::.*\]\n+)*?(== Additional resources|\.Additional resources)\n+((ifdef|ifndef|ifeval|endif)::.*\]\n+)*?((\* .*\n+((ifdef|ifndef|ifeval|endif)::.*\]\n+)*?(^//.*\n+)*?((\/{4,})(.*\n)*?(\/{4,})\n+)*?)*\z)', re.IGNORECASE)
 
     # Deprecated footnoteref macro
     #

@@ -1,4 +1,5 @@
 import re
+
 from enki_msg import Report
 from enki_regex import Regexes, Tags
 

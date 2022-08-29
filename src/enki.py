@@ -6,6 +6,7 @@ import os
 import sys
 import time
 import logging
+
 from enki_files_validator import validating_files
 
 
@@ -104,7 +105,7 @@ def expand_file_paths(path: Path) -> list[str]:
     """Expand filepaths."""
     expanded_files = []
 
-    for dirpath, dirnames, filenames in os.walk(path):
+    for dirpath, _dirnames, filenames in os.walk(path):
         for name in filenames:
             if not name.startswith('_') and name.endswith('.adoc') and name != 'README.adoc':
                 file = os.path.realpath(os.path.join(dirpath, name))
