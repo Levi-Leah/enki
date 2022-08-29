@@ -81,7 +81,7 @@ def validate(
     return report
 
 
-def validating_files(files: list[str], output: str = None, start_time: float = None) -> None:
+def validating_files(files: list[str], start_time: float, output: str = None) -> None:
     """Print the result of validation and exit with an error."""
     report = Report()
 
@@ -91,6 +91,6 @@ def validating_files(files: list[str], output: str = None, start_time: float = N
     if file_validation.count == 0:
         sys.exit(0)
 
-    file_validation.print_report(output, start_time)
+    file_validation.print_report(start_time, output)
 
     sys.exit(2)

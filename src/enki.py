@@ -77,9 +77,9 @@ if args.command == 'validate':
 
     if files:
         if args.oneline:
-            validating_files(files, output='oneline')
+            validating_files(files, start, output='oneline')
         elif args.gitlab:
-            validating_files(files, output='gitlab', start_time=start)
+            validating_files(files, start, output='gitlab')
         elif args.links:
             lcheck_path = os.path.dirname(os.path.abspath(__file__)) + '/lcheck.rb'
 
@@ -90,4 +90,4 @@ if args.command == 'validate':
             os.system(f'ruby {lcheck_path} {master_adocs}')
 
         else:
-            validating_files(files)
+            validating_files(files, start)

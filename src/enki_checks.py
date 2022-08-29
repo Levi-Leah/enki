@@ -20,30 +20,40 @@ def unterminated_conditional_check(stripped_file: str) -> bool:
     closing_conditional = re.findall(Regex.CLOSING_CONDITIONAL, stripped_file)
     if len(opening_conditional) != len(closing_conditional):
         return True
+    else:
+        return False
 
 
 def footnote_ref_check(stripped_file: str) -> bool:
     """Checks if deprecated foornoteref is present."""
     if re.findall(Regex.FOOTNOTE_REF, stripped_file):
         return True
+    else:
+        return False
 
 # FIXME: might not catch all cases cause of comment being removed
 def empty_line_after_include_check(stripped_file: str) -> bool:
     """Checks if there's an empty line after every include statement."""
     if re.findall(Regex.INCLUDE_STATEMENT, stripped_file) and not re.findall(Regex.EMPTY_LINE_AFTER_INCLUDE, stripped_file):
         return True
+    else:
+        return False
 
 
 def vanilla_xref_check(stripped_file: str) -> bool:
     """Check if the file contains vanilla xrefs."""
     if re.findall(Regex.VANILLA_XREF, stripped_file):
         return True
+    else:
+        return False
 
 
 def human_readable_label_check(stripped_file: str) -> bool:
     "Check if the human readable label is present in xrefs."""
     if re.findall(Regex.HUMAN_READABLE_LABEL, stripped_file):
         return True
+    else:
+        return False
 
 
 # NOTE: DISABLED
@@ -51,6 +61,8 @@ def html_markup_check(stripped_file: str) -> bool:
     """Check if HTML markup is present in the file."""
     if re.findall(Regex.HTML_MARKUP, stripped_file):
         return True
+    else:
+        return False
 
 
 def nesting_in_modules_check(
@@ -72,16 +84,23 @@ def related_info_check(stripped_file: str) -> bool:
     """Checks if related info section is present."""
     if re.findall(Regex.RELATED_INFO, stripped_file):
         return True
+    else:
+        return False
 
 
 # NOTE: DISABLED
+"""
 def add_res_wrong_format_check(stripped_file: str) -> bool:
     if not re.findall(Regex.ADDITIONAL_RES, stripped_file):
-        return
+        return False
     if not stripped_file.count(Tags.ADD_RES) == 1:
-        return
+        return False
     if not re.findall(Regex.CORRECT_ADDITIONAL_RES_SECTION, stripped_file):
         return True
+    # TODO: A provisional fallback value. Check if this it the right one.
+    else:
+        return False
+"""
 
 
 def checks(
