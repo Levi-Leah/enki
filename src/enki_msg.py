@@ -51,5 +51,4 @@ class Report():
         separator = "\n\t"
 
         for category, files in self.report.items():
-            logging.error(f"{category} found in the following files:")
-            print('\t' + separator.join(files))
+            logging.error(f"{category} found in the following files:\n\t{separator.join(files)}\n")

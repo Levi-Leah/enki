@@ -78,8 +78,7 @@ def validate(user_input: list[Path], args: argparse.Namespace) -> None:
 
     if unsupported_files:
         separator = "\n\t"
-        logging.error('Unsupported file format. The following files cannot be validated:')
-        logging.error('\t' + separator.join(unsupported_files))
+        logging.error(f'Unsupported file format. The following files cannot be validated:\n\t{separator.join(unsupported_files)}\n')
         sys.exit(2)
 
     if files:
