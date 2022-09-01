@@ -78,8 +78,7 @@ def validate(user_input: list[Path], args: argparse.Namespace) -> None:
 
     if unsupported_files:
         separator = "\n\t"
-        logging.error('Unsupported file format. The following files cannot be validated:')
-        logging.error('\t' + separator.join(unsupported_files))
+        logging.error(f'Unsupported file format. The following files cannot be validated:\n\t{separator.join(unsupported_files)}\n')
         sys.exit(2)
 
     if files:
@@ -95,7 +94,11 @@ def validate(user_input: list[Path], args: argparse.Namespace) -> None:
             for file in files:
                 if os.path.basename(file) == 'master.adoc':
                     master_adocs.append(file)
-            os.system(f'ruby {lcheck_path} {master_adocs}')
+
+            if master_adocs:
+                os.system(f'ruby {lcheck_path} {master_adocs}')
+            else:
+                logging.error('No master.adoc detected.')
 
         else:
             validating_files(files, start)

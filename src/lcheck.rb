@@ -97,12 +97,12 @@ def queue_broken_links(links_dict)
 
             begin
                 conn.get(link)
-            rescue URI::BadURIError
+            rescue URI::BadURIError => e
                 broken_links += 1
                 error_type = 'Bad URI'
                 print_msg(link, error_type, files)
 
-            rescue URI::InvalidURIError
+            rescue URI::InvalidURIError => e
                 broken_links += 1
                 error_type = 'Invalid URL'
                 print_msg(link, error_type, files)
