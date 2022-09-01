@@ -95,7 +95,11 @@ def validate(user_input: list[Path], args: argparse.Namespace) -> None:
             for file in files:
                 if os.path.basename(file) == 'master.adoc':
                     master_adocs.append(file)
-            os.system(f'ruby {lcheck_path} {master_adocs}')
+
+            if master_adocs:
+                os.system(f'ruby {lcheck_path} {master_adocs}')
+            else:
+                logging.error('No master.adoc detected.')
 
         else:
             validating_files(files, start)
