@@ -26,7 +26,7 @@ class Report():
         if output == 'oneline':
             for category, files in self.report.items():
                 for file in files:
-                    logging.error(f"{file}: {category} found.")
+                    logging.error(f"{category} found: {file}")
             return
 
         if output == 'gitlab':
@@ -52,4 +52,4 @@ class Report():
 
         for category, files in self.report.items():
             logging.error(f"{category} found in the following files:")
-            logging.error('\t' + separator.join(files))
+            print('\t' + separator.join(files))
