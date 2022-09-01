@@ -2,7 +2,6 @@ import re
 
 
 class Tags:
-
     """Define tags."""
     ABSTRACT = '[role="_abstract"]'
     ADD_RES = '[role="_additional-resources"]'
@@ -10,7 +9,7 @@ class Tags:
     LVLOFFSET = ':leveloffset:'
 
 
-class Regex:
+class Regexes:
     """Define regular expressions for the checks."""
 
     # Additional resources tag
@@ -57,7 +56,8 @@ class Regex:
     # ifdef::condition[description!]
     # ifndef::condition[description!]
     #
-    SINGLE_LINE_CONDITIONAL = re.compile(r'(ifdef|ifndef)::[\S]*\[(?!\])(.*)\]')
+    SINGLE_LINE_CONDITIONAL = re.compile(
+        r'(ifdef|ifndef)::[\S]*\[(?!\])(.*)\]')
 
     # Empty line after
     #
@@ -102,7 +102,6 @@ class Regex:
     #
     SNIPPET_TYPE = re.compile(r':_content-type: SNIPPET')
 
-
     # Vanilla xrefs
     #
     # Matches any vanilla xref
@@ -137,7 +136,8 @@ class Regex:
     # Example
     #   // This is a single-line comment
     #
-    SINGLE_LINE_COMMENT = re.compile(r'(?<!\/\/)(?<!\/)^\/\/(?!\/\/).*\n', re.M)
+    SINGLE_LINE_COMMENT = re.compile(
+        r'(?<!\/\/)(?<!\/)^\/\/(?!\/\/).*\n', re.M)
 
     # In-line anchor
     #
@@ -203,7 +203,8 @@ class Regex:
     #   https://link.com[Human readable label]
     #   link:https://link.com[Human readable label]
     #
-    HUMAN_READABLE_LABEL = re.compile(r'xref:[\S]*\[\]|\b(?:https?|file|ftp|irc):\/\/[^\s\[\]<]*\[\]')
+    HUMAN_READABLE_LABEL = re.compile(
+        r'xref:[\S]*\[\]|\b(?:https?|file|ftp|irc):\/\/[^\s\[\]<]*\[\]')
 
     # Include statement
     # Matches all includes
@@ -234,7 +235,8 @@ class Regex:
     #   = Related information
     #   .Related information
     #
-    RELATED_INFO = re.compile(r'= Related information|\.Related information', re.IGNORECASE)
+    RELATED_INFO = re.compile(
+        r'= Related information|\.Related information', re.IGNORECASE)
 
     # Additional information resources section
     #
@@ -245,9 +247,11 @@ class Regex:
     #   == Additional information
     #   .Additional information
     #
-    ADDITIONAL_RES = re.compile(r'== Additional resources|\.Additional resources', re.IGNORECASE)
+    ADDITIONAL_RES = re.compile(
+        r'== Additional resources|\.Additional resources', re.IGNORECASE)
 
-    '''CORRECT_ADDITIONAL_RES_SECTION = re.compile(r'\[role="_additional-resources"\]\n+((ifdef|ifndef|ifeval|endif)::.*\]\n+)*?(== Additional resources|\.Additional resources)\n+((ifdef|ifndef|ifeval|endif)::.*\]\n+)*?((\* .*\n+((ifdef|ifndef|ifeval|endif)::.*\]\n+)*?(^//.*\n+)*?((\/{4,})(.*\n)*?(\/{4,})\n+)*?)*\z)', re.IGNORECASE)'''
+    # CORRECT_ADDITIONAL_RES_SECTION = re.compile(
+    #     r'\[role="_additional-resources"\]\n+((ifdef|ifndef|ifeval|endif)::.*\]\n+)*?(== Additional resources|\.Additional resources)\n+((ifdef|ifndef|ifeval|endif)::.*\]\n+)*?((\* .*\n+((ifdef|ifndef|ifeval|endif)::.*\]\n+)*?(^//.*\n+)*?((\/{4,})(.*\n)*?(\/{4,})\n+)*?)*\z)', re.IGNORECASE)
 
     # Deprecated footnoteref macro
     #
