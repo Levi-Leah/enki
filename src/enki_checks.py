@@ -54,9 +54,17 @@ def vanilla_xref_check(stripped_file: str) -> bool:
         return False
 
 
-def human_readable_label_check(stripped_file: str) -> bool:
+def human_readable_label_check_links(stripped_file: str) -> bool:
+    "Check if the human readable label is present in links."""
+    if re.findall(Regexes.HUMAN_READABLE_LABEL_LINKS, stripped_file):
+        return True
+    else:
+        return False
+
+
+def human_readable_label_check_xrefs(stripped_file: str) -> bool:
     "Check if the human readable label is present in xrefs."""
-    if re.findall(Regexes.HUMAN_READABLE_LABEL, stripped_file):
+    if re.findall(Regexes.HUMAN_READABLE_LABEL_XREFS, stripped_file):
         return True
     else:
         return False
@@ -136,9 +144,13 @@ def checks(
     # if html_markup_check(stripped_file):
     #    report.create_report('HTML markup', file_path)
 
-    if human_readable_label_check(stripped_file):
+    if human_readable_label_check_links(stripped_file):
         report.create_report(
-            'Xrefs or links without the human readable label', file_path)
+            'Links without the human readable label', file_path)
+
+    if human_readable_label_check_xrefs(stripped_file):
+        report.create_report(
+            'Xrefs without the human readable label', file_path)
 
     if empty_line_after_include_check(stripped_file):
         report.create_report(

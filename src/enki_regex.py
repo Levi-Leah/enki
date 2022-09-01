@@ -194,17 +194,26 @@ class Regexes:
     #    --
     CODE_BLOCK = re.compile(r'((-|\.){2,}|--\n+)(.*\n)*?((-|\.){2,})')
 
-    # Human readable label
-    # Matches human readable label for xrefs and links
+    # Links without uman readable label
+    # Matches links without human readable label
     #
     # Examples
     #
-    #   xref:some-id[Human readable label]
-    #   https://link.com[Human readable label]
-    #   link:https://link.com[Human readable label]
+    #   https://link.com[]
+    #   link:https://link.com[]
     #
-    HUMAN_READABLE_LABEL = re.compile(
-        r'xref:[\S]*\[\]|\b(?:https?|file|ftp|irc):\/\/[^\s\[\]<]*\[\]')
+    HUMAN_READABLE_LABEL_LINKS = re.compile(
+        r'\b(?:https?|file|ftp|irc):\/\/[^\s\[\]<]*\[\]')
+
+    # Xrefs without human readable label
+    # Matches xrefs without human readable label for xrefs and links
+    #
+    # Examples
+    #
+    #   xref:some-id[]
+    #
+    HUMAN_READABLE_LABEL_XREFS = re.compile(
+        r'xref:[\S]*\[\]')
 
     # Include statement
     # Matches all includes
