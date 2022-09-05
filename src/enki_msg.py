@@ -45,8 +45,11 @@ class Report():
                     # args: sys out, sys err, assertions num
                     time_stamp = datetime.timestamp(datetime.now())
                     # args: status, class
-                    test_case = TestCase(testcase_name, testsuite_name, duration, '', '', '', time_stamp, '', '', file) # args: line, log, url
-                    test_case.add_failure_info(f'{category} found.', '', 'ERROR')
+                    test_case = TestCase(testcase_name, testsuite_name,
+                                         duration, '', '', '', time_stamp, '',
+                                         '', file)  # args: line, log, url
+                    test_case.add_failure_info(
+                        f'{category} found.', '', 'ERROR')
                     test_cases.append(test_case)
 
             # args: hostname, id, package, timestamp, ? num, file, log, url, sys out, sys err
