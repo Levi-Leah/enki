@@ -93,6 +93,10 @@ def validating_files(files: list[str], start_time: float, output: str = None) ->
     if file_validation.count == 0:
         sys.exit(0)
 
-    file_validation.print_report(start_time, output)
+    if output == 'gitlab' or 'oneline':
 
+        file_validation.print_report(start_time, output)
+        sys.exit(2)
+
+    file_validation.print_report(output)
     sys.exit(2)
