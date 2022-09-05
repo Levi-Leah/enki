@@ -1,5 +1,5 @@
 import unittest
-from src.enki_regex import Regex
+from src.enki_regex import Regexes
 from src.enki_checks import *
 from src.enki_msg import Report
 import os
@@ -17,8 +17,8 @@ class TestTooManyCommentsCheck(unittest.TestCase):
 
         with open(file_name, 'r') as file:
             original = file.read()
-            stripped = Regex.MULTI_LINE_COMMENT.sub('', original)
-            stripped = Regex.SINGLE_LINE_COMMENT.sub('', stripped)
+            stripped = Regexes.MULTI_LINE_COMMENT.sub('', original)
+            stripped = Regexes.SINGLE_LINE_COMMENT.sub('', stripped)
 
 
             result = too_many_comments_check(original, stripped, report, file_name)
@@ -30,8 +30,8 @@ class TestTooManyCommentsCheck(unittest.TestCase):
 
         with open(file_name, 'r') as file:
             original = file.read()
-            stripped = Regex.MULTI_LINE_COMMENT.sub('', original)
-            stripped = Regex.SINGLE_LINE_COMMENT.sub('', stripped)
+            stripped = Regexes.MULTI_LINE_COMMENT.sub('', original)
+            stripped = Regexes.SINGLE_LINE_COMMENT.sub('', stripped)
 
 
             result = too_many_comments_check(original, stripped, report, file_name)
@@ -97,7 +97,7 @@ include::other.adoc[leveloffset=+1]
 """
 
         result = empty_line_after_include_check(file_contents)
-        self.assertIsNone(result, "Should return None when the empty line is present.")
+        self.assertFalse(result, "Should return False when the empty line is present.")
 
     def test_empty_line_not_present(self):
         file_contents = """= Heading
@@ -131,15 +131,15 @@ class TestVanillaXrefCheck(unittest.TestCase):
         self.assertFalse(result, "Should return False when file has no vanilla xref.")
 
 
-class TestHumanReadableLabelCheck(unittest.TestCase):
+class TestHumanReadableLabelCheckXrefs(unittest.TestCase):
     def test_label_present_xref(self):
         file_contents = """= Heading
 
 [role="_abstract"]
 This is examle abstract and xref:human-readable_label[present]."""
 
-        result = human_readable_label_check(file_contents)
-        self.assertIsNone(result, "Should return None when xref has a human readable label.")
+        result = human_readable_label_check_xrefs(file_contents)
+        self.assertFalse(result, "Should return False when xref has a human readable label.")
 
     def test_label_not_present_xref(self):
         file_contents = """= Heading
@@ -148,17 +148,19 @@ This is examle abstract and xref:human-readable_label[present]."""
 This is examle abstract and xref:human-readable_label[present].
 xref:human-readable-label_not-present[]."""
 
-        result = human_readable_label_check(file_contents)
+        result = human_readable_label_check_xrefs(file_contents)
         self.assertTrue(result, "Should return True when xref has no human readable label.")
 
+
+class TestHumanReadableLabelCheckLinks(unittest.TestCase):
     def test_label_present_link(self):
         file_contents = """= Heading
 
 [role="_abstract"]
 This is examle abstract and http://www.sample-link.com[present]."""
 
-        result = human_readable_label_check(file_contents)
-        self.assertIsNone(result, "Should return None when link has a human readable label.")
+        result = human_readable_label_check_links(file_contents)
+        self.assertFalse(result, "Should return False when link has a human readable label.")
 
     def test_label_not_present_link(self):
         file_contents = """= Heading
@@ -166,7 +168,7 @@ This is examle abstract and http://www.sample-link.com[present]."""
 [role="_abstract"]
 This is examle abstract and http://www.sample-link.com[]."""
 
-        result = human_readable_label_check(file_contents)
+        result = human_readable_label_check_links(file_contents)
         self.assertTrue(result, "Should return True when link has no human readable label.")
 
 
@@ -185,7 +187,7 @@ class TestHtmlMarkupCheck(unittest.TestCase):
 <nothtml>markup<nothtml>"""
 
         result = html_markup_check(file_contents)
-        self.assertIsNone(result, "Should return None when file has no HTML markup.")
+        self.assertFalse(result, "Should return False when file has no HTML markup.")
 
 
 class TestNestingInModules(unittest.TestCase):

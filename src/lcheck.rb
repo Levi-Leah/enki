@@ -61,8 +61,19 @@ def return_broken_links()
 end
 
 
+def print_msg(link, error_type, files)
+    puts "\nLink: #{link}"
+    puts "Response code: #{error_type}"
+
+    if files.count > 1
+        puts "File count: #{files.count}"
+    end
+    puts "File path: #{files.join(", ")}"
+end
+
+
 def queue_broken_links(links_dict)
-    # takes in the link: path hash
+    # takes in the \nLink: path hash
         # #e.g. hash = {'www.example.com'=>['path/to/file1.adoc', 'path/to/file2.adoc']}
     # Runs link check on the hash keys
     # Returns the list of broken links (for statistics)
@@ -86,30 +97,21 @@ def queue_broken_links(links_dict)
 
             begin
                 conn.get(link)
-            rescue URI::BadURIError
+            rescue URI::BadURIError => e
                 broken_links += 1
-                puts "\nFiles: #{files.count}"
-                files.each do |file|
-                    puts file
-                end
-                puts "Link: #{link}"
-                puts "Response code: Bad URI"
-            rescue URI::InvalidURIError
+                error_type = 'Bad URI'
+                print_msg(link, error_type, files)
+
+            rescue URI::InvalidURIError => e
                 broken_links += 1
-                puts "\nFiles: #{files.count}"
-                files.each do |file|
-                    puts file
-                end
-                puts "Link: #{link}"
-                puts "Response code: Invalid URL"
+                error_type = 'Invalid URL'
+                print_msg(link, error_type, files)
+
             rescue Faraday::Error => e
                 broken_links += 1
-                puts "\nFiles: #{files.count}"
-                files.each do |file|
-                    puts "#{file}"
-                end
-                puts "Link: #{link}"
-                puts "Response code: #{e.response[:status]}"
+                error_type = e.response[:status]
+                print_msg(link, error_type, files)
+
             end
             semaphore.push(1) # Release token
         end
