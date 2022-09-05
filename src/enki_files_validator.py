@@ -1,10 +1,14 @@
 import os
 import re
 import sys
+import time
 
 from enki_msg import Report
 from enki_checks import checks, nesting_in_modules_check, too_many_comments_check
 from enki_regex import Regexes
+
+
+start_time = time.time()
 
 
 def sort_files(files: list[str]) -> tuple[list[str], list[str], list[str]]:
@@ -97,5 +101,5 @@ def validating_files(files: list[str], start_time: float, output: str = None) ->
         file_validation.print_report(output, start_time)
         sys.exit(0)
 
-    file_validation.print_report(output, start_time)
+    file_validation.print_report(output)
     sys.exit(2)
