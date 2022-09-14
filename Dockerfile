@@ -4,7 +4,8 @@
 FROM registry.access.redhat.com/ubi9-minimal:latest
 WORKDIR /app
 COPY . .
-RUN microdnf install -y python3 python3-pip gem
+# findutils provides xargs
+RUN microdnf install -y findutils python3 python3-pip gem
 RUN pip3 install -r requirements.txt
 
 # Create a simple executable file for enki
