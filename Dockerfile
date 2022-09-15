@@ -6,7 +6,11 @@ WORKDIR /app
 COPY . .
 # findutils provides xargs
 RUN microdnf install -y findutils python3 python3-pip gem
+# Install Python dependencies
 RUN pip3 install -r requirements.txt
+# Install Ruby dependencies
+RUN gem install bundler
+RUN bundle install --gemfile=Gemfile
 
 # Create a simple executable file for enki
 RUN echo '#!/bin/sh' > /usr/local/bin/enki
