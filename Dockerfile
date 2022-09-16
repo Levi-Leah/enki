@@ -4,6 +4,7 @@
 FROM registry.access.redhat.com/ubi9-minimal:latest
 WORKDIR /app
 COPY . .
+
 # findutils provides xargs
 RUN microdnf install -y findutils python3 python3-pip gem
 # Install Python dependencies
