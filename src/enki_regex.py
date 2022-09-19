@@ -175,9 +175,9 @@ class Regexes:
     #
     INTERNAL_IFDEF = re.compile(r'(ifdef::internal\[\])(.*\n)*?(endif::\[\])')
 
-    # Code blocks
+    # Code block 4 dashes
     #
-    # Matches code blocks
+    # Matches code blocks with 4 dashes
     #
     # Example
     #
@@ -185,14 +185,31 @@ class Regexes:
     #    this is a code block
     #    ----
     #
+    CODE_BLOCK_DASHES = re.compile(r'(-{4,})(.*\n)*?(-{4,})')
+
+    # Code block 4 dots
+    #
+    # Matches code blocks with 4 dots
+    #
+    # Example
+    #
     #    ....
-    #    this is also a code block
+    #    this is a code block
     #    ....
     #
+    CODE_BLOCK_DOTS = re.compile(r'(\.{4,})(.*\n)*?(\.{4,})')
+
+    # Code block 2 dashes
+    #
+    # Matches code blocks with 4 dashes
+    #
+    # Example
+    #
     #    --
-    #    I guess this is a thing too
+    #    this is a code block
     #    --
-    CODE_BLOCK = re.compile(r'((-|\.){2,}|--\n+)(.*\n)*?((-|\.){2,})')
+    #
+    CODE_BLOCK_TWO_DASHES = re.compile(r'(-{2,})(.*\n)*?(-{2,})')
 
     # Links without uman readable label
     # Matches links without human readable label
