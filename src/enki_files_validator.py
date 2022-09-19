@@ -54,7 +54,9 @@ def validate(
             # are replaced
             too_many_comments_check(original, stripped, report, relative_path)
 
-            stripped = Regexes.CODE_BLOCK.sub('', stripped)
+            stripped = Regexes.CODE_BLOCK_DASHES.sub('', stripped)
+            stripped = Regexes.CODE_BLOCK_DOTS.sub('', stripped)
+            stripped = Regexes.CODE_BLOCK_TWO_DASHES.sub('', stripped)
             stripped = Regexes.INTERNAL_IFDEF.sub('', stripped)
             stripped = Regexes.SINGLE_LINE_CONDITIONAL.sub('', stripped)
 
