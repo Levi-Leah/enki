@@ -19,7 +19,7 @@ Command-line validation tool.
     sh install.sh
     ```
 
-1. Source your `~/.baschrc` file:
+1. Source your `~/.bashrc` file:
     ```bash
     source ~/.bashrc
     ```
