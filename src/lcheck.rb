@@ -73,7 +73,7 @@ end
 
 
 def queue_broken_links(links_dict)
-    # takes in the \nLink: path hash
+    # Takes in the \nLink: path hash
         # #e.g. hash = {'www.example.com'=>['path/to/file1.adoc', 'path/to/file2.adoc']}
     # Runs link check on the hash keys
     # Returns the list of broken links (for statistics)
