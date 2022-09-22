@@ -9,6 +9,7 @@ COPY . .
 RUN microdnf install -y findutils python3 python3-pip gem
 # Install Python dependencies
 RUN pip3 install -r requirements.txt
+
 # Install Ruby dependencies
 RUN gem install bundler
 RUN bundle install --gemfile=Gemfile
