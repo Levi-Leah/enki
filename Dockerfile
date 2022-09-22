@@ -20,7 +20,7 @@ RUN echo 'python3 /app/src/enki.py "$@"' >> /usr/local/bin/enki
 RUN chmod +x /usr/local/bin/enki
 
 # When running this container interactively, use `-v .:/mnt/enki:Z`
-# to mount the current directory in the host to the container working dir.
+# to mount the current directory in the host to the container working dir
 VOLUME ["/mnt/enki"]
 WORKDIR "/mnt/enki"
 CMD ["enki"]
