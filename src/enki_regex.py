@@ -209,7 +209,7 @@ class Regexes:
     #    this is a code block
     #    --
     #
-    CODE_BLOCK_TWO_DASHES = re.compile(r'(-{2,})(.*\n)*?(-{2,})')
+    CODE_BLOCK_TWO_DASHES = re.compile(r'^(-{2,})(.*\n)*?(-{2,})\n')
 
     # Links without uman readable label
     # Matches links without human readable label
