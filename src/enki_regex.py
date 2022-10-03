@@ -262,7 +262,7 @@ class Regexes:
     #   .Related information
     #
     RELATED_INFO = re.compile(
-        r'= Related information|\.Related information', re.IGNORECASE)
+        r'== Related information|\.Related information', re.IGNORECASE)
 
     # Additional information resources section
     #
