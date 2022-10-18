@@ -15,6 +15,8 @@
 | ERROR: No empty line after the include statement found | The file does not have empty lines after include statements. |
 | ERROR: Nesting in modules found | The module contains includes of files other than snippets (e.g. modules or assemblies). |
 | ERROR: "Related information" section found | The file contains `Related information` section instead of the `Additional recourses` section. |
+| ERROR: `pantheonenv` variable found | The file contains conditionals that use `pantheonenv`. Such conditionals should be rewritten or removed. |
+| ERROR: Path-based xref found | The file contains a path-based xref (e.g. xref:some/path/to/file.adoc[]). Such xrefs are no longer supported and should be removed.  |
 
 
 # Link error messages
