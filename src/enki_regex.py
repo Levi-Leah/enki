@@ -11,6 +11,26 @@ class Tags:
 
 class Regexes:
     """Define regular expressions for the checks."""
+    
+    # path-based xrefs
+    #
+    # Matches path-based xrefs
+    #
+    # Examples
+    #
+    #   xref:modules/performance/ref_priority-map.adoc[Description of the priority range]
+    #
+    PATH_XREF = re.compile(r'xref:(.+?)\/([^\/]+?)\.adoc\[')
+
+    # pantheonenv var
+    #
+    # Matches pantheonenv var
+    #
+    # Examples
+    #
+    #   ifndef::pantheonenv[]
+    #
+    PV_ENV = re.compile(r'pantheonenv')
 
     # Additional resources tag
     #

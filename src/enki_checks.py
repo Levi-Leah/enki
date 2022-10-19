@@ -4,6 +4,22 @@ from enki_msg import Report
 from enki_regex import Regexes, Tags
 
 
+def path_xref_check(stripped_file: str) -> bool:
+    """Checks if path-based xref is present"""
+    if re.findall(Regexes.PATH_XREF, stripped_file):
+        return True
+    else:
+        return False
+
+
+def pantheon_env_check(stripped_file: str) -> bool:
+    """Checks if pantheonenv var is present"""
+    if re.findall(Regexes.PV_ENV, stripped_file):
+        return True
+    else:
+        return False
+
+
 def too_many_comments_check(
         original_file: str,
         stripped_file: str,
@@ -159,3 +175,11 @@ def checks(
     if empty_line_after_include_check(stripped_file):
         report.create_report(
             'No empty line after the include statement', file_path)
+
+
+    if pantheon_env_check(stripped_file):
+        report.create_report('`pantheonenv` variable', file_path)
+
+    
+    if path_xref_check(stripped_file):
+        report.create_report('Path-based xref', file_path)

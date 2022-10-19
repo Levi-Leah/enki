@@ -6,6 +6,49 @@ import os
 
 
 # class for every function
+class TestPathXrefCheck(unittest.TestCase):
+    def test_path_xref(self):
+        file_contents = """
+xref:modules/performance/proc_installing-tuna-tool.adoc[Installing tuna tool].   
+"""
+        result = path_xref_check(file_contents)
+        self.assertTrue(result, "Should return True when file has a pantheonenv var.")
+
+    def test_no_path_xref(self):
+        file_contents = """
+xref:some_xref[Installing tuna tool].   
+"""
+        result = path_xref_check(file_contents)
+        self.assertFalse(result, "Should return False when file has a pantheonenv var.")
+
+
+
+class TestPantheonEnvCheck(unittest.TestCase):
+    def test_pv_env_present(self):
+        file_contents = """
+ifdef::pantheonenv[]
+For more infomration on how to use these parameters to configure HugeTLB pages at boot time, see xref:modules/performance/proc_configuring-hugetlb-at-boot-tinme.adoc[Configuring HugeTLB at boot time].
+endif::[]
+ifndef::pantheonenv[]
+For more infomration on how to use these parameters to configure HugeTLB pages at boot time, see link:https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html-single/monitoring_and_managing_system_status_and_performance/configuring-huge-pages_monitoring-and-managing-system-status-and-performance#configuring-hugetlb-at-boot-time_configuring-huge-pages[Configuring HugeTLB at boot time].
+endif::[]
+"""
+        result = pantheon_env_check(file_contents)
+        self.assertTrue(result, "Should return True when file has a pantheonenv var.")
+
+    def test_no_pv_env(self):
+        file_contents = """
+ifdef::other[]
+For more infomration on how to use these parameters to configure HugeTLB pages at boot time, see xref:modules/performance/proc_configuring-hugetlb-at-boot-tinme.adoc[Configuring HugeTLB at boot time].
+endif::[]
+ifndef::other[]
+For more infomration on how to use these parameters to configure HugeTLB pages at boot time, see link:https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/8/html-single/monitoring_and_managing_system_status_and_performance/configuring-huge-pages_monitoring-and-managing-system-status-and-performance#configuring-hugetlb-at-boot-time_configuring-huge-pages[Configuring HugeTLB at boot time].
+endif::[]
+"""
+        result = pantheon_env_check(file_contents)
+        self.assertFalse(result, "Should return False when file has no pantheonenv var.")
+
+
 class TestTooManyCommentsCheck(unittest.TestCase):
     def setUp(self):
         self.current_path = os.path.dirname(__file__)
@@ -237,10 +280,18 @@ Sample text."""
     def test_assembly_section_present(self):
         file_contents = """= Heading
 
-= Related information
+== Related information
 Sample text."""
         result = related_info_check(file_contents)
-        self.assertTrue(result, "Should return True when file has `= Related information` section.")
+        self.assertTrue(result, "Should return True when file has `== Related information` section.")
+
+    def test_assembly_section_present(self):
+        file_contents = """= Heading
+
+.Related information
+Sample text."""
+        result = related_info_check(file_contents)
+        self.assertTrue(result, "Should return True when file has `.Related information` section.")
 
     def test_no_section_present(self):
         file_contents = """= Heading
