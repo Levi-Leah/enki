@@ -88,7 +88,7 @@ class Regexes:
     #   include::file.adoc[]
     #
     #
-    EMPTY_LINE_AFTER_INCLUDE = re.compile(r'include::.*\]\n\n')
+    EMPTY_LINE_AFTER_INCLUDE = re.compile(r'include::.*\]\ninclude::.*\]')
 
     # Module content type tags
     #
