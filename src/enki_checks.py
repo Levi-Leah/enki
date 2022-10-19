@@ -56,7 +56,7 @@ def footnote_ref_check(stripped_file: str) -> bool:
 
 def empty_line_after_include_check(stripped_file: str) -> bool:
     """Checks if there's an empty line after every include statement."""
-    if re.findall(Regexes.INCLUDE_STATEMENT, stripped_file) and not re.findall(Regexes.EMPTY_LINE_AFTER_INCLUDE, stripped_file):
+    if re.findall(Regexes.EMPTY_LINE_AFTER_INCLUDE, stripped_file):
         return True
     else:
         return False
