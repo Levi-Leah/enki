@@ -3,7 +3,7 @@ import re
 import sys
 
 from enki_msg import Report
-from enki_checks import checks, nesting_in_modules_check, too_many_comments_check
+from enki_checks import checks, nesting_in_modules_check, too_many_comments_check, con_lang_check
 from enki_regex import Regexes
 
 
@@ -32,7 +32,8 @@ def validate(
         report: Report,
         undefined_content: list[str],
         prefix_assemblies: list[str],
-        prefix_modules: list[str]) -> Report:
+        prefix_modules: list[str],
+        output: str = None) -> Report:
     """Run validation checks and return the report."""
 
     undetermined_file_type = []
@@ -53,6 +54,10 @@ def validate(
             # internal/single line conditionals
             # are replaced
             too_many_comments_check(original, stripped, report, relative_path)
+
+            if output != 'gitlab':
+                # this check is CLI only
+                con_lang_check(stripped, report, relative_path)
 
             stripped = Regexes.CODE_BLOCK_DASHES.sub('', stripped)
             stripped = Regexes.CODE_BLOCK_DOTS.sub('', stripped)
@@ -90,7 +95,7 @@ def validating_files(files: list[str], start_time: float, output: str = None) ->
 
     prefix_assemblies, prefix_modules, undefined_content = sort_files(files)
     file_validation = validate(
-        files, report, undefined_content, prefix_assemblies, prefix_modules)
+        files, report, undefined_content, prefix_assemblies, prefix_modules, output)
 
     if file_validation.count == 0:
         sys.exit(0)
