@@ -4,6 +4,17 @@ from enki_msg import Report
 from enki_regex import Regexes, Tags
 
 
+# standalone test to run on filenames;
+# exclusive to CLI
+def con_lang_check_filename(
+    report: Report,
+    file_path: str) -> None:
+    """Checks if stop words are present."""
+    if re.findall(Regexes.CON_LANG, file_path):
+        report.create_report(
+            'Filename contains word such as master, slave, whitelist, blacklist. Stopwords found', file_path)
+
+
 # standalone test to run on partially stripepd files;
 # exclusive to CLI
 def con_lang_check(

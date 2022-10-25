@@ -3,7 +3,7 @@ import re
 import sys
 
 from enki_msg import Report
-from enki_checks import checks, nesting_in_modules_check, too_many_comments_check, con_lang_check
+from enki_checks import checks, nesting_in_modules_check, too_many_comments_check, con_lang_check, con_lang_check_filename
 from enki_regex import Regexes
 
 
@@ -57,6 +57,7 @@ def validate(
 
             if output != 'gitlab':
                 # this check is CLI only
+                con_lang_check_filename(report, relative_path)
                 con_lang_check(stripped, report, relative_path)
 
             stripped = Regexes.CODE_BLOCK_DASHES.sub('', stripped)

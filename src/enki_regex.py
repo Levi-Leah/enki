@@ -22,7 +22,7 @@ class Regexes:
     #   master
     #   slave
     #
-    CON_LANG = re.compile(r'master|slave|blacklist|black list|black-list|whitelist|white list|white-list')
+    CON_LANG = re.compile(r'master|slave|blacklist|black list|black-list|black_list|whitelist|white list|white-list|white_list')
     
     # Path-based xrefs
     #
