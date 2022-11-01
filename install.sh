@@ -3,6 +3,11 @@
 path_to_script="$(realpath $(dirname "$0"))"
 enki=$path_to_script'/src/enki.py'
 
+# install ruby
+sudo dnf install ruby
+sudo dnf install pip
+
+
 # install dependencies
 if test -f $path_to_script'/requirements.txt'; then
     echo 'installing python dependencies'

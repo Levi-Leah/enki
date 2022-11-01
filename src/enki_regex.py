@@ -11,8 +11,20 @@ class Tags:
 
 class Regexes:
     """Define regular expressions for the checks."""
+    # Concious language
+    #
+    # Matches stop words that shall not be used in the docs
+    #
+    # Examples
+    #
+    #   blacklist
+    #   whitelist
+    #   master
+    #   slave
+    #
+    CON_LANG = re.compile(r'master|slave|blacklist|black list|black-list|black_list|whitelist|white list|white-list|white_list')
     
-    # path-based xrefs
+    # Path-based xrefs
     #
     # Matches path-based xrefs
     #

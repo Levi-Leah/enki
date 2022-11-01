@@ -17,6 +17,8 @@
 | ERROR: "Related information" section found | The file contains `Related information` section instead of the `Additional recourses` section. |
 | ERROR: `pantheonenv` variable found | The file contains conditionals that use `pantheonenv` attribute. Such conditionals should be rewritten or removed. |
 | ERROR: Path-based xref found | The file contains a path-based xref (e.g. xref:some/path/to/file.adoc[]). Such xrefs are no longer supported and should be removed.  |
+| ERROR: Words such as master, slave, whitelist, blacklist found | The file contains stop words that are not allowed under conscious language inniciative. |
+| ERROR: Filename contains word such as master, slave, whitelist, blacklist. Stopwords found | The filename contains stop words that are not allowed under conscious language inniciative. |
 
 
 # Link error messages

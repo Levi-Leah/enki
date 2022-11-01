@@ -6,6 +6,161 @@ import os
 
 
 # class for every function
+class TestConLangCheck_filename(unittest.TestCase):
+
+    def test_no_stopwords(self):
+        file_path = "some/path"
+        report = Report()
+
+        result = con_lang_check_filename(report, file_path)
+        self.assertNotIn('Words such as master, slave, whitelist, blacklist', report.report)
+
+    def test_stopword_master(self):
+        file_path = "some/master.adoc"
+        report = Report()
+
+        result = con_lang_check_filename(report, file_path)
+        self.assertIn('Filename contains word such as master, slave, whitelist, blacklist. Stopwords found', report.report)
+
+
+    def test_stopword_slave(self):
+        file_path = "some/slave.adoc"
+        report = Report()
+
+        result = con_lang_check_filename(report, file_path)
+        self.assertIn('Filename contains word such as master, slave, whitelist, blacklist. Stopwords found', report.report)
+
+    def test_stopword_blacklist(self):
+        file_path = "some/blacklist.adoc"
+        report = Report()
+
+        result = con_lang_check_filename(report, file_path)
+        self.assertIn('Filename contains word such as master, slave, whitelist, blacklist. Stopwords found', report.report)
+
+    def test_stopword_black_list(self):
+        file_path = "some/black_list.adoc"
+        report = Report()
+
+        result = con_lang_check_filename(report, file_path)
+        self.assertIn('Filename contains word such as master, slave, whitelist, blacklist. Stopwords found', report.report)
+
+    def test_stopword_black_list_dash(self):
+        file_path = "some/black-list.adoc"
+        report = Report()
+
+        result = con_lang_check_filename(report, file_path)
+        self.assertIn('Filename contains word such as master, slave, whitelist, blacklist. Stopwords found', report.report)
+
+    def test_stopword_whitelist(self):
+        file_path = "some/whitelist.adoc"
+        report = Report()
+
+        result = con_lang_check_filename(report, file_path)
+        self.assertIn('Filename contains word such as master, slave, whitelist, blacklist. Stopwords found', report.report)
+
+    def test_stopword_white_list(self):
+        file_path = "some/white_list.adoc"
+        report = Report()
+
+        result = con_lang_check_filename(report, file_path)
+        self.assertIn('Filename contains word such as master, slave, whitelist, blacklist. Stopwords found', report.report)
+
+    def test_stopword_white_list_dash(self):
+        file_path = "some/white-list.adoc"
+        report = Report()
+
+        result = con_lang_check_filename(report, file_path)
+        self.assertIn('Filename contains word such as master, slave, whitelist, blacklist. Stopwords found', report.report)
+
+
+
+class TestConLangCheck(unittest.TestCase):
+    def setUp(self):
+        self.file_path = "some/path"
+
+    def test_no_stopwords(self):
+        report = Report()
+
+        file_contents = """
+just process"""
+
+        result = con_lang_check(file_contents, report, self.file_path)
+        self.assertNotIn('Words such as master, slave, whitelist, blacklist', report.report)
+
+    def test_stopword_master(self):
+        report = Report()
+
+        file_contents = """
+master process"""
+
+        result = con_lang_check(file_contents, report, self.file_path)
+        self.assertIn('Words such as master, slave, whitelist, blacklist', report.report)
+
+
+    def test_stopword_slave(self):
+        report = Report()
+
+        file_contents = """
+slave process"""
+
+        result = con_lang_check(file_contents, report, self.file_path)
+        self.assertIn('Words such as master, slave, whitelist, blacklist', report.report)
+
+    def test_stopword_whitelist(self):
+        report = Report()
+
+        file_contents = """
+whitelist process"""
+
+        result = con_lang_check(file_contents, report, self.file_path)
+        self.assertIn('Words such as master, slave, whitelist, blacklist', report.report)
+
+    def test_stopword_white_list(self):
+        report = Report()
+
+        file_contents = """
+white list process"""
+
+        result = con_lang_check(file_contents, report, self.file_path)
+        self.assertIn('Words such as master, slave, whitelist, blacklist', report.report)   
+
+    def test_stopword_white_list_dash(self):
+        report = Report()
+
+        file_contents = """
+white-list process"""
+
+        result = con_lang_check(file_contents, report, self.file_path)
+        self.assertIn('Words such as master, slave, whitelist, blacklist', report.report)
+
+    def test_stopword_blacklist(self):
+        report = Report()
+
+        file_contents = """
+blacklist process"""
+
+        result = con_lang_check(file_contents, report, self.file_path)
+        self.assertIn('Words such as master, slave, whitelist, blacklist', report.report)
+
+    def test_stopword_black_list(self):
+        report = Report()
+
+        file_contents = """
+black list process"""
+
+        result = con_lang_check(file_contents, report, self.file_path)
+        self.assertIn('Words such as master, slave, whitelist, blacklist', report.report)   
+
+    def test_stopword_black_list_dash(self):
+        report = Report()
+
+        file_contents = """
+black-list process"""
+
+        result = con_lang_check(file_contents, report, self.file_path)
+        self.assertIn('Words such as master, slave, whitelist, blacklist', report.report)
+
+
 class TestPathXrefCheck(unittest.TestCase):
     def test_path_xref(self):
         file_contents = """

@@ -4,8 +4,31 @@ from enki_msg import Report
 from enki_regex import Regexes, Tags
 
 
+# standalone test to run on filenames;
+# exclusive to CLI
+def con_lang_check_filename(
+    report: Report,
+    file_path: str) -> None:
+    """Checks if stop words are present."""
+    if re.findall(Regexes.CON_LANG, file_path):
+        report.create_report(
+            'Filename contains word such as master, slave, whitelist, blacklist. Stopwords found', file_path)
+
+
+# standalone test to run on partially stripepd files;
+# exclusive to CLI
+def con_lang_check(
+    stripped_file: str,
+    report: Report,
+    file_path: str) -> None:
+    """Checks if stop words are present."""
+    if re.findall(Regexes.CON_LANG, stripped_file):
+        report.create_report(
+            'Words such as master, slave, whitelist, blacklist', file_path)
+
+
 def path_xref_check(stripped_file: str) -> bool:
-    """Checks if path-based xref is present"""
+    """Checks if path-based xref is present."""
     if re.findall(Regexes.PATH_XREF, stripped_file):
         return True
     else:
@@ -13,7 +36,7 @@ def path_xref_check(stripped_file: str) -> bool:
 
 
 def pantheon_env_check(stripped_file: str) -> bool:
-    """Checks if pantheonenv var is present"""
+    """Checks if pantheonenv var is present."""
     if re.findall(Regexes.PV_ENV, stripped_file):
         return True
     else:
