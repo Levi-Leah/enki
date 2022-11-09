@@ -14,7 +14,7 @@ path = '/home/levi/rhel-8-docs/'
 def get_attribute_files(path):
     attribute_files = []
 
-    patterns = ["_global-rt-attributes.adoc", "_attributes.adoc"]
+    patterns = ["_global-rt-attributes.adoc""]
     # collect attribute files
     posix_paths = [p for p in Path(path).rglob('*') if p.name in patterns]
 
