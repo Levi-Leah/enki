@@ -8,6 +8,7 @@ import time
 import logging
 
 from enki_files_validator import validating_files
+from enki_attributes_validator import validate_attributes
 
 
 def main() -> None:
@@ -34,10 +35,16 @@ def cli_args() -> argparse.Namespace:
 
     parser_a = subparsers.add_parser("validate", help="perform validation")
     group_a = parser_a.add_mutually_exclusive_group()
+
+    # core
     group_a.add_argument("--oneline", action="store_true",
                          help="print one validation error per line")
     group_a.add_argument("--gitlab", action="store_true",
                          help="print validation errors in xml format")
+    group_a.add_argument("--attributes", action="store_true",
+                         help="perform attribute validation")
+
+    # lcheck
     group_a.add_argument("--links", action="store_true",
                          help="perform links validation")
     parser_a.add_argument("path", nargs='+', type=Path, help='path to files')
@@ -86,6 +93,8 @@ def validate(user_input: list[Path], args: argparse.Namespace) -> None:
             validating_files(files, start, output='oneline')
         elif args.gitlab:
             validating_files(files, start, output='gitlab')
+        elif args.attributes:
+            validate_attributes(files, start)
         elif args.links:
             lcheck_path = os.path.dirname(
                 os.path.abspath(__file__)) + '/lcheck.rb'

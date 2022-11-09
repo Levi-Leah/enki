@@ -203,6 +203,6 @@ def checks(
     if pantheon_env_check(stripped_file):
         report.create_report('`pantheonenv` variable', file_path)
 
-    
+
     if path_xref_check(stripped_file):
         report.create_report('Path-based xref', file_path)
