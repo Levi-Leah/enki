@@ -107,6 +107,7 @@ def validate(user_input: list[Path], args: argparse.Namespace) -> None:
                 str_path = str(path)
 
                 if path.is_dir():
+                    # problematic: filenames that start with _ are considered attributes
                     expanded_files = expand_attribute_file_paths(path)
                     for file in expanded_files:
                         if file not in attribute_files:
@@ -121,6 +122,10 @@ def validate(user_input: list[Path], args: argparse.Namespace) -> None:
             if unsupported_attribute_files:
                 separator = "\n\t"
                 logging.error(f'Unsupported file format:\n\t{separator.join(unsupported_attribute_files)}\n')
+                sys.exit(2)
+            elif not attribute_files:
+                separator = "\n\t"
+                logging.error(f'Not an attributes file\n\t{args.attributes}\n')
                 sys.exit(2)
 
             validate_attributes(files, start, attribute_files)

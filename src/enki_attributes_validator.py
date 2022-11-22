@@ -9,6 +9,7 @@ from bs4 import BeautifulSoup
 from enki_files_validator import sort_files
 from enki_msg import Report
 from enki_checks import attr_check
+import logging
 
 
 
@@ -36,7 +37,12 @@ def parse_attributes(attributes):
                         continue
                     attribute_names.append(name)
 
-    return attribute_names
+    if not attribute_names:
+        separator = "\n\t"
+        logging.error(f'Not attributes found in:\n\t{separator.join(attributes)}\n')
+        sys.exit(2)
+    else:
+        return attribute_names
 
 
 def resolve_attributes(attributes, attribute_names):
