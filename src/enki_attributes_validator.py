@@ -8,21 +8,8 @@ from enki_regex import Regexes
 from bs4 import BeautifulSoup
 from enki_files_validator import sort_files
 from enki_msg import Report
+from enki_checks import attr_check
 
-path = '/home/levi/rhel-8-docs/'
-
-def get_attribute_files(path):
-    attribute_files = []
-
-    patterns = ["_global-rt-attributes.adoc", "_attributes.adoc"]
-    # collect attribute files
-    posix_paths = [p for p in Path(path).rglob('*') if p.name in patterns]
-
-    for i in posix_paths:
-        if path not in attribute_files:
-            attribute_files.append(str(i))
-
-    return attribute_files
 
 
 def parse_attributes(attributes):
@@ -96,12 +83,18 @@ def get_resolved_attributes_dict(attributes):
     resolved_attributes_dict = resolve_attributes(attributes, attribute_names)
     # remove keys if value == empty string
     resolved_attributes_dict = {key: value for key, value in resolved_attributes_dict.items() if value}
-    # keys to remove
-    remove_keys = ['toclevels', 'imagesdir']
-    for key in remove_keys:
-        del resolved_attributes_dict[key]
 
-    return resolved_attributes_dict
+    # flip keys and values cause I'm too lazy to rewrite the dict
+    reverse_dict = dict((v,k) for k,v in resolved_attributes_dict.items())
+
+    # list(dict.items()) to avoid RuntimeError: dictionary changed size during iteration
+    # force copies dict
+    for key, value in list(reverse_dict.items()):
+        key1 = key.replace("&nbsp;", " " )
+        if key1 not in reverse_dict:
+            reverse_dict[key1] = value
+
+    return reverse_dict
 
 
 def mock_sort(user_input):
@@ -113,10 +106,9 @@ def mock_sort(user_input):
     return unique_files
 
 
-def validation(user_input):
+def validation(user_input, attribute_files):
     report = Report()
 
-    attribute_files = get_attribute_files(path)
     all_files = mock_sort(user_input)
     dict = get_resolved_attributes_dict(attribute_files)
 
@@ -131,22 +123,21 @@ def validation(user_input):
             stripped = Regexes.SINGLE_LINE_COMMENT.sub('', stripped)
             stripped = Regexes.NBSP.sub(' ', stripped)
 
-            for key, value in dict.items():
-                value = value.replace("&nbsp;", " " )
-                # if re.findall(re.escape(value), stripped):
-                #     print(f"{key} not used in {relative_path}")
-                if re.findall(re.escape(value), stripped):
-                    report.create_report(
-                    f"'{value}' value can be replaced with '{key}' attribute. Value", relative_path)
+            for value, key in dict.items():
+                attr_check(stripped, report, relative_path, value, key)
 
 
     return report
 
 
-def validate_attributes(user_input, start_time):
+def validate_attributes(user_input, start_time, attribute_files):
     report = Report()
+    attribute_names = parse_attributes(attribute_files)
 
-    attribute_validation = validation(user_input)
+    attributes = resolve_attributes(attribute_files, attribute_names)
+
+
+    attribute_validation = validation(user_input, attribute_files)
     if attribute_validation.count == 0:
         sys.exit(0)
 
