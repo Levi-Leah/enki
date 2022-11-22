@@ -4,6 +4,17 @@ from enki_msg import Report
 from enki_regex import Regexes, Tags
 
 
+def attr_check(stripped_file: str,
+    report: Report,
+    file_path: str,
+    value: str,
+    key: str):
+
+    if re.findall(re.escape(value), stripped_file):
+        report.create_report(
+        f"'{value}' value can be replaced with '{key}' attribute. Value", file_path)
+
+
 # standalone test to run on filenames;
 # exclusive to CLI
 def con_lang_check_filename(
