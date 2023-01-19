@@ -169,8 +169,9 @@ def checks(
     if unterminated_conditional_check(stripped_file):
         report.create_report('Unterminated conditional statement', file_path)
 
-    if footnote_ref_check(stripped_file):
-        report.create_report('Deprecated `footnoteref` markup', file_path)
+    # NOTE: DISABLED
+    # if footnote_ref_check(stripped_file):
+    #     report.create_report('Deprecated `footnoteref` markup', file_path)
 
     if related_info_check(stripped_file):
         report.create_report('"Related information" section', file_path)
