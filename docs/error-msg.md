@@ -11,7 +11,6 @@
 | ------------- | ------------- |
 | ERROR: More than 1/3 of the lines are comments. Too many comments found | Comments comprise over 1/3 of the file. |
 | ERROR: Unterminated conditional statement found|The number of the opening conditional statements (e.g. `ifdef`, `ifndef`, `ifeval`) does not match the number of the closing conditional statements (e.g. `endif`). |
-| ERROR: Deprecated \`footnoteref\` markup found | The file contains the deprecated footnote reference (e.g. `footnoteref:[some text]`). |
 | ERROR: No empty line after the include statement found | The file does not have empty lines after include statements. |
 | ERROR: Nesting in modules found | The module contains includes of files other than snippets (e.g. modules or assemblies). |
 | ERROR: "Related information" section found | The file contains `Related information` section instead of the `Additional recourses` section. |

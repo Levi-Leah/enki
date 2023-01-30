@@ -67,12 +67,13 @@ def unterminated_conditional_check(stripped_file: str) -> bool:
         return False
 
 
-def footnote_ref_check(stripped_file: str) -> bool:
-    """Checks if deprecated foornoteref is present."""
-    if re.findall(Regexes.FOOTNOTE_REF, stripped_file):
-        return True
-    else:
-        return False
+# NOTE: DISABLED
+# def footnote_ref_check(stripped_file: str) -> bool:
+#     """Checks if deprecated foornoteref is present."""
+#     if re.findall(Regexes.FOOTNOTE_REF, stripped_file):
+#         return True
+#     else:
+#         return False
 
 # FIXME: might not catch all cases cause of comment being removed
 
@@ -168,8 +169,9 @@ def checks(
     if unterminated_conditional_check(stripped_file):
         report.create_report('Unterminated conditional statement', file_path)
 
-    if footnote_ref_check(stripped_file):
-        report.create_report('Deprecated `footnoteref` markup', file_path)
+    # NOTE: DISABLED
+    # if footnote_ref_check(stripped_file):
+    #     report.create_report('Deprecated `footnoteref` markup', file_path)
 
     if related_info_check(stripped_file):
         report.create_report('"Related information" section', file_path)
@@ -203,6 +205,6 @@ def checks(
     if pantheon_env_check(stripped_file):
         report.create_report('`pantheonenv` variable', file_path)
 
-    
+
     if path_xref_check(stripped_file):
         report.create_report('Path-based xref', file_path)

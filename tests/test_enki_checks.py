@@ -122,7 +122,7 @@ whitelist process"""
 white list process"""
 
         result = con_lang_check(file_contents, report, self.file_path)
-        self.assertIn('Words such as master, slave, whitelist, blacklist', report.report)   
+        self.assertIn('Words such as master, slave, whitelist, blacklist', report.report)
 
     def test_stopword_white_list_dash(self):
         report = Report()
@@ -149,7 +149,7 @@ blacklist process"""
 black list process"""
 
         result = con_lang_check(file_contents, report, self.file_path)
-        self.assertIn('Words such as master, slave, whitelist, blacklist', report.report)   
+        self.assertIn('Words such as master, slave, whitelist, blacklist', report.report)
 
     def test_stopword_black_list_dash(self):
         report = Report()
@@ -164,14 +164,14 @@ black-list process"""
 class TestPathXrefCheck(unittest.TestCase):
     def test_path_xref(self):
         file_contents = """
-xref:modules/performance/proc_installing-tuna-tool.adoc[Installing tuna tool].   
+xref:modules/performance/proc_installing-tuna-tool.adoc[Installing tuna tool].
 """
         result = path_xref_check(file_contents)
         self.assertTrue(result, "Should return True when file has a pantheonenv var.")
 
     def test_no_path_xref(self):
         file_contents = """
-xref:some_xref[Installing tuna tool].   
+xref:some_xref[Installing tuna tool].
 """
         result = path_xref_check(file_contents)
         self.assertFalse(result, "Should return False when file has a pantheonenv var.")
@@ -236,20 +236,21 @@ class TestTooManyCommentsCheck(unittest.TestCase):
             self.assertNotIn('Over 1/3 of the file is comments. Too many comments', report.report)
 
 
-class TestFootnoteRefCheck(unittest.TestCase):
-    def test_deprecated_footnote(self):
-        file_contents = """
-footnoteref:[Some text]
-"""
-        result = footnote_ref_check(file_contents)
-        self.assertTrue(result, "Should return True when file has a deprecated footnoteref.")
-
-    def test_no_footnote(self):
-        file_contents = """
-No footnote.
-"""
-        result = footnote_ref_check(file_contents)
-        self.assertFalse(result, "Should return False when file has no deprecated footnoteref.")
+# NOTE: DISABLED
+# class TestFootnoteRefCheck(unittest.TestCase):
+#     def test_deprecated_footnote(self):
+#         file_contents = """
+# footnoteref:[Some text]
+# """
+#         result = footnote_ref_check(file_contents)
+#         self.assertTrue(result, "Should return True when file has a deprecated footnoteref.")
+#
+#     def test_no_footnote(self):
+#         file_contents = """
+# No footnote.
+# """
+#         result = footnote_ref_check(file_contents)
+#         self.assertFalse(result, "Should return False when file has no deprecated footnoteref.")
 
 
 class TestUnterminatedConditionalCheck(unittest.TestCase):

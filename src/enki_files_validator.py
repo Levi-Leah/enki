@@ -1,6 +1,7 @@
 import os
 import re
 import sys
+from typing import Optional
 
 from enki_msg import Report
 from enki_checks import checks, nesting_in_modules_check, too_many_comments_check, con_lang_check, con_lang_check_filename
@@ -33,7 +34,7 @@ def validate(
         undefined_content: list[str],
         prefix_assemblies: list[str],
         prefix_modules: list[str],
-        output: str = None) -> Report:
+        output: Optional[str] = None) -> Report:
     """Run validation checks and return the report."""
 
     undetermined_file_type = []
