@@ -1,6 +1,7 @@
 import os
 import re
 import sys
+from typing import Optional
 
 from enki_msg import Report
 from enki_checks import checks, nesting_in_modules_check, too_many_comments_check, con_lang_check, con_lang_check_filename
