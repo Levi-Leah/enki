@@ -33,7 +33,7 @@ def validate(
         undefined_content: list[str],
         prefix_assemblies: list[str],
         prefix_modules: list[str],
-        output: Optional[str]) -> Report:
+        output: Optional[str] = None) -> Report:
     """Run validation checks and return the report."""
 
     undetermined_file_type = []
