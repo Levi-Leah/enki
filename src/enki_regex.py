@@ -11,6 +11,20 @@ class Tags:
 
 class Regexes:
     """Define regular expressions for the checks."""
+    # Sudo check
+    #
+    # Matches sudo, su -, root, administrative access
+    #
+    # Examples
+    #
+    #   sudo
+    #   su -
+    #   root
+    #   administrative access (ignire case)
+    #
+    SUDO = re.compile(r'sudo|su -|root| administrative access', re.IGNORECASE)
+
+
     # Concious language
     #
     # Matches stop words that shall not be used in the docs
@@ -23,7 +37,7 @@ class Regexes:
     #   slave
     #
     CON_LANG = re.compile(r'master|slave|blacklist|black list|black-list|black_list|whitelist|white list|white-list|white_list')
-    
+
     # Path-based xrefs
     #
     # Matches path-based xrefs
