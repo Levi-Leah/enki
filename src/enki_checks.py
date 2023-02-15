@@ -1,4 +1,5 @@
 import re
+import itertools
 
 from enki_msg import Report
 from enki_regex import Regexes, Tags
@@ -11,19 +12,17 @@ def sudo_check(
     """Checks if sudo access is mentioned in documentation"""
     code_block_dots = Regexes.CODE_BLOCK_DOTS.findall(stripped_file)
     code_block_dashes = Regexes.CODE_BLOCK_DASHES.findall(stripped_file)
+    code_block_two_dashes = Regexes.CODE_BLOCK_TWO_DASHES.findall(stripped_file)
 
-    for block in code_block_dashes:
-        for line in block:
-            # regex for root access  "# ", "~]# ", "*# ", " # ", "[root@", "[command]`# ", "#{nbsp}", "pass:quotes[#"
-            if line.startswith(("$ sudo ", "$ *sudo ", "su -", "*su -")):
-                 report.create_report(
-                     'Code blocks that require sudo', file_path)
+    code_block = code_block_dots + code_block_dashes + code_block_two_dashes
 
-    for block in code_block_dots:
-        for line in block:
-            if line.startswith(("$ sudo ", "$ *sudo ", "su -", "*su -")):
-                 report.create_report(
-                     'Code blocks that require sudo', file_path)
+    # regex for root access  "# ", "~]# ", "*# ", " # ", "[root@", "[command]`# ", "#{nbsp}", "pass:quotes[#"
+    for item in ["$ sudo ", "$ *sudo ", "su -", "*su -"]:
+        for block in code_block:
+            if [b for b in block if b.startswith(item)]:
+                report.create_report(
+                              'Code blocks that require sudo', file_path)
+                return
 
 
 # standalone test to run on filenames;
