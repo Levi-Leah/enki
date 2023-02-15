@@ -21,7 +21,7 @@ class Report():
             self.report[category] = []
         self.report[category].append(file_path)
 
-    def print_report(self, start_time: float, Optional[str] = None) -> None:
+    def print_report(self, start_time: float, output: Optional[str] = None) -> None:
         """Print report."""
 
         if output == 'oneline':
