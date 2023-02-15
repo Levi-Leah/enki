@@ -18,6 +18,7 @@
 | ERROR: Path-based xref found | The file contains a path-based xref (e.g. xref:some/path/to/file.adoc[]). Such xrefs are no longer supported and should be removed.  |
 | ERROR: Words such as master, slave, whitelist, blacklist found | The file contains stop words that are not allowed under conscious language inniciative. |
 | ERROR: Filename contains word such as master, slave, whitelist, blacklist. Stopwords found | The filename contains stop words that are not allowed under conscious language inniciative. |
+| ERROR: Code blocks that require sudo found | The file contains code blocks that require sudo access. |
 
 
 # Link error messages
