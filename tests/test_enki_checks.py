@@ -6,6 +6,33 @@ import os
 
 
 # class for every function
+class TestSudo_check(unittest.TestCase):
+    def setUp(self):
+        self.file_path = "some/path"
+
+    def test_no_codeblock(self):
+        report = Report()
+
+        file_contents = """
+just text"""
+
+        result = sudo_check(file_contents, report, self.file_path)
+        self.assertNotIn('Code blocks that require sudo', report.report)
+
+    def test_codeblock_dahes(self):
+        report = Report()
+
+        file_contents = """
+
+----
+$ sudo command
+----
+"""
+
+        result = sudo_check(file_contents, report, self.file_path)
+        self.assertIn('Code blocks that require sudo', report.report)
+
+
 class TestConLangCheck_filename(unittest.TestCase):
 
     def test_no_stopwords(self):
