@@ -92,7 +92,7 @@ def validate(
     return report
 
 
-def validating_files(files: list[str], start_time: float, output: str = None) -> None:
+def validating_files(files: list[str], start_time: float, output: Optional[str] = None) -> None:
     """Print the result of validation and exit with an error."""
     report = Report()
 
