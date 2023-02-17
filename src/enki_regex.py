@@ -22,7 +22,7 @@ class Regexes:
     #   root
     #   administrative access (ignire case)
     #
-    SUDO = re.compile(r'sudo|su -|root| administrative access', re.IGNORECASE)
+    SUDO = re.compile(r'((\S+\])?[$#]\s+)?sudo|su\b')
 
 
     # Concious language
@@ -231,7 +231,7 @@ class Regexes:
     #    this is a code block
     #    ----
     #
-    CODE_BLOCK_DASHES = re.compile(r'(-{4,})(.*\n)*?(-{4,})')
+    CODE_BLOCK_DASHES = re.compile(r'----\n(.*?)\n----', re.DOTALL)
 
     # Code block 4 dots
     #
@@ -243,7 +243,7 @@ class Regexes:
     #    this is a code block
     #    ....
     #
-    CODE_BLOCK_DOTS = re.compile(r'(\.{4,})(.*\n)*?(\.{4,})')
+    CODE_BLOCK_DOTS = re.compile(r'\.\.\.\.\n(.*?)\n\.\.\.\.', re.DOTALL)
 
     # Code block 2 dashes
     #
@@ -255,7 +255,7 @@ class Regexes:
     #    this is a code block
     #    --
     #
-    CODE_BLOCK_TWO_DASHES = re.compile(r'^(-{2,})(.*\n)*?(-{2,})\n')
+    CODE_BLOCK_TWO_DASHES = re.compile(r'\n--\n(.*?)--', re.DOTALL)
 
     # Links without uman readable label
     # Matches links without human readable label
