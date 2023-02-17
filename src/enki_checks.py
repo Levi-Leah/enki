@@ -10,20 +10,9 @@ def sudo_check(
     report: Report,
     file_path: str) -> None:
     """Checks if sudo access is mentioned in documentation"""
-    code_block_dots = Regexes.CODE_BLOCK_DOTS.findall(stripped_file)
-    code_block_dashes = Regexes.CODE_BLOCK_DASHES.findall(stripped_file)
-    code_block_two_dashes = Regexes.CODE_BLOCK_TWO_DASHES.findall(stripped_file)
-
-    code_block = code_block_dots + code_block_dashes + code_block_two_dashes
-
-    # regex for root access  "# ", "~]# ", "*# ", " # ", "[root@", "[command]`# ", "#{nbsp}", "pass:quotes[#"
-    for item in ["$ sudo ", "$ *sudo ", "su -", "*su -"]:
-        for block in code_block:
-            if [b for b in block if b.startswith(item)]:
-                report.create_report(
-                              'Code blocks that require sudo', file_path)
-                return
-
+    if re.findall(Regexes.SUDO, stripped_file):
+        report.create_report(
+                      'Code blocks that require sudo', file_path)
 
 # standalone test to run on filenames;
 # exclusive to CLI
