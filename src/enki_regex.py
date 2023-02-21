@@ -22,7 +22,7 @@ class Regexes:
     #   root
     #   administrative access (ignire case)
     #
-    SUDO = re.compile(r'((\S+\])?[$#]\s+)?sudo|su\b')
+    SUDO = re.compile(r'((\S+\])?[$#]\s+)?sudo|su |su -\b')
 
 
     # Concious language
