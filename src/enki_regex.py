@@ -24,7 +24,6 @@ class Regexes:
     #
     SUDO = re.compile(r'((\S+\])?[$#]\s+)?sudo|su |\b')
 
-
     # Concious language
     #
     # Matches stop words that shall not be used in the docs
