@@ -1,8 +1,18 @@
 import re
+import itertools
 
 from enki_msg import Report
 from enki_regex import Regexes, Tags
 
+# standalone test to run on code blocks
+def sudo_check(
+    stripped_file: str,
+    report: Report,
+    file_path: str) -> None:
+    """Checks if sudo access is mentioned in documentation"""
+    if re.findall(Regexes.SUDO, stripped_file):
+        report.create_report(
+                      'Code blocks that require sudo', file_path)
 
 # standalone test to run on filenames;
 # exclusive to CLI
@@ -12,7 +22,7 @@ def con_lang_check_filename(
     """Checks if stop words are present."""
     if re.findall(Regexes.CON_LANG, file_path):
         report.create_report(
-            'Filename contains word such as master, slave, whitelist, blacklist. Stopwords found', file_path)
+            'Filename contains word such as master, slave, whitelist, blacklist. Stopwords', file_path)
 
 
 # standalone test to run on partially stripepd files;

@@ -11,6 +11,20 @@ class Tags:
 
 class Regexes:
     """Define regular expressions for the checks."""
+    # Sudo check
+    #
+    # Matches sudo, su -, root, administrative access
+    #
+    # Examples
+    #
+    #   sudo
+    #   su -
+    #   root
+    #   administrative access (ignire case)
+    #
+    SUDO = re.compile(r'((\S+\])?[$#]\s+)?sudo|su\b')
+
+
     # Concious language
     #
     # Matches stop words that shall not be used in the docs
@@ -23,7 +37,7 @@ class Regexes:
     #   slave
     #
     CON_LANG = re.compile(r'master|slave|blacklist|black list|black-list|black_list|whitelist|white list|white-list|white_list')
-    
+
     # Path-based xrefs
     #
     # Matches path-based xrefs
@@ -217,7 +231,7 @@ class Regexes:
     #    this is a code block
     #    ----
     #
-    CODE_BLOCK_DASHES = re.compile(r'(-{4,})(.*\n)*?(-{4,})')
+    CODE_BLOCK_DASHES = re.compile(r'----\n(.*?)\n----', re.DOTALL)
 
     # Code block 4 dots
     #
@@ -229,7 +243,7 @@ class Regexes:
     #    this is a code block
     #    ....
     #
-    CODE_BLOCK_DOTS = re.compile(r'(\.{4,})(.*\n)*?(\.{4,})')
+    CODE_BLOCK_DOTS = re.compile(r'\.\.\.\.\n(.*?)\n\.\.\.\.', re.DOTALL)
 
     # Code block 2 dashes
     #
@@ -241,7 +255,7 @@ class Regexes:
     #    this is a code block
     #    --
     #
-    CODE_BLOCK_TWO_DASHES = re.compile(r'^(-{2,})(.*\n)*?(-{2,})\n')
+    CODE_BLOCK_TWO_DASHES = re.compile(r'\n--\n(.*?)--', re.DOTALL)
 
     # Links without uman readable label
     # Matches links without human readable label

@@ -6,6 +6,33 @@ import os
 
 
 # class for every function
+class TestSudo_check(unittest.TestCase):
+    def setUp(self):
+        self.file_path = "some/path"
+
+    def test_no_codeblock(self):
+        report = Report()
+
+        file_contents = """
+just text"""
+
+        result = sudo_check(file_contents, report, self.file_path)
+        self.assertNotIn('Code blocks that require sudo', report.report)
+
+    def test_codeblock_dahes(self):
+        report = Report()
+
+        file_contents = """
+
+----
+$ sudo command
+----
+"""
+
+        result = sudo_check(file_contents, report, self.file_path)
+        self.assertIn('Code blocks that require sudo', report.report)
+
+
 class TestConLangCheck_filename(unittest.TestCase):
 
     def test_no_stopwords(self):
@@ -20,7 +47,7 @@ class TestConLangCheck_filename(unittest.TestCase):
         report = Report()
 
         result = con_lang_check_filename(report, file_path)
-        self.assertIn('Filename contains word such as master, slave, whitelist, blacklist. Stopwords found', report.report)
+        self.assertIn('Filename contains word such as master, slave, whitelist, blacklist. Stopwords', report.report)
 
 
     def test_stopword_slave(self):
@@ -28,49 +55,49 @@ class TestConLangCheck_filename(unittest.TestCase):
         report = Report()
 
         result = con_lang_check_filename(report, file_path)
-        self.assertIn('Filename contains word such as master, slave, whitelist, blacklist. Stopwords found', report.report)
+        self.assertIn('Filename contains word such as master, slave, whitelist, blacklist. Stopwords', report.report)
 
     def test_stopword_blacklist(self):
         file_path = "some/blacklist.adoc"
         report = Report()
 
         result = con_lang_check_filename(report, file_path)
-        self.assertIn('Filename contains word such as master, slave, whitelist, blacklist. Stopwords found', report.report)
+        self.assertIn('Filename contains word such as master, slave, whitelist, blacklist. Stopwords', report.report)
 
     def test_stopword_black_list(self):
         file_path = "some/black_list.adoc"
         report = Report()
 
         result = con_lang_check_filename(report, file_path)
-        self.assertIn('Filename contains word such as master, slave, whitelist, blacklist. Stopwords found', report.report)
+        self.assertIn('Filename contains word such as master, slave, whitelist, blacklist. Stopwords', report.report)
 
     def test_stopword_black_list_dash(self):
         file_path = "some/black-list.adoc"
         report = Report()
 
         result = con_lang_check_filename(report, file_path)
-        self.assertIn('Filename contains word such as master, slave, whitelist, blacklist. Stopwords found', report.report)
+        self.assertIn('Filename contains word such as master, slave, whitelist, blacklist. Stopwords', report.report)
 
     def test_stopword_whitelist(self):
         file_path = "some/whitelist.adoc"
         report = Report()
 
         result = con_lang_check_filename(report, file_path)
-        self.assertIn('Filename contains word such as master, slave, whitelist, blacklist. Stopwords found', report.report)
+        self.assertIn('Filename contains word such as master, slave, whitelist, blacklist. Stopwords', report.report)
 
     def test_stopword_white_list(self):
         file_path = "some/white_list.adoc"
         report = Report()
 
         result = con_lang_check_filename(report, file_path)
-        self.assertIn('Filename contains word such as master, slave, whitelist, blacklist. Stopwords found', report.report)
+        self.assertIn('Filename contains word such as master, slave, whitelist, blacklist. Stopwords', report.report)
 
     def test_stopword_white_list_dash(self):
         file_path = "some/white-list.adoc"
         report = Report()
 
         result = con_lang_check_filename(report, file_path)
-        self.assertIn('Filename contains word such as master, slave, whitelist, blacklist. Stopwords found', report.report)
+        self.assertIn('Filename contains word such as master, slave, whitelist, blacklist. Stopwords', report.report)
 
 
 

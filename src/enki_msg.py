@@ -1,6 +1,7 @@
 from datetime import datetime
 import logging
 import time
+from typing import Optional
 
 from junit_xml import TestSuite, TestCase
 
@@ -20,7 +21,7 @@ class Report():
             self.report[category] = []
         self.report[category].append(file_path)
 
-    def print_report(self, start_time: float, output: str = None) -> None:
+    def print_report(self, start_time: float, output: Optional[str] = None) -> None:
         """Print report."""
 
         if output == 'oneline':

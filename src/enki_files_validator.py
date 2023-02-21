@@ -4,7 +4,7 @@ import sys
 from typing import Optional
 
 from enki_msg import Report
-from enki_checks import checks, nesting_in_modules_check, too_many_comments_check, con_lang_check, con_lang_check_filename
+from enki_checks import checks, nesting_in_modules_check, too_many_comments_check, con_lang_check, con_lang_check_filename, sudo_check
 from enki_regex import Regexes
 
 
@@ -60,6 +60,7 @@ def validate(
                 # this check is CLI only
                 con_lang_check_filename(report, relative_path)
                 con_lang_check(stripped, report, relative_path)
+                sudo_check(stripped, report, relative_path)
 
             stripped = Regexes.CODE_BLOCK_DASHES.sub('', stripped)
             stripped = Regexes.CODE_BLOCK_DOTS.sub('', stripped)
@@ -91,7 +92,7 @@ def validate(
     return report
 
 
-def validating_files(files: list[str], start_time: float, output: str = None) -> None:
+def validating_files(files: list[str], start_time: float, output: Optional[str] = None) -> None:
     """Print the result of validation and exit with an error."""
     report = Report()
 
