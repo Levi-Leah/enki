@@ -17,7 +17,7 @@ class TestSudo_check(unittest.TestCase):
 just text"""
 
         result = sudo_check(file_contents, report, self.file_path)
-        self.assertNotIn('Code blocks that require sudo', report.report)
+        self.assertNotIn('Mentions of sudo access', report.report)
 
     def test_codeblock_dahes(self):
         report = Report()
@@ -30,7 +30,7 @@ $ sudo command
 """
 
         result = sudo_check(file_contents, report, self.file_path)
-        self.assertIn('Code blocks that require sudo', report.report)
+        self.assertIn('Mentions of sudo access', report.report)
 
 
 class TestConLangCheck_filename(unittest.TestCase):

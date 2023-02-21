@@ -12,7 +12,7 @@ def sudo_check(
     """Checks if sudo access is mentioned in documentation"""
     if re.findall(Regexes.SUDO, stripped_file):
         report.create_report(
-                      'Code blocks that require sudo', file_path)
+                      'Mentions of sudo access', file_path)
 
 # standalone test to run on filenames;
 # exclusive to CLI
