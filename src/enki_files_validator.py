@@ -1,6 +1,7 @@
 import os
 import re
 import sys
+import logging
 from typing import Optional
 
 from enki_msg import Report
