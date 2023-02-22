@@ -54,7 +54,7 @@ def main() -> None:
 def cli_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
                         prog = 'enki',
-                        description = 'Enki validation',
+                        description = 'Enki runs validation tests on Asciidoc source files',
                         epilog = 'Raise an issue: https://github.com/Levi-Leah/enki/issues')
 
     group = parser.add_mutually_exclusive_group(required=True)
