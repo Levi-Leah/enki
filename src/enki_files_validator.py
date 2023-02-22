@@ -105,3 +105,18 @@ def validating_files(files: list[str], start_time: float, output: Optional[str] 
 
     file_validation.print_report(start_time, output)
     sys.exit(2)
+
+
+def lcheck_validate(files: list[str]) -> None:
+    lcheck_path = os.path.dirname(
+        os.path.abspath(__file__)) + '/lcheck.rb'
+
+    master_adocs = []
+    for file in files:
+        if os.path.basename(file) == 'master.adoc':
+            master_adocs.append(file)
+
+    if master_adocs:
+        os.system(f'ruby {lcheck_path} {master_adocs}')
+    else:
+        logging.error('No master.adoc detected.')
