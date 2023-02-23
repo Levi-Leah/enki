@@ -40,19 +40,19 @@ Command-line validation tool.
 
 * To validate the files, run:
     ```bash
-    enki validate <PATH>
+    enki --validate <PATH>
     ```
     Replace `<PATH>` with the path to files or directories you want to validate.
 
 * To print one validation error per line, run:
     ```bash
-    enki validate --oneline <PATH>
+    enki --oneline <PATH>
     ```
     Replace `<PATH>` with the path to files or directories you want to validate.
 
 * To validate the links, run:
     ```bash
-    enki validate --links <PATH>
+    enki --links <PATH>
     ```
     **Note**
     Validation can only be performed on `master.adoc` files.
@@ -65,32 +65,32 @@ Command-line validation tool.
 
 * To validate all files in the directory, run:
     ```bash
-    enki validate path/
+    enki --validate path/
     ```
 
 * To validate a specific file or files, run:
     ```bash
-    enki validate path/to/file.adoc
+    enki --validate path/to/file.adoc
     ```
 
 * To validate all files that match a global pattern, run:
     ```bash
-    enki validate path/to/**/**/*adoc
+    enki --validate path/to/**/**/*adoc
     ```
 
 * To validate all files that match the special character, run:
     ```bash
-    enki validate path/to/*adoc
+    enki --validate path/to/*adoc
     ```
 
 * To validate files and print one validation error per line, run:
     ```bash
-    enki validate --oneline path/to/*adoc
+    enki --oneline path/to/*adoc
     ```
 
 * To validate links, run:
     ```bash
-    enki validate --links path/to/dir/
+    enki --links path/to/dir/
     ```
 
 ## Error messages
