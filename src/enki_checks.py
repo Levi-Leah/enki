@@ -1,5 +1,7 @@
 import re
 import itertools
+import inspect
+import sys
 
 from enki_msg import Report
 from enki_regex import Regexes, Tags
@@ -9,17 +11,17 @@ def sudo_check(
     stripped_file: str,
     report: Report,
     file_path: str) -> None:
-    """Checks if sudo access is mentioned in documentation"""
+    """Checks if sudo access is mentioned in documentation."""
     if re.findall(Regexes.SUDO, stripped_file):
         report.create_report(
                       'Mentions of sudo access', file_path)
 
 # standalone test to run on filenames;
 # exclusive to CLI
-def con_lang_check_filename(
+def con_lang_filename_check(
     report: Report,
     file_path: str) -> None:
-    """Checks if stop words are present."""
+    """Checks if stop words are present in filaname."""
     if re.findall(Regexes.CON_LANG, file_path):
         report.create_report(
             'Filename contains word such as master, slave, whitelist, blacklist. Stopwords', file_path)
@@ -31,7 +33,7 @@ def con_lang_check(
     stripped_file: str,
     report: Report,
     file_path: str) -> None:
-    """Checks if stop words are present."""
+    """Checks if stop words are present in file source."""
     if re.findall(Regexes.CON_LANG, stripped_file):
         report.create_report(
             'Words such as master, slave, whitelist, blacklist', file_path)
@@ -65,8 +67,7 @@ def too_many_comments_check(
 
 
 def unterminated_conditional_check(stripped_file: str) -> bool:
-    """Check if the number of opening conditionals matches
-    the number of closing conditionals."""
+    """Checks if the number of opening and closing conditionals match."""
     opening_conditional = re.findall(
         Regexes.OPENING_CONDITIONAL, stripped_file)
     closing_conditional = re.findall(
@@ -97,7 +98,7 @@ def empty_line_after_include_check(stripped_file: str) -> bool:
 
 
 def vanilla_xref_check(stripped_file: str) -> bool:
-    """Check if the file contains vanilla xrefs."""
+    """Checks if the file contains vanilla xrefs."""
     if re.findall(Regexes.VANILLA_XREF, stripped_file):
         return True
     else:
@@ -105,26 +106,26 @@ def vanilla_xref_check(stripped_file: str) -> bool:
 
 
 # NOTE: DISABLED
-def human_readable_label_check_links(stripped_file: str) -> bool:
-    "Check if the human readable label is present in links."""
-    if re.findall(Regexes.HUMAN_READABLE_LABEL_LINKS, stripped_file):
-        return True
-    else:
-        return False
+# def human_readable_label_check_links(stripped_file: str) -> bool:
+#     "Checks if the human readable label is present in links."""
+#     if re.findall(Regexes.HUMAN_READABLE_LABEL_LINKS, stripped_file):
+#         return True
+#     else:
+#         return False
 
 
 # NOTE: DISABLED
-def human_readable_label_check_xrefs(stripped_file: str) -> bool:
-    "Check if the human readable label is present in xrefs."""
-    if re.findall(Regexes.HUMAN_READABLE_LABEL_XREFS, stripped_file):
-        return True
-    else:
-        return False
+# def human_readable_label_check_xrefs(stripped_file: str) -> bool:
+#     "Checks if the human readable label is present in xrefs."""
+#     if re.findall(Regexes.HUMAN_READABLE_LABEL_XREFS, stripped_file):
+#         return True
+#     else:
+#         return False
 
 
 # NOTE: DISABLED
 def html_markup_check(stripped_file: str) -> bool:
-    """Check if HTML markup is present in the file."""
+    """Checks if HTML markup is present in the file."""
     if re.findall(Regexes.HTML_MARKUP, stripped_file):
         return True
     else:
@@ -135,7 +136,7 @@ def nesting_in_modules_check(
         report: Report,
         stripped_file: str,
         file_path: str) -> None:
-    """Check if modules contains nested content."""
+    """Checks if modules contains nested content."""
     includes = re.findall(Regexes.INCLUDE_STATEMENT, stripped_file)
 
     error = 0
@@ -147,7 +148,7 @@ def nesting_in_modules_check(
 
 
 def related_info_check(stripped_file: str) -> bool:
-    """Checks if related info section is present."""
+    """Checks if related information section is present."""
     if re.findall(Regexes.RELATED_INFO, stripped_file):
         return True
     else:

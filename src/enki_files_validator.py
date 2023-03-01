@@ -5,7 +5,7 @@ import logging
 from typing import Optional
 
 from enki_msg import Report
-from enki_checks import checks, nesting_in_modules_check, too_many_comments_check, con_lang_check, con_lang_check_filename, sudo_check
+from enki_checks import checks, nesting_in_modules_check, too_many_comments_check, con_lang_check, con_lang_filename_check, sudo_check
 from enki_regex import Regexes
 
 
@@ -59,7 +59,7 @@ def validate(
 
             if output != 'gitlab':
                 # this check is CLI only
-                con_lang_check_filename(report, relative_path)
+                con_lang_filename_check(report, relative_path)
                 con_lang_check(stripped, report, relative_path)
                 sudo_check(stripped, report, relative_path)
 
@@ -109,6 +109,7 @@ def validating_files(files: list[str], start_time: float, output: Optional[str] 
 
 
 def lcheck_validate(files: list[str]) -> None:
+    "Find broken links."
     lcheck_path = os.path.dirname(
         os.path.abspath(__file__)) + '/lcheck.rb'
 

@@ -39,14 +39,14 @@ class TestConLangCheck_filename(unittest.TestCase):
         file_path = "some/path"
         report = Report()
 
-        result = con_lang_check_filename(report, file_path)
+        result = con_lang_filename_check(report, file_path)
         self.assertNotIn('Words such as master, slave, whitelist, blacklist', report.report)
 
     def test_stopword_master(self):
         file_path = "some/master.adoc"
         report = Report()
 
-        result = con_lang_check_filename(report, file_path)
+        result = con_lang_filename_check(report, file_path)
         self.assertIn('Filename contains word such as master, slave, whitelist, blacklist. Stopwords', report.report)
 
 
@@ -54,49 +54,49 @@ class TestConLangCheck_filename(unittest.TestCase):
         file_path = "some/slave.adoc"
         report = Report()
 
-        result = con_lang_check_filename(report, file_path)
+        result = con_lang_filename_check(report, file_path)
         self.assertIn('Filename contains word such as master, slave, whitelist, blacklist. Stopwords', report.report)
 
     def test_stopword_blacklist(self):
         file_path = "some/blacklist.adoc"
         report = Report()
 
-        result = con_lang_check_filename(report, file_path)
+        result = con_lang_filename_check(report, file_path)
         self.assertIn('Filename contains word such as master, slave, whitelist, blacklist. Stopwords', report.report)
 
     def test_stopword_black_list(self):
         file_path = "some/black_list.adoc"
         report = Report()
 
-        result = con_lang_check_filename(report, file_path)
+        result = con_lang_filename_check(report, file_path)
         self.assertIn('Filename contains word such as master, slave, whitelist, blacklist. Stopwords', report.report)
 
     def test_stopword_black_list_dash(self):
         file_path = "some/black-list.adoc"
         report = Report()
 
-        result = con_lang_check_filename(report, file_path)
+        result = con_lang_filename_check(report, file_path)
         self.assertIn('Filename contains word such as master, slave, whitelist, blacklist. Stopwords', report.report)
 
     def test_stopword_whitelist(self):
         file_path = "some/whitelist.adoc"
         report = Report()
 
-        result = con_lang_check_filename(report, file_path)
+        result = con_lang_filename_check(report, file_path)
         self.assertIn('Filename contains word such as master, slave, whitelist, blacklist. Stopwords', report.report)
 
     def test_stopword_white_list(self):
         file_path = "some/white_list.adoc"
         report = Report()
 
-        result = con_lang_check_filename(report, file_path)
+        result = con_lang_filename_check(report, file_path)
         self.assertIn('Filename contains word such as master, slave, whitelist, blacklist. Stopwords', report.report)
 
     def test_stopword_white_list_dash(self):
         file_path = "some/white-list.adoc"
         report = Report()
 
-        result = con_lang_check_filename(report, file_path)
+        result = con_lang_filename_check(report, file_path)
         self.assertIn('Filename contains word such as master, slave, whitelist, blacklist. Stopwords', report.report)
 
 
@@ -357,46 +357,46 @@ class TestVanillaXrefCheck(unittest.TestCase):
         self.assertFalse(result, "Should return False when file has no vanilla xref.")
 
 
-class TestHumanReadableLabelCheckXrefs(unittest.TestCase):
-    def test_label_present_xref(self):
-        file_contents = """= Heading
-
-[role="_abstract"]
-This is examle abstract and xref:human-readable_label[present]."""
-
-        result = human_readable_label_check_xrefs(file_contents)
-        self.assertFalse(result, "Should return False when xref has a human readable label.")
-
-    def test_label_not_present_xref(self):
-        file_contents = """= Heading
-
-[role="_abstract"]
-This is examle abstract and xref:human-readable_label[present].
-xref:human-readable-label_not-present[]."""
-
-        result = human_readable_label_check_xrefs(file_contents)
-        self.assertTrue(result, "Should return True when xref has no human readable label.")
-
-
-class TestHumanReadableLabelCheckLinks(unittest.TestCase):
-    def test_label_present_link(self):
-        file_contents = """= Heading
-
-[role="_abstract"]
-This is examle abstract and http://www.sample-link.com[present]."""
-
-        result = human_readable_label_check_links(file_contents)
-        self.assertFalse(result, "Should return False when link has a human readable label.")
-
-    def test_label_not_present_link(self):
-        file_contents = """= Heading
-
-[role="_abstract"]
-This is examle abstract and http://www.sample-link.com[]."""
-
-        result = human_readable_label_check_links(file_contents)
-        self.assertTrue(result, "Should return True when link has no human readable label.")
-
+# class TestHumanReadableLabelCheckXrefs(unittest.TestCase):
+#     def test_label_present_xref(self):
+#         file_contents = """= Heading
+#
+# [role="_abstract"]
+# This is examle abstract and xref:human-readable_label[present]."""
+#
+#         result = human_readable_label_check_xrefs(file_contents)
+#         self.assertFalse(result, "Should return False when xref has a human readable label.")
+#
+#     def test_label_not_present_xref(self):
+#         file_contents = """= Heading
+#
+# [role="_abstract"]
+# This is examle abstract and xref:human-readable_label[present].
+# xref:human-readable-label_not-present[]."""
+#
+#         result = human_readable_label_check_xrefs(file_contents)
+#         self.assertTrue(result, "Should return True when xref has no human readable label.")
+#
+#
+# class TestHumanReadableLabelCheckLinks(unittest.TestCase):
+#     def test_label_present_link(self):
+#         file_contents = """= Heading
+#
+# [role="_abstract"]
+# This is examle abstract and http://www.sample-link.com[present]."""
+#
+#         result = human_readable_label_check_links(file_contents)
+#         self.assertFalse(result, "Should return False when link has a human readable label.")
+#
+#     def test_label_not_present_link(self):
+#         file_contents = """= Heading
+#
+# [role="_abstract"]
+# This is examle abstract and http://www.sample-link.com[]."""
+#
+#         result = human_readable_label_check_links(file_contents)
+#         self.assertTrue(result, "Should return True when link has no human readable label.")
+#
 
 class TestHtmlMarkupCheck(unittest.TestCase):
     def test_html_markup_present(self):
