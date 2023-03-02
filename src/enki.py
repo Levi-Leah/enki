@@ -8,6 +8,7 @@ import time
 import logging
 
 from enki_files_validator import validating_files, lcheck_validate
+import enki_checks
 
 
 def main() -> None:
@@ -26,7 +27,7 @@ def main() -> None:
 
     # if args.command == 'validate':
     #     validate(user_input, args)
-    adoc_files, unsupported_files = collect_files(user_input)
+    adoc_files, unsupported_files = get_files(user_input)
 
     if unsupported_files:
         separator = "\n\t"
@@ -54,11 +55,12 @@ def main() -> None:
 def cli_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
                         prog = 'enki',
-                        description = 'Enki runs validation tests on Asciidoc source files',
-                        epilog = 'Raise an issue: https://github.com/Levi-Leah/enki/issues')
+                        description = 'Enki runs validation tests on Asciidoc source files')
 
-    group = parser.add_mutually_exclusive_group(required=True)
+    group = parser.add_mutually_exclusive_group()
 
+    parser.add_argument('-t', '--testcase', action="store_true",
+                         help="show test cases")
     parser.add_argument('path', nargs='+', type=Path, help='path to files')
     group.add_argument('-v', '--validate', action="store_true",
                          help="perform validation")
@@ -69,12 +71,16 @@ def cli_args() -> argparse.Namespace:
     group.add_argument('-l', '--links', action="store_true",
                          help="find broken links")
 
+    if any(x in sys.argv for x in ['-t', '--testcase']):
+        help(enki_checks)
+        sys.exit(0)
+    
     args = parser.parse_args()
 
     return args
 
 
-def collect_files(user_input: list[Path]):
+def get_files(user_input: list[Path]):
     files = []
     unsupported_files = []
 
