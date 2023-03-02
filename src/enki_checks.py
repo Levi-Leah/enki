@@ -21,7 +21,7 @@ def sudo_check(
 def con_lang_filename_check(
     report: Report,
     file_path: str) -> None:
-    """Checks if stop words are present in filaname."""
+    """Checks if stop words are present in file names."""
     if re.findall(Regexes.CON_LANG, file_path):
         report.create_report(
             'Filename contains word such as master, slave, whitelist, blacklist. Stopwords', file_path)
@@ -40,7 +40,7 @@ def con_lang_check(
 
 
 def path_xref_check(stripped_file: str) -> bool:
-    """Checks if path-based xref is present."""
+    """Checks if path-based xrefs are present."""
     if re.findall(Regexes.PATH_XREF, stripped_file):
         return True
     else:
@@ -136,7 +136,7 @@ def nesting_in_modules_check(
         report: Report,
         stripped_file: str,
         file_path: str) -> None:
-    """Checks if modules contains nested content."""
+    """Checks if modules contain nested content."""
     includes = re.findall(Regexes.INCLUDE_STATEMENT, stripped_file)
 
     error = 0
@@ -148,7 +148,7 @@ def nesting_in_modules_check(
 
 
 def related_info_check(stripped_file: str) -> bool:
-    """Checks if related information section is present."""
+    """Checks if a Related information section is present."""
     if re.findall(Regexes.RELATED_INFO, stripped_file):
         return True
     else:
