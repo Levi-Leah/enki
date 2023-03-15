@@ -230,7 +230,7 @@ class Regexes:
     #    this is a code block
     #    ----
     #
-    CODE_BLOCK_DASHES = re.compile(r'----\n(.*?)\n----', re.DOTALL)
+    CODE_BLOCK_DASHES = re.compile(r'\n----\n([^$]+?)\n----\n', re.DOTALL)
 
     # Code block 4 dots
     #
@@ -242,7 +242,7 @@ class Regexes:
     #    this is a code block
     #    ....
     #
-    CODE_BLOCK_DOTS = re.compile(r'\.\.\.\.\n(.*?)\n\.\.\.\.', re.DOTALL)
+    CODE_BLOCK_DOTS = re.compile(r'\n\.\.\.\.\n([^$]+?)\n\.\.\.\.\n', re.DOTALL)
 
     # Code block 2 dashes
     #
@@ -254,7 +254,7 @@ class Regexes:
     #    this is a code block
     #    --
     #
-    CODE_BLOCK_TWO_DASHES = re.compile(r'\n--\n(.*?)--', re.DOTALL)
+    CODE_BLOCK_TWO_DASHES = re.compile(r'\n--\n([^$]+?)\n--\n', re.DOTALL)
 
     # Links without uman readable label
     # Matches links without human readable label
