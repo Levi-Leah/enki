@@ -109,7 +109,12 @@ def queue_broken_links(links_dict)
 
             rescue Faraday::Error => e
                 broken_links += 1
-                error_type = e.response[:status]
+                if e.response.nil?
+                    error_type = 'TimeoutError'
+                else
+                    error_type = e.response[:status]
+                end
+                
                 print_msg(link, error_type, files)
 
             end
