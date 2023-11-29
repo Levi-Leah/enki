@@ -28,7 +28,7 @@ def return_broken_links()
     @expanded_files.each do |file|
         Asciidoctor::LoggerManager.logger.level = :fatal
         doc = Asciidoctor.convert_file file, safe: :safe, catalog_assets: true, sourcemap: true
-        doc.find_by(context: :paragraph).each do |l|
+        doc.find_by(context: :section).each do |l|
             realpath = File.realpath(l.file)
 
             unless files_checked.include?(realpath)
@@ -68,7 +68,9 @@ def print_msg(link, error_type, files)
     if files.count > 1
         puts "File count: #{files.count}"
     end
-    puts "File path: #{files.join(", ")}"
+
+    # Format file paths as clickable links
+    puts "File path: #{files.map { |file| "file://#{file}" }.join(", ")}"
 end
 
 
