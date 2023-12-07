@@ -29,6 +29,10 @@ def return_broken_links()
         Asciidoctor::LoggerManager.logger.level = :fatal
         doc = Asciidoctor.convert_file file, safe: :safe, catalog_assets: true, sourcemap: true
         doc.find_by(context: :section).each do |l|
+
+            next if l.file.end_with?('master.adoc')
+            next if l.file.include?('assembly_')
+
             realpath = File.realpath(l.file)
 
             unless files_checked.include?(realpath)
@@ -114,7 +118,12 @@ def queue_broken_links(links_dict)
                 if e.response.nil?
                     error_type = 'TimeoutError'
                 else
-                    error_type = e.response[:status]
+                    case e.response[:status]
+                    when 403
+                        next
+                    else
+                        error_type = e.response[:status]
+                    end
                 end
                 
                 print_msg(link, error_type, files)
